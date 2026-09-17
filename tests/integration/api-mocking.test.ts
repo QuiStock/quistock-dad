@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { healthyApiResponse } from '../fixtures/health'
+import { healthyApiResponse } from '@test/fixtures/health'
 
 describe('external API test boundary', () => {
   it('uses a deterministic mocked response instead of the network', async () => {

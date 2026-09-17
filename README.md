@@ -62,6 +62,28 @@ tests/
 Os testes devem verificar resultados observáveis. Evite assertions sobre estado interno,
 implementação de hooks, classes CSS ou snapshots extensos.
 
+## Imports internos
+
+O projeto usa aliases para evitar caminhos relativos longos:
+
+| Alias     | Destino   | Uso                                    |
+| --------- | --------- | -------------------------------------- |
+| `@/*`     | `src/*`   | Código produtivo                       |
+| `@test/*` | `tests/*` | Fixtures, mocks e utilitários de teste |
+
+Use caminhos relativos para arquivos do mesmo módulo e aliases quando o import atravessar
+diretórios. Dependências externas continuam usando o nome do pacote:
+
+```ts
+import App from '@/App'
+import { healthyApiResponse } from '@test/fixtures/health'
+import { describe, expect, it } from 'vitest'
+import './App.css'
+```
+
+Não crie aliases para cada diretório. Um novo alias deve representar uma fronteira estável
+do projeto e ser configurado tanto no TypeScript quanto na ferramenta que executa o código.
+
 ## API externa nos testes
 
 Os testes automatizados não acessam a API externa real. Requisições HTTP são
