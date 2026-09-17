@@ -1,0 +1,9 @@
+pre-push:
+  parallel: false
+  commands:
+    formatting:
+      run: npm run format:check
+    lint:
+      run: npm run lint
+    code-smell:
+      run: npm run code-smell
