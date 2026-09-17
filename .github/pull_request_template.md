@@ -2,11 +2,9 @@
 
 Briefly explain the problem solved or the new feature implemented. Include the expected user behavior and any relevant UI, state management, or API integration changes.
 
-
 ## Related Jira card
 
 - [QUIS-XXX](https://quistock.atlassian.net/browse/QUIS-XXX)
-
 
 ## Change category
 
@@ -16,14 +14,12 @@ Briefly explain the problem solved or the new feature implemented. Include the e
 - [ ] Repository configuration
 - [ ] Documentation
 
-
 ## Change type
 
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Not applicable
-
 
 ## Quality
 
@@ -37,13 +33,11 @@ Briefly explain the problem solved or the new feature implemented. Include the e
 - [ ] API and configuration impacts were considered, where applicable.
 - [ ] Not applicable
 
-
 ## How to test
 
 Provide the commands and steps a reviewer can use to validate this change. Include the relevant viewport sizes, user interactions, and expected results.
 
 1.
-
 
 ## UI changes
 
@@ -51,13 +45,11 @@ Provide the commands and steps a reviewer can use to validate this change. Inclu
 - [ ] Screenshots or recordings are attached.
 - [ ] Relevant desktop and mobile viewport sizes were validated.
 
-
 ## API and configuration changes
 
 - [ ] No API contract or configuration changes.
 - [ ] Changed endpoints, request/response fields, or error behavior are described above.
 - [ ] New or changed environment variables are documented in `.env.example`.
-
 
 ## Impact and rollback plan
 
