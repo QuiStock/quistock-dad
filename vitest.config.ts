@@ -25,7 +25,10 @@ export default defineConfig({
     },
     environment: 'jsdom',
     exclude: ['tests/e2e/**'],
-    include: ['tests/**/*.{test,spec}.{ts,tsx}'],
+    include: ['tests/**/*.{test,spec}.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
+    server: {
+      deps: { inline: ['@csstools/css-calc', '@asamuzakjp/css-color'] },
+    },
     pool: 'threads',
     maxWorkers: 1,
     setupFiles: ['tests/setup/vitest.setup.ts'],
