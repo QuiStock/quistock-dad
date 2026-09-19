@@ -28,7 +28,8 @@ describe('emitNotification', () => {
     })
 
     expect(globalThis.dispatchEvent).toHaveBeenCalled()
-    const event = (globalThis.dispatchEvent as Mock).mock.calls[0][0] as NotificationEvent
+    const event = (globalThis.dispatchEvent as Mock).mock
+      .calls[0][0] as NotificationEvent
     expect(event.type).toBe('emitNotification')
     expect(event.detail.type).toBe('success')
     expect(event.detail.message).toBe('It worked!')
@@ -43,7 +44,8 @@ describe('emitNotification', () => {
       errors: { field1: 'Required field', field2: '' },
     })
 
-    const event = (globalThis.dispatchEvent as Mock).mock.calls[0][0] as NotificationEvent
+    const event = (globalThis.dispatchEvent as Mock).mock
+      .calls[0][0] as NotificationEvent
     expect(event.detail.id).toBe('custom-id')
     expect(event.detail.message).toContain('Validation failed')
     expect(event.detail.message).toContain('Required field')
@@ -54,7 +56,8 @@ describe('emitNotification', () => {
       type: 'info',
     } as unknown as INotificationProps)
 
-    const event = (globalThis.dispatchEvent as Mock).mock.calls[0][0] as NotificationEvent
+    const event = (globalThis.dispatchEvent as Mock).mock
+      .calls[0][0] as NotificationEvent
     expect(event.detail.message).toBe('')
   })
 })
