@@ -75,7 +75,7 @@ Use caminhos relativos para arquivos do mesmo módulo e aliases quando o import 
 diretórios. Dependências externas continuam usando o nome do pacote:
 
 ```ts
-import App from '@/App'
+import App from '@/pages/App'
 import { healthyApiResponse } from '@test/fixtures/health'
 import { describe, expect, it } from 'vitest'
 import './App.css'
