@@ -5,7 +5,7 @@ const emitNotification = (notification: INotificationProps) => {
 
   if (notification.errors) {
     errorsMessage += `<b>${notification.message}</b> <br />`
-    for (const [_, value] of Object.entries(notification.errors)) {
+    for (const value of Object.values(notification.errors)) {
       if (value) errorsMessage += `• ${value} <br />`
     }
   }
@@ -15,11 +15,7 @@ const emitNotification = (notification: INotificationProps) => {
       detail: {
         id: notification.id || `${new Date().getTime()}`,
         type: notification.type,
-        message: errorsMessage
-          ? errorsMessage
-          : notification.message
-            ? notification.message
-            : '',
+        message: errorsMessage || notification.message || '',
       },
     }),
   )

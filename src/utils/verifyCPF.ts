@@ -1,6 +1,7 @@
 const verifyCPF = (cpf: string) => {
   const cleanCPF = cpf.replace(/[^\d]+/g, '')
-  if (cleanCPF.length !== 11 || !!cleanCPF.match(/(\d)\1{10}/)) return false
+  if (cleanCPF.length !== 11 || /(\d)\1{10}/.exec(cleanCPF) !== null)
+    return false
   const splittedCPF = cleanCPF.split('')
 
   const validator = splittedCPF
@@ -18,7 +19,7 @@ const verifyCPF = (cpf: string) => {
       11) %
     10
 
-  return !(rest(10, 2) !== validator[0])
+  return rest(10, 2) === validator[0]
 }
 
 export default verifyCPF
