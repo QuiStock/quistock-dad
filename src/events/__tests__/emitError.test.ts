@@ -23,7 +23,8 @@ describe('emitError', () => {
     emitError('Oops, an error occurred')
 
     expect(globalThis.dispatchEvent).toHaveBeenCalled()
-    const event = (globalThis.dispatchEvent as Mock).mock.calls[0][0] as NotificationEvent
+    const event = (globalThis.dispatchEvent as Mock).mock
+      .calls[0][0] as NotificationEvent
     expect(event.type).toBe('emitNotification')
     expect(event.detail.type).toBe('error')
     expect(event.detail.message).toBe('Oops, an error occurred')
@@ -32,7 +33,8 @@ describe('emitError', () => {
   it('dispatches an error notification with extra errors map', () => {
     emitError('Validation Error', { username: 'Too short' })
 
-    const event = (globalThis.dispatchEvent as Mock).mock.calls[0][0] as NotificationEvent
+    const event = (globalThis.dispatchEvent as Mock).mock
+      .calls[0][0] as NotificationEvent
     expect(event.detail.type).toBe('error')
     expect(event.detail.message).toContain('Validation Error')
     expect(event.detail.message).toContain('Too short')
