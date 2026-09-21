@@ -4,7 +4,7 @@ Frontend web do Quistock, desenvolvido com React, TypeScript e Vite.
 
 ## Requisitos
 
-- Node.js 22
+- Node.js 24
 - npm 12 ou compatível com o `package-lock.json`
 
 ## Preparação do ambiente
@@ -135,7 +135,7 @@ pipeline completo para não tornar o push local excessivamente lento.
 ## Integração contínua
 
 O workflow `.github/workflows/ci.yaml` roda em pull requests, pushes para `main` e execução
-manual. Todos os jobs usam Node.js 22, `npm ci`, cache npm, Ubuntu 24.04 e timeout explícito.
+manual. Todos os jobs usam Node.js 24, `npm ci`, cache npm, Ubuntu 24.04 e timeout explícito.
 
 | Job                      | Validação                               |
 | ------------------------ | --------------------------------------- |
