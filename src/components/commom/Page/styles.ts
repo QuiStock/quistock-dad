@@ -16,7 +16,7 @@ export const TopBar = styled(Box)(
     && {
       width: 100vw;
       height: 8.8rem;
-      background-color: #fff;
+      background-color: #2D1B4E;
       padding: 1.6rem 0;
       position: fixed;
       top: 0;
@@ -76,6 +76,7 @@ export const MenuButton = styled(Menu)(
     && {
       cursor: pointer;
       font-size: ${theme.font.size.bigTitle};
+      color: ${theme.colors.white};
 
       @media (max-width: ${theme.screen.small}) {
         font-size: ${theme.font.size.pageTab};
@@ -116,7 +117,7 @@ export const MenuDrawer = styled(Drawer)(
 
       .MuiPaper-root {
         top: 8.8rem;
-        background-color: ${theme.colors.lightBlue};
+        background-color: #2D1B4E;
         padding: 1.6rem 0;
       }
 
@@ -194,7 +195,7 @@ export const CustomLink = styled(Link)(
       font-family: ${theme.font.family.base};
       font-weight: 700;
       font-size: ${theme.font.size.pageTab};
-      color: ${theme.font.colors.title};
+      color: ${theme.colors.white};
       padding: 0.8rem 1.6rem;
 
       cursor: pointer;
@@ -292,27 +293,5 @@ export const StyledContainer = styled('div')(
     align-items: flex-start;
     gap: 1.6rem;
     padding: 1.6rem;
-  `
-)
-
-export const LanguageSelection = styled('div')(
-  ({ theme }) => css`
-    width: 14rem;
-    height: 5rem;
-    display: flex;
-    gap: 0.8rem;
-    align-items: center;
-    justify-content: center;
-    color: ${theme.colors.darkBlue};
-    font-family: ${theme.font.family.base};
-    font-size: ${theme.font.size.body2};
-    font-weight: 700;
-    font-style: normal;
-    line-height: normal;
-    cursor: pointer;
-
-    @media (max-width: ${theme.screen.small}) {
-      width: 5rem;
-    }
   `
 )
