@@ -5,6 +5,7 @@ import theme from '@/styles/theme'
 import { ToastNotification } from '@/components/commom/ToastNotification'
 import { type INotificationProps } from '@/types'
 import GlobalStyles from '@/styles/globals'
+import NotFound from './404'
 
 export default function App() {
   const [notifications, setNotifications] = useState<INotificationProps[]>([])
@@ -24,7 +25,8 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles />
+      <NotFound />
       <ToastNotification notifications={notifications} />
-    </ThemeProvider >
+    </ThemeProvider>
   )
 }

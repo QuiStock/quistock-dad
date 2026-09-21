@@ -11,10 +11,12 @@ import {
 
 interface IPage {
   children: ReactNode
+  title: string
 }
 
 const Page = ({
   children,
+  title,
 }: IPage) => {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -32,6 +34,9 @@ const Page = ({
 
   return (
     <>
+      <title>
+        {`Quistock | ${title}`}
+      </title>
       <header>
         <S.TopBar>
           <Container maxWidth="xl">
@@ -54,15 +59,6 @@ const Page = ({
                   {"Q"}
                 </S.AvatarButton>
               </S.BoxItens>
-
-              <S.StyledFloatMenu
-                open={open}
-                anchorEl={anchorEl}
-                onClose={() => setAnchorEl(null)}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-              >
-              </S.StyledFloatMenu>
             </S.BoxTopBar>
           </Container>
 
@@ -74,25 +70,25 @@ const Page = ({
             <S.StyledContainer>
               <S.CustomLink href={'/'}>
                 <S.MenuItem>
-                  <HouseOutlined />
+                  <HouseOutlined /> {"Home"}
                 </S.MenuItem>
               </S.CustomLink>
 
               <S.CustomLink href={'/funcionarios'}>
                 <S.MenuItem>
-                  <PeopleAltOutlinedIcon />
+                  <PeopleAltOutlinedIcon /> {"Funcionários"}
                 </S.MenuItem>
               </S.CustomLink>
 
               <S.CustomLink href={'/dashboards'}>
                 <S.MenuItem>
-                  <InsertChartOutlinedOutlinedIcon />
+                  <InsertChartOutlinedOutlinedIcon /> {"Dashboards"}
                 </S.MenuItem>
               </S.CustomLink>
 
               <S.CustomLink href={'/fefo'}>
                 <S.MenuItem>
-                  <AssistantOutlinedIcon />
+                  <AssistantOutlinedIcon /> {"FEFO"}
                 </S.MenuItem>
               </S.CustomLink>
             </S.StyledContainer>
