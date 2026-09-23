@@ -11,6 +11,6 @@ describe('<IconsComponent />', () => {
       </IconsComponent>,
     )
 
-    expect(screen.getByText('Teste de conteúdo'))
+    expect(screen.getByText('Teste de conteúdo')).toBeInTheDocument()
   })
 })

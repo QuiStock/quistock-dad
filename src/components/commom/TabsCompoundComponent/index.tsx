@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useState } from 'react'
+import { createContext, type ReactNode, use, useState } from 'react'
 import * as S from './styles'
 
 import { ArrowBack } from '@mui/icons-material'
@@ -66,14 +66,14 @@ const Root = ({ children, permissionsArray = [true] }: IRootProps) => {
   })
 
   return (
-    <TabsContext.Provider value={{ tab, permissionsArray, setTab }}>
+    <TabsContext value={{ tab, permissionsArray, setTab }}>
       {children}
-    </TabsContext.Provider>
+    </TabsContext>
   )
 }
 
 const List = ({ children, onReturnPage }: IListProps) => {
-  const context = useContext(TabsContext)
+  const context = use(TabsContext)
 
   if (!context) {
     console.error('Tabs.List deve ser usado dentro de Tabs.Root')
@@ -96,7 +96,7 @@ const List = ({ children, onReturnPage }: IListProps) => {
 }
 
 const Tab = ({ label, index, onClickOcurrence }: ITabProps) => {
-  const context = useContext(TabsContext)
+  const context = use(TabsContext)
 
   if (!context) {
     console.error('Tabs.Tab deve ser usado dentro de Tabs.Root')
@@ -122,7 +122,7 @@ const Tab = ({ label, index, onClickOcurrence }: ITabProps) => {
 }
 
 const Panel = ({ children, index }: IPanelProps) => {
-  const context = useContext(TabsContext)
+  const context = use(TabsContext)
 
   if (!context) {
     console.error('Tabs.Panel deve ser usado dentro de Tabs.Root')

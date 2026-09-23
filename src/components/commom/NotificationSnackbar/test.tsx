@@ -9,6 +9,6 @@ describe('<ToastNotification />', () => {
       <NotificationSnackbar message="mensagem de sucesso!" type="success" />,
     )
 
-    expect(screen.getAllByText('mensagem de sucesso!')[0])
+    expect(screen.getAllByText('mensagem de sucesso!')[0]).toBeInTheDocument()
   })
 })

@@ -2,8 +2,11 @@ import { Page } from '@/components/commom/Page'
 import { Home } from '@mui/icons-material'
 import { IconsComponent } from '@/components/commom/IconsComponent'
 import { ButtonWithIcon } from '@/components/commom/ButtonWithIcon'
+import { useNavigate } from 'react-router-dom'
 
 const NotFound = () => {
+  const navigate = useNavigate()
+
   return (
     <Page title="Quistock Admin">
       <IconsComponent type="OpsExclamation" size="big">
@@ -11,8 +14,9 @@ const NotFound = () => {
         <ButtonWithIcon
           variant="contained"
           icon={<Home />}
-          // TODO: ver como faz sem next/router
-          // onClick={() => router.push('/')}
+          onClick={() => {
+            void navigate('/')
+          }}
         >
           {'Voltar'}
         </ButtonWithIcon>

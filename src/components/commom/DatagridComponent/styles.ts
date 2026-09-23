@@ -5,7 +5,7 @@ interface IDatagridComponent {
   isnotmobilefixed?: boolean
 }
 
-export const Wrapper: any = styled(DataGrid)<IDatagridComponent>(
+export const Wrapper = styled(DataGrid)<IDatagridComponent>(
   ({ theme, isnotmobilefixed }) => css`
     && {
       box-shadow: ${theme.boxShadow.main};

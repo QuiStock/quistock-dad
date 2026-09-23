@@ -9,7 +9,7 @@ interface StyledWrapperProps {
 export const Wrapper = styled(ButtonComponent)<StyledWrapperProps>(
   ({ theme, height }) => css`
     && {
-      height: ${height && height};
+      ${height && `height: ${height};`}
       svg {
         font-size: ${theme.font.size.pageTab};
       }
