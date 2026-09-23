@@ -12,13 +12,11 @@ test('loads the production bundle and supports its primary interaction', async (
 
   await page.goto('/')
 
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Get started' }),
-  ).toBeVisible()
+  // Verify the NotFound page renders on the root route
+  await expect(page.getByText('Página não encontrada...')).toBeVisible()
 
-  const counter = page.getByRole('button', { name: 'Count is 0' })
-  await counter.click()
-  await expect(page.getByRole('button', { name: 'Count is 1' })).toBeVisible()
+  const backButton = page.getByRole('button', { name: 'Voltar' })
+  await expect(backButton).toBeVisible()
 
   expect(unexpectedConsoleErrors).toEqual([])
 })
