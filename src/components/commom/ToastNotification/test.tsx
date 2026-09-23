@@ -13,6 +13,6 @@ describe('<ToastNotification />', () => {
       />,
     )
 
-    expect(screen.getAllByText('mensagem de erro')[0])
+    expect(screen.getAllByText('mensagem de erro')[0]).toBeInTheDocument()
   })
 })

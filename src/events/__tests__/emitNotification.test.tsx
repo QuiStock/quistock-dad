@@ -1,11 +1,12 @@
-// @vitest-environment node
+import { render } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import type { Mock } from 'vitest'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import emitNotification from '../emitNotification'
 import type { INotificationProps } from '@/types'
 
 interface NotificationEvent extends CustomEvent {
-  detail: { type: string; message: string; id?: string }
+  detail: { type: string; message: ReactNode; id?: string }
 }
 
 describe('emitNotification', () => {
@@ -47,8 +48,10 @@ describe('emitNotification', () => {
     const event = (globalThis.dispatchEvent as Mock).mock
       .calls[0][0] as NotificationEvent
     expect(event.detail.id).toBe('custom-id')
-    expect(event.detail.message).toContain('Validation failed')
-    expect(event.detail.message).toContain('Required field')
+
+    const { container } = render(<>{event.detail.message}</>)
+    expect(container.textContent).toContain('Validation failed')
+    expect(container.textContent).toContain('Required field')
   })
 
   it('handles empty message and errors', () => {

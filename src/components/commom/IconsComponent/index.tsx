@@ -92,7 +92,7 @@ const IconsComponent = ({
     >
       {icons[type]({ size })}
 
-      {children && <S.BoxContent align={align}>{children}</S.BoxContent>}
+      {!!children && <S.BoxContent align={align}>{children}</S.BoxContent>}
     </S.Wrapper>
   )
 }

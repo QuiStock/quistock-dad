@@ -7,6 +7,6 @@ describe('<ButtonComponent />', () => {
   it('Should be render', () => {
     renderWithTheme(<ButtonComponent onClick={() => {}} />)
 
-    expect(screen.getByTestId('button'))
+    expect(screen.getByTestId('button')).toBeInTheDocument()
   })
 })

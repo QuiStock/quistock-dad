@@ -10,6 +10,6 @@ describe('<TextInputWithIcon />', () => {
       <TextInputWithIcon icon={<SearchIcon />} label="Pesquisar por curso" />,
     )
 
-    expect(screen.getAllByText('Pesquisar por curso')[0])
+    expect(screen.getAllByText('Pesquisar por curso')[0]).toBeInTheDocument()
   })
 })

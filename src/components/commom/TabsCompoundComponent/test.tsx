@@ -21,12 +21,12 @@ describe('<TabsCompoundComponent />', () => {
       </TabsCompoundComponent.Root>,
     )
 
-    expect(screen.getByText('Conteúdo da aba 1'))
+    expect(screen.getByText('Conteúdo da aba 1')).toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Aba 2'))
 
     await waitFor(() => {
-      expect(screen.getByText('Conteúdo da aba 2'))
+      expect(screen.getByText('Conteúdo da aba 2')).toBeInTheDocument()
     })
   })
 
@@ -41,8 +41,8 @@ describe('<TabsCompoundComponent />', () => {
     )
 
     const tabs = screen.getAllByRole('tab')
-    expect(tabs[0])
-    expect(tabs[1])
+    expect(tabs[0]).toBeEnabled()
+    expect(tabs[1]).toBeDisabled()
   })
 
   it('calls onChange when a tab is clicked', () => {

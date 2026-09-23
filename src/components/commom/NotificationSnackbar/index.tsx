@@ -15,7 +15,7 @@ const NotificationSnackbar = ({
 
   const handleClose = (_?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') return
-    onClose && onClose()
+    onClose?.()
     setOpen(false)
   }
 
@@ -30,9 +30,8 @@ const NotificationSnackbar = ({
         elevation={6}
         variant="filled"
         severity={type === 'long' ? 'info' : type}
-        sx={{ width: '100%' }}
       >
-        <p dangerouslySetInnerHTML={{ __html: message }} />
+        <p>{message}</p>
       </S.Alert>
     </S.Wrapper>
   )

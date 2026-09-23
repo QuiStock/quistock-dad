@@ -7,12 +7,12 @@ describe('<LoadingMask />', () => {
   it('Should be rendered when isLoading = true', () => {
     renderWithTheme(<LoadingMask isLoading={true} />)
 
-    expect(screen.getByTestId('loading'))
+    expect(screen.getByTestId('loading')).toBeInTheDocument()
   })
 
   it('Should not be renderd when isLoading = false', () => {
     renderWithTheme(<LoadingMask isLoading={false} />)
 
-    expect(screen.queryByTestId('loading'))
+    expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
   })
 })

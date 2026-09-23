@@ -4,7 +4,6 @@ interface ILoadingMaskProps {
   isLoading: boolean
 }
 
-/* eslint-disable @next/next/no-img-element */
 const LoadingMask = ({ isLoading }: ILoadingMaskProps) => (
   <>
     {isLoading && (

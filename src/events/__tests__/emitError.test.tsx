@@ -1,9 +1,11 @@
+import { render } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import type { Mock } from 'vitest'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import emitError from '../emitError'
 
 interface NotificationEvent extends CustomEvent {
-  detail: { type: string; message: string; id?: string }
+  detail: { type: string; message: ReactNode; id?: string }
 }
 
 describe('emitError', () => {
@@ -36,7 +38,9 @@ describe('emitError', () => {
     const event = (globalThis.dispatchEvent as Mock).mock
       .calls[0][0] as NotificationEvent
     expect(event.detail.type).toBe('error')
-    expect(event.detail.message).toContain('Validation Error')
-    expect(event.detail.message).toContain('Too short')
+
+    const { container } = render(<>{event.detail.message}</>)
+    expect(container.textContent).toContain('Validation Error')
+    expect(container.textContent).toContain('Too short')
   })
 })

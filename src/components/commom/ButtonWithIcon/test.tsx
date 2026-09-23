@@ -8,6 +8,6 @@ describe('<ButtonWithIcon />', () => {
   it('should be rendered', () => {
     renderWithTheme(<ButtonWithIcon icon={<Add />}>Adicionar</ButtonWithIcon>)
 
-    expect(screen.getByText('Adicionar'))
+    expect(screen.getByText('Adicionar')).toBeInTheDocument()
   })
 })
