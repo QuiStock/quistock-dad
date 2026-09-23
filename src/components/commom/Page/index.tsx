@@ -1,32 +1,21 @@
-import { type ReactNode, useMemo, useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import * as S from './styles'
 
-import InsertChartOutlinedOutlinedIcon from '@mui/icons-material/InsertChartOutlinedOutlined';
-import AssistantOutlinedIcon from '@mui/icons-material/AssistantOutlined';
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import InsertChartOutlinedOutlinedIcon from '@mui/icons-material/InsertChartOutlinedOutlined'
+import AssistantOutlinedIcon from '@mui/icons-material/AssistantOutlined'
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import { Container } from '@mui/material'
-import {
-  HouseOutlined,
-} from '@mui/icons-material'
+import { HouseOutlined } from '@mui/icons-material'
 
 interface IPage {
   children: ReactNode
   title: string
 }
 
-const Page = ({
-  children,
-  title,
-}: IPage) => {
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+const Page = ({ children, title }: IPage) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const open = useMemo(() => !!anchorEl, [anchorEl])
-
-  const handleClickUserAvatar = (e: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(e.currentTarget)
-  }
+  const handleClickUserAvatar = () => {}
 
   const handleClickMenuButton = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -34,9 +23,7 @@ const Page = ({
 
   return (
     <>
-      <title>
-        {`Quistock | ${title}`}
-      </title>
+      <title>{`Quistock | ${title}`}</title>
       <header>
         <S.TopBar>
           <Container maxWidth="xl">
@@ -50,13 +37,13 @@ const Page = ({
                     alt="Logo Quistock"
                   />
                   <span>|</span>
-                  {"Admin"}
+                  {'Admin'}
                 </S.CustomLink>
               </S.BoxItens>
 
               <S.BoxItens>
                 <S.AvatarButton onClick={handleClickUserAvatar}>
-                  {"Q"}
+                  {'Q'}
                 </S.AvatarButton>
               </S.BoxItens>
             </S.BoxTopBar>
@@ -70,31 +57,31 @@ const Page = ({
             <S.StyledContainer>
               <S.CustomLink href={'/'}>
                 <S.MenuItem>
-                  <HouseOutlined /> {"Home"}
+                  <HouseOutlined /> {'Home'}
                 </S.MenuItem>
               </S.CustomLink>
 
-              <S.CustomLink href={'/funcionarios'}>
+              <S.CustomLink href={'/dashboard'}>
                 <S.MenuItem>
-                  <PeopleAltOutlinedIcon /> {"Funcionários"}
+                  <InsertChartOutlinedOutlinedIcon /> {'Dashboard'}
                 </S.MenuItem>
               </S.CustomLink>
 
-              <S.CustomLink href={'/dashboards'}>
+              <S.CustomLink href={'/gerentes'}>
                 <S.MenuItem>
-                  <InsertChartOutlinedOutlinedIcon /> {"Dashboards"}
+                  <PeopleAltOutlinedIcon /> {'Meus gerentes'}
                 </S.MenuItem>
               </S.CustomLink>
 
               <S.CustomLink href={'/fefo'}>
                 <S.MenuItem>
-                  <AssistantOutlinedIcon /> {"FEFO"}
+                  <AssistantOutlinedIcon /> {'FEFO'}
                 </S.MenuItem>
               </S.CustomLink>
             </S.StyledContainer>
           </S.MenuDrawer>
         </S.TopBar>
-      </header >
+      </header>
 
       <main>
         <S.Wrapper>
