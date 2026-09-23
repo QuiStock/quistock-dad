@@ -21,8 +21,9 @@ export const Wrapper: any = styled(DataGrid)<IDatagridComponent>(
         font-size: ${theme.font.size.medium};
       }
 
-      ${!isnotmobilefixed &&
-    css`
+      ${
+        !isnotmobilefixed &&
+        css`
           .MuiDataGrid-columnHeader,
           .MuiDataGrid-cell {
             @media (max-width: ${theme.screen.small}) {
@@ -30,7 +31,7 @@ export const Wrapper: any = styled(DataGrid)<IDatagridComponent>(
             }
           }
         `
-    }
+      }
     }
   `,
 )

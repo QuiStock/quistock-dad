@@ -1,6 +1,6 @@
-import { type IIconSize } from "@/components/commom/IconsComponent/icons/types";
+import { type IIconSize } from '@/components/commom/IconsComponent/icons/types'
 
-const Empty = ({ size = "big" }: IIconSize) => {
+const Empty = ({ size = 'big' }: IIconSize) => {
   const big = (
     <svg
       width="320"
@@ -25,7 +25,7 @@ const Empty = ({ size = "big" }: IIconSize) => {
         strokeWidth="3"
       />
     </svg>
-  );
+  )
 
   const small = (
     <svg
@@ -51,9 +51,9 @@ const Empty = ({ size = "big" }: IIconSize) => {
         strokeWidth="1.5"
       />
     </svg>
-  );
+  )
 
-  return size === "small" ? small : big;
-};
+  return size === 'small' ? small : big
+}
 
-export default Empty;
+export default Empty

@@ -1,5 +1,5 @@
-import styled, { css } from "styled-components";
-import { Button, type IconButtonProps } from "@mui/material";
+import styled, { css } from 'styled-components'
+import { Button, type IconButtonProps } from '@mui/material'
 
 export const Wrapper = styled(Button)<IconButtonProps>(
   ({ theme, variant }) => css`
@@ -23,29 +23,33 @@ export const Wrapper = styled(Button)<IconButtonProps>(
         text-decoration: none;
       }
 
-      ${variant === "contained" &&
-    css`
-        background-color: ${theme.colors.lightBlue};
-        &:disabled {
-          background-color: rgba(0, 0, 0, 0.12);
-        }
-        &:hover {
-          background-color: ${theme.colors.darkBlue};
-        }
-      `}
+      ${
+        variant === 'contained' &&
+        css`
+          background-color: ${theme.colors.lightBlue};
+          &:disabled {
+            background-color: rgba(0, 0, 0, 0.12);
+          }
+          &:hover {
+            background-color: ${theme.colors.darkBlue};
+          }
+        `
+      }
 
-      ${variant === "outlined" &&
-    css`
-        border: 0.1rem solid ${theme.colors.lightBlue};
-        color: ${theme.colors.lightBlue};
-        &:disabled {
-          color: rgba(0, 0, 0, 0.26);
-          border: 0.1rem solid rgba(0, 0, 0, 0.12);
-        }
-        &:hover {
-          background-color: rgba(0, 90, 190, 0.1);
-        }
-      `}
+      ${
+        variant === 'outlined' &&
+        css`
+          border: 0.1rem solid ${theme.colors.lightBlue};
+          color: ${theme.colors.lightBlue};
+          &:disabled {
+            color: rgba(0, 0, 0, 0.26);
+            border: 0.1rem solid rgba(0, 0, 0, 0.12);
+          }
+          &:hover {
+            background-color: rgba(0, 90, 190, 0.1);
+          }
+        `
+      }
     }
-  `
-);
+  `,
+)

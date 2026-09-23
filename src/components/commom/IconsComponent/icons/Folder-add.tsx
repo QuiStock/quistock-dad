@@ -1,6 +1,6 @@
-import { type IIconSize } from "@/components/commom/IconsComponent/icons/types";
+import { type IIconSize } from '@/components/commom/IconsComponent/icons/types'
 
-const FolderAdd = ({ size = "big" }: IIconSize) => {
+const FolderAdd = ({ size = 'big' }: IIconSize) => {
   const big = (
     <svg
       width="322"
@@ -49,7 +49,7 @@ const FolderAdd = ({ size = "big" }: IIconSize) => {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 
   const small = (
     <svg
@@ -99,9 +99,9 @@ const FolderAdd = ({ size = "big" }: IIconSize) => {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 
-  return size === "small" ? small : big;
-};
+  return size === 'small' ? small : big
+}
 
-export default FolderAdd;
+export default FolderAdd

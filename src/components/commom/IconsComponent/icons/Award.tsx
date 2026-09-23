@@ -1,6 +1,6 @@
-import { type IIconSize } from "@/components/commom/IconsComponent/icons/types";
+import { type IIconSize } from '@/components/commom/IconsComponent/icons/types'
 
-const Award = ({ size = "big" }: IIconSize) => {
+const Award = ({ size = 'big' }: IIconSize) => {
   const big = (
     <svg
       width="272"
@@ -36,7 +36,7 @@ const Award = ({ size = "big" }: IIconSize) => {
         fill="#C3EBFA"
       />
     </svg>
-  );
+  )
 
   const small = (
     <svg
@@ -73,9 +73,9 @@ const Award = ({ size = "big" }: IIconSize) => {
         fill="#C3EBFA"
       />
     </svg>
-  );
+  )
 
-  return size === "small" ? small : big;
-};
+  return size === 'small' ? small : big
+}
 
-export default Award;
+export default Award

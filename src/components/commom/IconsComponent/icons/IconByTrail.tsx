@@ -10,7 +10,7 @@ const IconByTrail = () => (
       <mask
         id="mask0_36672_85680"
         style={{
-          maskType: "luminance",
+          maskType: 'luminance',
         }}
         maskUnits="userSpaceOnUse"
         x="0"
@@ -44,6 +44,6 @@ const IconByTrail = () => (
       </clipPath>
     </defs>
   </svg>
-);
+)
 
-export default IconByTrail;
+export default IconByTrail

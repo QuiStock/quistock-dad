@@ -1,6 +1,6 @@
-import { type IIconSize } from "@/components/commom/IconsComponent/icons/types";
+import { type IIconSize } from '@/components/commom/IconsComponent/icons/types'
 
-const OpsExclamation = ({ size = "big" }: IIconSize) => {
+const OpsExclamation = ({ size = 'big' }: IIconSize) => {
   const big = (
     <svg
       width="322"
@@ -73,7 +73,7 @@ const OpsExclamation = ({ size = "big" }: IIconSize) => {
         </clipPath>
       </defs>
     </svg>
-  );
+  )
 
   const small = (
     <svg
@@ -147,9 +147,9 @@ const OpsExclamation = ({ size = "big" }: IIconSize) => {
         </clipPath>
       </defs>
     </svg>
-  );
+  )
 
-  return size === "small" ? small : big;
-};
+  return size === 'small' ? small : big
+}
 
-export default OpsExclamation;
+export default OpsExclamation

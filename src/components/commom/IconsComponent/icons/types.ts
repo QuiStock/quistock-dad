@@ -1,3 +1,3 @@
 export interface IIconSize {
-  size: "big" | "small";
+  size: 'big' | 'small'
 }

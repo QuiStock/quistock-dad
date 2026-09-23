@@ -12,7 +12,7 @@ const PDFBox = () => {
         fill="#DC4405"
       />
     </svg>
-  );
-};
+  )
+}
 
-export default PDFBox;
+export default PDFBox

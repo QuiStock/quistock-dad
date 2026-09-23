@@ -10,7 +10,7 @@ const IconByCourse = () => (
       <mask
         id="mask0_36672_85695"
         style={{
-          maskType: "luminance",
+          maskType: 'luminance',
         }}
         maskUnits="userSpaceOnUse"
         x="0"
@@ -40,6 +40,6 @@ const IconByCourse = () => (
       </clipPath>
     </defs>
   </svg>
-);
+)
 
-export default IconByCourse;
+export default IconByCourse
