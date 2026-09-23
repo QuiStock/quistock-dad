@@ -1,7 +1,7 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components'
 
-import Snackbar from "@mui/material/Snackbar";
-import { Alert as MuiAlert } from "@mui/material";
+import Snackbar from '@mui/material/Snackbar'
+import { Alert as MuiAlert } from '@mui/material'
 
 export const Wrapper = styled(Snackbar)(
   () => css`
@@ -12,8 +12,8 @@ export const Wrapper = styled(Snackbar)(
       bottom: unset;
       right: unset;
     }
-  `
-);
+  `,
+)
 
 export const Alert = styled(MuiAlert)(
   ({ theme }) => css`
@@ -31,5 +31,5 @@ export const Alert = styled(MuiAlert)(
         padding: 0;
       }
     }
-  `
-);
+  `,
+)

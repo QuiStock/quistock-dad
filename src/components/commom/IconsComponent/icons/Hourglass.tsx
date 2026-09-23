@@ -1,6 +1,6 @@
-import { type IIconSize } from "@/components/commom/IconsComponent/icons/types";
+import { type IIconSize } from '@/components/commom/IconsComponent/icons/types'
 
-const Hourglass = ({ size = "big" }: IIconSize) => {
+const Hourglass = ({ size = 'big' }: IIconSize) => {
   const big = (
     <svg
       width="320"
@@ -78,7 +78,7 @@ const Hourglass = ({ size = "big" }: IIconSize) => {
         </clipPath>
       </defs>
     </svg>
-  );
+  )
 
   const small = (
     <svg
@@ -157,9 +157,9 @@ const Hourglass = ({ size = "big" }: IIconSize) => {
         </clipPath>
       </defs>
     </svg>
-  );
+  )
 
-  return size === "small" ? small : big;
-};
+  return size === 'small' ? small : big
+}
 
-export default Hourglass;
+export default Hourglass

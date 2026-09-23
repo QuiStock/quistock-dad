@@ -1,6 +1,6 @@
-import { type IIconSize } from "@/components/commom/IconsComponent/icons/types";
+import { type IIconSize } from '@/components/commom/IconsComponent/icons/types'
 
-const Briefcase = ({ size = "big" }: IIconSize) => {
+const Briefcase = ({ size = 'big' }: IIconSize) => {
   const big = (
     <svg
       width="324"
@@ -77,7 +77,7 @@ const Briefcase = ({ size = "big" }: IIconSize) => {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 
   const small = (
     <svg
@@ -155,9 +155,9 @@ const Briefcase = ({ size = "big" }: IIconSize) => {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 
-  return size === "small" ? small : big;
-};
+  return size === 'small' ? small : big
+}
 
-export default Briefcase;
+export default Briefcase

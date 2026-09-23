@@ -1,9 +1,9 @@
-import * as S from "./styles";
-import { NotificationSnackbar } from "../NotificationSnackbar";
-import { type INotificationProps } from "@/types";
+import * as S from './styles'
+import { NotificationSnackbar } from '../NotificationSnackbar'
+import { type INotificationProps } from '@/types'
 
 interface IToastNotificationProps {
-  notifications: INotificationProps[];
+  notifications: INotificationProps[]
 }
 
 const ToastNotification = ({ notifications }: IToastNotificationProps) => (
@@ -16,6 +16,6 @@ const ToastNotification = ({ notifications }: IToastNotificationProps) => (
       />
     ))}
   </S.Wrapper>
-);
+)
 
-export { ToastNotification };
+export { ToastNotification }

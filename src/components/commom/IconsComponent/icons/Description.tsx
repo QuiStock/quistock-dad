@@ -1,6 +1,6 @@
-import { type IIconSize } from "@/components/commom/IconsComponent/icons/types";
+import { type IIconSize } from '@/components/commom/IconsComponent/icons/types'
 
-const Description = ({ size = "big" }: IIconSize) => {
+const Description = ({ size = 'big' }: IIconSize) => {
   const big = (
     <svg
       width="324"
@@ -94,7 +94,7 @@ const Description = ({ size = "big" }: IIconSize) => {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 
   const small = (
     <svg
@@ -189,9 +189,9 @@ const Description = ({ size = "big" }: IIconSize) => {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 
-  return size === "small" ? small : big;
-};
+  return size === 'small' ? small : big
+}
 
-export default Description;
+export default Description

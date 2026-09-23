@@ -10,7 +10,7 @@ const IconByPerson = () => (
       <mask
         id="mask0_36843_4033"
         style={{
-          maskType: "luminance",
+          maskType: 'luminance',
         }}
         maskUnits="userSpaceOnUse"
         x="0"
@@ -42,6 +42,6 @@ const IconByPerson = () => (
       </clipPath>
     </defs>
   </svg>
-);
+)
 
-export default IconByPerson;
+export default IconByPerson

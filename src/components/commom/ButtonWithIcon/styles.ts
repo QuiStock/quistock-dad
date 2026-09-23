@@ -1,9 +1,9 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components'
 
-import { ButtonComponent } from "@/components/commom/ButtonComponent";
+import { ButtonComponent } from '@/components/commom/ButtonComponent'
 
 interface StyledWrapperProps {
-  height?: string;
+  height?: string
 }
 
 export const Wrapper = styled(ButtonComponent)<StyledWrapperProps>(
@@ -14,5 +14,5 @@ export const Wrapper = styled(ButtonComponent)<StyledWrapperProps>(
         font-size: ${theme.font.size.pageTab};
       }
     }
-  `
-);
+  `,
+)

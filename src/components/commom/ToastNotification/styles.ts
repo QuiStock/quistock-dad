@@ -1,6 +1,6 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components'
 
-export const Wrapper = styled("div")(
+export const Wrapper = styled('div')(
   () => css`
     display: flex;
     flex-direction: column;
@@ -19,4 +19,4 @@ export const Wrapper = styled("div")(
       width: 0;
     }
   `,
-);
+)

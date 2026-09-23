@@ -9,7 +9,7 @@ const IconByBusiness = () => (
     <mask
       id="mask0_37022_18942"
       style={{
-        maskType: "luminance",
+        maskType: 'luminance',
       }}
       maskUnits="userSpaceOnUse"
       x="0"
@@ -74,6 +74,6 @@ const IconByBusiness = () => (
       />
     </g>
   </svg>
-);
+)
 
-export default IconByBusiness;
+export default IconByBusiness

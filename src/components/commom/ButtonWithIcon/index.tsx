@@ -1,12 +1,12 @@
-import { type ReactNode } from "react";
-import * as S from "./styles";
-import { type ButtonProps } from "@mui/material";
+import { type ReactNode } from 'react'
+import * as S from './styles'
+import { type ButtonProps } from '@mui/material'
 
 export interface IButtonWithIconProps extends ButtonProps {
-  children: string | ReactNode;
-  icon: ReactNode;
-  isEndIcon?: boolean;
-  height?: string;
+  children: string | ReactNode
+  icon: ReactNode
+  isEndIcon?: boolean
+  height?: string
 }
 
 const ButtonWithIcon = (props: IButtonWithIconProps) => (
@@ -20,6 +20,6 @@ const ButtonWithIcon = (props: IButtonWithIconProps) => (
       {props.children}
     </S.Wrapper>
   </>
-);
+)
 
-export { ButtonWithIcon };
+export { ButtonWithIcon }

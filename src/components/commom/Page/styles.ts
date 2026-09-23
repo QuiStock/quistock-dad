@@ -7,7 +7,7 @@ import {
   IconButton,
   MenuItem as ItemFloatMenu,
   Menu as FloatMenu,
-  Link
+  Link,
 } from '@mui/material'
 import { Menu, NotificationsNone } from '@mui/icons-material'
 
@@ -16,7 +16,7 @@ export const TopBar = styled(Box)(
     && {
       width: 100vw;
       height: 8.8rem;
-      background-color: #2D1B4E;
+      background-color: #2d1b4e;
       padding: 1.6rem 0;
       position: fixed;
       top: 0;
@@ -25,7 +25,7 @@ export const TopBar = styled(Box)(
       align-items: center;
       z-index: 1201;
     }
-  `
+  `,
 )
 
 export const BoxItens = styled('div')(
@@ -37,7 +37,7 @@ export const BoxItens = styled('div')(
     @media (max-width: ${theme.screen.small}) {
       gap: 1rem;
     }
-  `
+  `,
 )
 
 export const BoxTopBar = styled('div')(
@@ -51,7 +51,7 @@ export const BoxTopBar = styled('div')(
     @media (max-width: ${theme.screen.small}) {
       gap: 0;
     }
-  `
+  `,
 )
 
 export const FlagLessonType = styled('div')(
@@ -68,7 +68,7 @@ export const FlagLessonType = styled('div')(
     font-size: ${theme.font.size.pageTab};
     font-family: ${theme.font.family.base};
     text-align: center;
-  `
+  `,
 )
 
 export const MenuButton = styled(Menu)(
@@ -82,7 +82,7 @@ export const MenuButton = styled(Menu)(
         font-size: ${theme.font.size.pageTab};
       }
     }
-  `
+  `,
 )
 
 export const Notifications = styled(NotificationsNone)(
@@ -91,7 +91,7 @@ export const Notifications = styled(NotificationsNone)(
       font-size: ${theme.font.size.bigTitle};
       margin-left: auto;
     }
-  `
+  `,
 )
 
 export const AvatarButton = styled(Avatar)(
@@ -107,7 +107,7 @@ export const AvatarButton = styled(Avatar)(
         height: 3rem;
       }
     }
-  `
+  `,
 )
 
 export const MenuDrawer = styled(Drawer)(
@@ -117,7 +117,7 @@ export const MenuDrawer = styled(Drawer)(
 
       .MuiPaper-root {
         top: 8.8rem;
-        background-color: #2D1B4E;
+        background-color: #2d1b4e;
         padding: 1.6rem 0;
       }
 
@@ -126,7 +126,7 @@ export const MenuDrawer = styled(Drawer)(
         font-size: 1.6rem;
       }
     }
-  `
+  `,
 )
 
 export const MenuItem = styled('div')(
@@ -143,7 +143,7 @@ export const MenuItem = styled('div')(
     svg {
       font-size: ${theme.font.size.body2};
     }
-  `
+  `,
 )
 
 export const Wrapper = styled('div')(
@@ -152,7 +152,7 @@ export const Wrapper = styled('div')(
       padding-bottom: 4.8rem;
       width: 100%;
     }
-  `
+  `,
 )
 
 export const TitleTop = styled('p')(
@@ -181,7 +181,7 @@ export const TitleTop = styled('p')(
         margin-right: 1rem;
       }
     }
-  `
+  `,
 )
 
 export const CustomLink = styled(Link)(
@@ -214,7 +214,7 @@ export const CustomLink = styled(Link)(
         }
       }
     }
-  `
+  `,
 )
 
 export const MenuDivisor = styled('div')(
@@ -222,14 +222,14 @@ export const MenuDivisor = styled('div')(
     width: 100%;
     margin-top: auto;
     border-bottom: solid 0.1rem ${theme.colors.white};
-  `
+  `,
 )
 
 export const StyledFloatMenu = styled(FloatMenu)(
   ({ theme }) => css`
     margin-top: 0.5rem;
     box-shadow: ${theme.boxShadow.main};
-  `
+  `,
 )
 
 export const StyledItemFloatMenu = styled(ItemFloatMenu)(
@@ -245,7 +245,7 @@ export const StyledItemFloatMenu = styled(ItemFloatMenu)(
       color: ${theme.colors.golden};
       transform: translateY(-0.2rem);
     }
-  `
+  `,
 )
 
 export const TextItemMenuFloat = styled('p')(
@@ -254,7 +254,7 @@ export const TextItemMenuFloat = styled('p')(
     font-size: ${theme.font.size.base};
     color: ${theme.font.colors.main};
     font-weight: 300;
-  `
+  `,
 )
 
 export const ButtonPrevPage = styled(IconButton)(
@@ -262,7 +262,7 @@ export const ButtonPrevPage = styled(IconButton)(
     && {
       margin-right: 1rem;
     }
-  `
+  `,
 )
 
 export const PageWrapper = styled('div')(
@@ -270,7 +270,7 @@ export const PageWrapper = styled('div')(
     width: 100%;
     height: 100%;
     padding: 2rem 0;
-  `
+  `,
 )
 
 export const LogoJBS = styled('img')(
@@ -282,7 +282,7 @@ export const LogoJBS = styled('img')(
     @media (max-width: ${theme.screen.small}) {
       height: 1.4rem;
     }
-  `
+  `,
 )
 
 export const StyledContainer = styled('div')(
@@ -293,5 +293,5 @@ export const StyledContainer = styled('div')(
     align-items: flex-start;
     gap: 1.6rem;
     padding: 1.6rem;
-  `
+  `,
 )

@@ -1,6 +1,6 @@
-import { type IIconSize } from "@/components/commom/IconsComponent/icons/types";
+import { type IIconSize } from '@/components/commom/IconsComponent/icons/types'
 
-const Calendar = ({ size = "big" }: IIconSize) => {
+const Calendar = ({ size = 'big' }: IIconSize) => {
   const big = (
     <svg
       width="324"
@@ -114,7 +114,7 @@ const Calendar = ({ size = "big" }: IIconSize) => {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 
   const small = (
     <svg
@@ -229,9 +229,9 @@ const Calendar = ({ size = "big" }: IIconSize) => {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 
-  return size === "small" ? small : big;
-};
+  return size === 'small' ? small : big
+}
 
-export default Calendar;
+export default Calendar
