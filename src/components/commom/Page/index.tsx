@@ -15,7 +15,7 @@ interface IPage {
 const Page = ({ children, title }: IPage) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const handleClickUserAvatar = () => {}
+  const handleClickUserAvatar = () => { }
 
   const handleClickMenuButton = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -23,7 +23,7 @@ const Page = ({ children, title }: IPage) => {
 
   return (
     <>
-      <title>{`Quistock | ${title}`}</title>
+      <title>{`QuiStock | ${title}`}</title>
       <header>
         <S.TopBar>
           <Container maxWidth="xl">
@@ -34,7 +34,7 @@ const Page = ({ children, title }: IPage) => {
                 <S.CustomLink href={'/'}>
                   <S.LogoJBS
                     src="src/assets/quistock.svg"
-                    alt="Logo Quistock"
+                    alt="Logo QuiStock"
                   />
                   <span>|</span>
                   {'Admin'}
