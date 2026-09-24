@@ -15,7 +15,7 @@ interface IPage {
 const Page = ({ children, title }: IPage) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const handleClickUserAvatar = () => {}
+  const handleClickUserAvatar = () => { }
 
   const handleClickMenuButton = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -55,15 +55,15 @@ const Page = ({ children, title }: IPage) => {
             onClose={handleClickMenuButton}
           >
             <S.StyledContainer>
-              <S.CustomLink href={'/'}>
+              <S.CustomLink href={'/home'}>
                 <S.MenuItem>
                   <HouseOutlined /> {'Home'}
                 </S.MenuItem>
               </S.CustomLink>
 
-              <S.CustomLink href={'/dashboard'}>
+              <S.CustomLink href={'/dashboards'}>
                 <S.MenuItem>
-                  <InsertChartOutlinedOutlinedIcon /> {'Dashboard'}
+                  <InsertChartOutlinedOutlinedIcon /> {'Dashboards'}
                 </S.MenuItem>
               </S.CustomLink>
 
