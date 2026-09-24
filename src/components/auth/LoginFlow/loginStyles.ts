@@ -13,14 +13,14 @@ export const BoxForm = styled('div')(
     font-family: ${theme.font.family.base};
     width: 60rem;
     border-radius: 25px;
-    border: 1rem solid #3B2C4E;
+    border: 1rem solid #3b2c4e;
     box-shadow: ${theme.boxShadow.main};
     background-color: ${theme.colors.white};
 
     @media (max-width: ${theme.screen.small}) {
       width: 95%;
     }
-  `
+  `,
 )
 
 export const Title = styled('p')(
@@ -45,7 +45,7 @@ export const Title = styled('p')(
         color: ${theme.font.colors.title};
       }
     }
-  `
+  `,
 )
 
 export const UserInput = styled(TextInputComponent)(
@@ -53,7 +53,7 @@ export const UserInput = styled(TextInputComponent)(
     && {
       margin-top: 4rem;
     }
-  `
+  `,
 )
 
 export const UserPassword = styled(TextInputWithIcon)(
@@ -61,7 +61,7 @@ export const UserPassword = styled(TextInputWithIcon)(
     && {
       margin-top: 4rem;
     }
-  `
+  `,
 )
 
 export const ButtonForgotPass = styled(ButtonComponent)(
@@ -69,7 +69,7 @@ export const ButtonForgotPass = styled(ButtonComponent)(
     && {
       width: fit-content;
     }
-  `
+  `,
 )
 
 export const HelpLink = styled(Link)(
@@ -80,7 +80,7 @@ export const HelpLink = styled(Link)(
       margin-bottom: 4rem;
       font-weight: 300;
     }
-  `
+  `,
 )
 
 export const ButtonContainer = styled('div')(
@@ -90,7 +90,7 @@ export const ButtonContainer = styled('div')(
       justify-content: right;
       margin-top: 4rem;
     }
-  `
+  `,
 )
 
 export const AdvanceButton = styled(ButtonWithIcon)(
@@ -98,7 +98,7 @@ export const AdvanceButton = styled(ButtonWithIcon)(
     && {
       align-self: self-end;
     }
-  `
+  `,
 )
 
 export const ReturnButton = styled(ButtonWithIcon)(
@@ -107,7 +107,7 @@ export const ReturnButton = styled(ButtonWithIcon)(
       align-self: self-start;
       margin-right: 2rem;
     }
-  `
+  `,
 )
 
 export const BoxPlatforms = styled('div')(
@@ -120,7 +120,7 @@ export const BoxPlatforms = styled('div')(
     @media (max-width: ${theme.screen.small}) {
       flex-direction: column;
     }
-  `
+  `,
 )
 
 export const BoxPlatform = styled('div')(
@@ -141,7 +141,7 @@ export const BoxPlatform = styled('div')(
       scale: 1.03;
       background-color: ${theme.colors.gray};
     }
-  `
+  `,
 )
 
 export const PlatformName = styled('p')(
@@ -156,7 +156,7 @@ export const PlatformName = styled('p')(
         font-size: ${theme.font.size.pageTab};
       }
     }
-  `
+  `,
 )
 
 export const StyledIconButton = styled(IconButton)(
@@ -176,7 +176,7 @@ export const StyledIconButton = styled(IconButton)(
         font-size: ${theme.font.size.pageTab};
       }
     }
-  `
+  `,
 )
 
 export const ForgotPasswordContent = styled('div')(
@@ -185,7 +185,7 @@ export const ForgotPasswordContent = styled('div')(
     flex-direction: column;
     align-items: flex-start;
     gap: 2.4rem;
-  `
+  `,
 )
 
 export const ForgotPasswordMessage = styled('p')(
@@ -196,7 +196,7 @@ export const ForgotPasswordMessage = styled('p')(
       font-size: ${theme.font.size.body1};
       font-weight: 400;
     }
-  `
+  `,
 )
 
 export const HeaderContainer = styled('div')(
@@ -205,7 +205,7 @@ export const HeaderContainer = styled('div')(
     flex-direction: column;
     gap: 0.5rem;
     margin-top: 2rem;
-  `
+  `,
 )
 
 export const LoginTitle = styled(Title)(
@@ -214,7 +214,7 @@ export const LoginTitle = styled(Title)(
       margin-top: 0;
       color: #000;
     }
-  `
+  `,
 )
 
 export const Subtitle = styled('p')(
@@ -222,7 +222,7 @@ export const Subtitle = styled('p')(
     margin: 0;
     font-size: 1.4rem;
     color: #666;
-  `
+  `,
 )
 
 export const LoginPassword = styled(UserPassword)(
@@ -230,7 +230,7 @@ export const LoginPassword = styled(UserPassword)(
     && {
       margin-top: 2rem;
     }
-  `
+  `,
 )
 
 export const LoginButtonContainer = styled(ButtonContainer)(
@@ -239,14 +239,14 @@ export const LoginButtonContainer = styled(ButtonContainer)(
       width: 100%;
       margin-top: 3rem;
     }
-  `
+  `,
 )
 
 export const SubmitButton = styled('button')<{ disabled?: boolean }>(
   ({ disabled }) => css`
     width: 100%;
     padding: 1.2rem;
-    background-color: #7F3AEF;
+    background-color: #7f3aef;
     color: white;
     border: none;
     border-radius: 0.8rem;
@@ -255,5 +255,5 @@ export const SubmitButton = styled('button')<{ disabled?: boolean }>(
     cursor: ${disabled ? 'not-allowed' : 'pointer'};
     opacity: ${disabled ? 0.7 : 1};
     transition: opacity 0.2s;
-  `
+  `,
 )
