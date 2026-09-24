@@ -13,7 +13,7 @@ import Stores from '@/pages/stores'
 import NotFound from '@/pages/404'
 import { AuthenticationPage } from '@/components/auth/AuthenticationPage'
 import { LoginFlow } from '@/components/auth/LoginFlow'
-
+import Home from './home'
 const queryClient = new QueryClient()
 
 export default function App() {
@@ -46,7 +46,7 @@ export default function App() {
                 <AuthenticationPage title="Login" children={<LoginFlow />} />
               }
             />
-            {/* <Route path="/home" element={<Home />} /> */}
+            <Route path="/home" element={<Home />} />
             <Route path="/lojas" element={<Stores />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

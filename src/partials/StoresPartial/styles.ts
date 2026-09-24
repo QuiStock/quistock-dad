@@ -44,24 +44,12 @@ export const FilterInputs = styled('div')(
   `,
 )
 
-export const ModalWrapper = styled('div')(
-  ({ theme }) => css`
-    width: 100%;
-    height: fit-content;
+export const SeeMoreStoresButton = styled('div')(
+  () => css`
     display: flex;
-    flex-direction: column;
-    background-color: ${theme.colors.white};
-    gap: 1.8rem;
-    padding: 2.4rem;
-  `,
-)
-
-export const ModalTitle = styled('p')(
-  ({ theme }) => css`
-    font-family: ${theme.font.family.base};
-    color: ${theme.font.colors.title};
-    font-size: ${theme.font.size.title};
-    font-weight: 700;
-    margin-bottom: 2rem;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
   `,
 )
