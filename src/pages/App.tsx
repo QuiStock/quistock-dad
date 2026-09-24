@@ -11,6 +11,8 @@ import GlobalStyles from '@/styles/globals'
 // Pages
 import Stores from '@/pages/stores'
 import NotFound from '@/pages/404'
+import { AuthenticationPage } from '@/components/auth/AuthenticationPage'
+import { LoginFlow } from '@/components/auth/LoginFlow'
 
 const queryClient = new QueryClient()
 
@@ -38,7 +40,8 @@ export default function App() {
 
         <BrowserRouter>
           <Routes>
-            {/* <Route path="/" element={<Home />} /> */}
+            <Route path="/auth" element={<AuthenticationPage title="Login" children={<LoginFlow />} />} />
+            {/* <Route path="/home" element={<Home />} /> */}
             <Route path="/lojas" element={<Stores />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
