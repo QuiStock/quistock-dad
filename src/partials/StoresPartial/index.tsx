@@ -87,17 +87,17 @@ export const StoresPartial = () => {
 
   // Mock
   const filteredStores = useMemo(() => {
-    let result = mockStoresData;
+    let result = mockStoresData
 
     if (searchName) {
       result = result.filter((store) =>
-        store.name.toLowerCase().includes(searchName.toLowerCase())
-      );
+        store.name.toLowerCase().includes(searchName.toLowerCase()),
+      )
     }
 
     // Se não estiver na página de lojas, limita a 5 resultados
-    return isStoresPage ? result : result.slice(0, 5);
-  }, [searchName, isStoresPage]);
+    return isStoresPage ? result : result.slice(0, 5)
+  }, [searchName, isStoresPage])
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -157,8 +157,8 @@ export const StoresPartial = () => {
           </TabsCompoundComponent.Root>
           <S.SeeMoreStoresButton>
             <ButtonComponent
-              variant='outlined'
-              onClick={() => navigate('/lojas')}
+              variant="outlined"
+              onClick={() => void navigate('/lojas')}
             >
               Ver mais lojas
             </ButtonComponent>
@@ -166,25 +166,23 @@ export const StoresPartial = () => {
         </S.BoxFilters>
       )}
 
-      {
-        filteredStores.length === 0 ? (
-          <IconsComponent type="Empty">
-            <p>{'Nenhuma loja encontrada'}</p>
-          </IconsComponent>
-        ) : (
-          <DatagridComponent
-            isNotMobileFixed
-            disableColumnMenu
-            columns={columns}
-            rows={filteredStores}
-            pageSizeOptions={[10, 25, 50]}
-            paginationModel={paginationModel}
-            paginationMode="client"
-            onPaginationModelChange={handlePaginationChange}
-            hideFooter={!isStoresPage}
-          />
-        )
-      }
-    </S.Wrapper >
+      {filteredStores.length === 0 ? (
+        <IconsComponent type="Empty">
+          <p>{'Nenhuma loja encontrada'}</p>
+        </IconsComponent>
+      ) : (
+        <DatagridComponent
+          isNotMobileFixed
+          disableColumnMenu
+          columns={columns}
+          rows={filteredStores}
+          pageSizeOptions={[10, 25, 50]}
+          paginationModel={paginationModel}
+          paginationMode="client"
+          onPaginationModelChange={handlePaginationChange}
+          hideFooter={!isStoresPage}
+        />
+      )}
+    </S.Wrapper>
   )
 }
