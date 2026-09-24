@@ -7,7 +7,6 @@ interface IAuthenticationPage {
 }
 
 const AuthenticationPage = ({ children, title }: IAuthenticationPage) => {
-
   return (
     <>
       <title>{`QuiStock | ${title}`}</title>

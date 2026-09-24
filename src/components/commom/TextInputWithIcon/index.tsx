@@ -12,16 +12,17 @@ type ITextInputWithIconProps = TextFieldProps & {
 
 const TextInputWithIcon = ({
   icon,
-  // @ts-expect-error InputProps is in the union variants but not the base type
-  InputProps,
+  slotProps,
   ...props
 }: ITextInputWithIconProps) => (
   <S.Wrapper
     {...props}
-    // @ts-expect-error styled-components types lose the discriminated union
-    InputProps={{
-      ...(InputProps as Partial<InputBaseProps>),
-      endAdornment: <InputAdornment position="end">{icon}</InputAdornment>,
+    slotProps={{
+      ...slotProps,
+      input: {
+        ...(slotProps?.input as Partial<InputBaseProps>),
+        endAdornment: <InputAdornment position="end">{icon}</InputAdornment>,
+      },
     }}
   />
 )

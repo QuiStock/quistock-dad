@@ -12,5 +12,5 @@ export const Logo = styled('img')<IImg>(
       height: auto;
       margin-top: 1rem;
     }
-  `
+  `,
 )

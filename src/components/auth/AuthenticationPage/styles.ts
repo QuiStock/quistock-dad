@@ -5,9 +5,9 @@ export const Container = styled('div')(
     position: relative;
     width: 100vw;
     height: 100vh;
-    background-color: #11061F;
+    background-color: #11061f;
     overflow: hidden;
-  `
+  `,
 )
 
 export const Wrapper = styled('div')(
@@ -20,7 +20,7 @@ export const Wrapper = styled('div')(
     justify-content: center;
     align-items: center;
     z-index: 1;
-  `
+  `,
 )
 
 export const Title = styled('p')(
@@ -32,7 +32,7 @@ export const Title = styled('p')(
       font-weight: 1000;
       margin: 2rem;
     }
-  `
+  `,
 )
 
 export const Background = styled('img')(
@@ -48,5 +48,5 @@ export const Background = styled('img')(
       object-position: right center;
       z-index: 0;
     }
-  `
+  `,
 )

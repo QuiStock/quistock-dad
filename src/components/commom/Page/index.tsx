@@ -15,7 +15,7 @@ interface IPage {
 const Page = ({ children, title }: IPage) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const handleClickUserAvatar = () => { }
+  const handleClickUserAvatar = () => {}
 
   const handleClickMenuButton = () => {
     setIsMenuOpen(!isMenuOpen)

@@ -40,7 +40,12 @@ export default function App() {
 
         <BrowserRouter>
           <Routes>
-            <Route path="/auth" element={<AuthenticationPage title="Login" children={<LoginFlow />} />} />
+            <Route
+              path="/auth"
+              element={
+                <AuthenticationPage title="Login" children={<LoginFlow />} />
+              }
+            />
             {/* <Route path="/home" element={<Home />} /> */}
             <Route path="/lojas" element={<Stores />} />
             <Route path="*" element={<NotFound />} />
