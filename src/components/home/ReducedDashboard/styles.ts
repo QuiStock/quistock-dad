@@ -5,7 +5,7 @@ export const Wrapper = styled('div')(
     width: 100%;
     display: flex;
     gap: 2rem;
-    
+
     @media (max-width: ${theme.screen.small}) {
       flex-direction: column;
     }
@@ -17,7 +17,7 @@ export const Column = styled('div')(
     display: flex;
     flex-direction: column;
     gap: 1.8rem;
-    
+
     &:first-child {
       flex: 1;
     }
