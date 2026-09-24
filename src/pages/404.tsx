@@ -8,7 +8,7 @@ const NotFound = () => {
   const navigate = useNavigate()
 
   return (
-    <Page title="QuiStock Admin">
+    <Page title="Admin">
       <IconsComponent type="OpsExclamation" size="big">
         <p>{'Página não encontrada...'}</p>
         <ButtonWithIcon
@@ -18,7 +18,7 @@ const NotFound = () => {
             void navigate('/')
           }}
         >
-          {'Voltar'}
+          Voltar
         </ButtonWithIcon>
       </IconsComponent>
     </Page>

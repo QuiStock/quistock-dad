@@ -8,6 +8,9 @@ import { DatagridComponent } from '@/components/commom/DatagridComponent'
 import { IconsComponent } from '@/components/commom/IconsComponent'
 
 import { TextInputWithIcon } from '@/components/commom/TextInputWithIcon'
+import { ButtonComponent } from '@/components/commom/ButtonComponent'
+import { useNavigate } from 'react-router-dom'
+import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
 
 const INITIAL_PATINATION = {
   page: 0,
@@ -69,6 +72,9 @@ const mockStoresData = [
 export const StoresPartial = () => {
   const [searchName, setSearchName] = useState('')
   const [paginationModel, setPaginationModel] = useState(INITIAL_PATINATION)
+  const navigate = useNavigate()
+
+  const isStoresPage = window.location.pathname === '/lojas'
 
   const handlePaginationChange = (model: typeof INITIAL_PATINATION) => {
     setPaginationModel(model)
@@ -81,11 +87,17 @@ export const StoresPartial = () => {
 
   // Mock
   const filteredStores = useMemo(() => {
-    if (!searchName) return mockStoresData
-    return mockStoresData.filter((store) =>
-      store.name.toLowerCase().includes(searchName.toLowerCase()),
-    )
-  }, [searchName])
+    let result = mockStoresData;
+
+    if (searchName) {
+      result = result.filter((store) =>
+        store.name.toLowerCase().includes(searchName.toLowerCase())
+      );
+    }
+
+    // Se não estiver na página de lojas, limita a 5 resultados
+    return isStoresPage ? result : result.slice(0, 5);
+  }, [searchName, isStoresPage]);
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -125,33 +137,54 @@ export const StoresPartial = () => {
 
   return (
     <S.Wrapper>
-      <S.BoxFilters>
-        <S.FilterInputs>
-          <TextInputWithIcon
-            icon={<Search />}
-            label={'Buscar lojas'}
-            value={searchName}
-            onChange={handleSearchChange}
-          />
-        </S.FilterInputs>
-      </S.BoxFilters>
-
-      {filteredStores.length === 0 ? (
-        <IconsComponent type="Empty">
-          <p>{'Nenhuma loja encontrada'}</p>
-        </IconsComponent>
+      {isStoresPage ? (
+        <S.BoxFilters>
+          <S.FilterInputs>
+            <TextInputWithIcon
+              icon={<Search />}
+              label={'Buscar lojas'}
+              value={searchName}
+              onChange={handleSearchChange}
+            />
+          </S.FilterInputs>
+        </S.BoxFilters>
       ) : (
-        <DatagridComponent
-          isNotMobileFixed
-          disableColumnMenu
-          columns={columns}
-          rows={filteredStores}
-          pageSizeOptions={[10, 25, 50]}
-          paginationModel={paginationModel}
-          paginationMode="client"
-          onPaginationModelChange={handlePaginationChange}
-        />
+        <S.BoxFilters>
+          <TabsCompoundComponent.Root>
+            <TabsCompoundComponent.List>
+              <TabsCompoundComponent.Tab label={'Lojas'} index={0} />
+            </TabsCompoundComponent.List>
+          </TabsCompoundComponent.Root>
+          <S.SeeMoreStoresButton>
+            <ButtonComponent
+              variant='outlined'
+              onClick={() => navigate('/lojas')}
+            >
+              Ver mais lojas
+            </ButtonComponent>
+          </S.SeeMoreStoresButton>
+        </S.BoxFilters>
       )}
-    </S.Wrapper>
+
+      {
+        filteredStores.length === 0 ? (
+          <IconsComponent type="Empty">
+            <p>{'Nenhuma loja encontrada'}</p>
+          </IconsComponent>
+        ) : (
+          <DatagridComponent
+            isNotMobileFixed
+            disableColumnMenu
+            columns={columns}
+            rows={filteredStores}
+            pageSizeOptions={[10, 25, 50]}
+            paginationModel={paginationModel}
+            paginationMode="client"
+            onPaginationModelChange={handlePaginationChange}
+            hideFooter={!isStoresPage}
+          />
+        )
+      }
+    </S.Wrapper >
   )
 }
