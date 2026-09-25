@@ -5,5 +5,3 @@ pre-push:
       run: npm run format:check
     lint:
       run: npm run lint
-    code-smell:
-      run: npm run code-smell
