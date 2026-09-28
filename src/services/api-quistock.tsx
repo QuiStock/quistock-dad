@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import type { IName, IServerDerivativePagination } from '@/types'
+import type { IIdAndName, IName, IServerDerivativePagination } from '@/types'
 import { buildQueryParams } from '@/utils/buildQueryParams'
 
 const apiUrl: string =
@@ -23,4 +23,16 @@ export const getStoresList = ({
 
 export const postStore = ({ name }: IName) => {
   return axios.post(`${apiUrl}/stores`, { name })
+}
+
+export const postManager = ({ name }: IName) => {
+  return axios.post(`${apiUrl}/managers`, { name })
+}
+
+export const putManager = ({
+  name,
+  id,
+  status,
+}: IIdAndName & { status?: string }) => {
+  return axios.put(`${apiUrl}/manager/${id}`, { name, status })
 }

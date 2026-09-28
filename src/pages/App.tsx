@@ -15,6 +15,7 @@ import { AuthenticationPage } from '@/components/auth/AuthenticationPage'
 import { LoginFlow } from '@/components/auth/LoginFlow'
 import Home from './home'
 import Dashboards from '@/pages/dashboards'
+import Managers from './managers'
 const queryClient = new QueryClient()
 
 export default function App() {
@@ -50,6 +51,7 @@ export default function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/lojas" element={<Stores />} />
             <Route path="/dashboards" element={<Dashboards />} />
+            <Route path="/gerentes" element={<Managers />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
