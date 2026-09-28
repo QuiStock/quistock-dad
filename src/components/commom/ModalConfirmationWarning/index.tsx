@@ -24,22 +24,24 @@ const ModalConfirmationWarning = ({
 }: IModalConfirmationWarning) => {
   const [secondValidation, setSecondValidation] = useState(false)
 
+  const getModalTitle = () => {
+    if (isImportant) return 'Aviso importante'
+    if (isAlert) return 'Alerta!'
+    return 'Confirmação'
+  }
+
   return (
     <S.StyledModal open={openModal}>
       <S.Wrapper>
         <S.ModalTitle color={isAlert ? 'red' : 'main'}>
-          {isImportant
-            ? 'Aviso importante'
-            : isAlert
-              ? 'Alerta!'
-              : 'Confirmação'}
+          {getModalTitle()}
         </S.ModalTitle>
 
         {typeof message === 'string' ? (
           <S.ModalContent>{message}</S.ModalContent>
         ) : (
-          message.map((string, index) => (
-            <S.ModalContent key={index}>{string}</S.ModalContent>
+          message.map((string) => (
+            <S.ModalContent key={string}>{string}</S.ModalContent>
           ))
         )}
 

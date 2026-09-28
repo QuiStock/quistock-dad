@@ -1,17 +1,32 @@
 import { renderWithTheme } from '@/utils/__tests__/helpers'
 import { fireEvent, screen } from '@testing-library/react'
 import { ModalCreateAndEditTitle } from './index'
-import { jest } from '@jest/globals'
+import { vi } from 'vitest'
+
+interface MockButtonProps {
+  children: React.ReactNode
+  onClick?: () => void
+  disabled?: boolean
+  'data-testid'?: string
+  variant?: string
+}
+
+interface MockInputProps {
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  label: string
+}
 
 // Mock dos componentes externos
-jest.mock('@/components/commom/ButtonComponent', () => ({
+vi.mock('@/components/commom/ButtonComponent', () => ({
   ButtonComponent: ({
     children,
     onClick,
     disabled,
     'data-testid': dataTestId,
     variant,
-  }: any) => (
+  }: MockButtonProps) => (
     <button
       onClick={onClick}
       disabled={disabled}
@@ -23,8 +38,13 @@ jest.mock('@/components/commom/ButtonComponent', () => ({
   ),
 }))
 
-jest.mock('@/components/commom/TextInputComponent', () => ({
-  TextInputComponent: ({ value, onChange, onKeyDown, label }: any) => (
+vi.mock('@/components/commom/TextInputComponent', () => ({
+  TextInputComponent: ({
+    value,
+    onChange,
+    onKeyDown,
+    label,
+  }: MockInputProps) => (
     <input
       type="text"
       value={value}
@@ -36,9 +56,9 @@ jest.mock('@/components/commom/TextInputComponent', () => ({
   ),
 }))
 
-const mockOnCancel = jest.fn()
-const mockOnSave = jest.fn()
-const mockValidateContent = jest.fn()
+const mockOnCancel = vi.fn()
+const mockOnSave = vi.fn()
+const mockValidateContent = vi.fn<(value: string) => boolean>()
 
 const defaultProps = {
   open: true,
@@ -53,7 +73,7 @@ const defaultProps = {
 
 describe('<ModalCreateAndEditTitle />', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockValidateContent.mockReturnValue(true)
   })
 
