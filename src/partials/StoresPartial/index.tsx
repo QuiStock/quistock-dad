@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import * as S from './styles'
 
-import { Search } from '@mui/icons-material'
-import { type GridColDef } from '@mui/x-data-grid'
+import { Add, Delete, Edit, Search } from '@mui/icons-material'
+import { type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
 
 import { DatagridComponent } from '@/components/commom/DatagridComponent'
 import { IconsComponent } from '@/components/commom/IconsComponent'
@@ -11,11 +11,16 @@ import { TextInputWithIcon } from '@/components/commom/TextInputWithIcon'
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
 import { useNavigate } from 'react-router-dom'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
+import { ButtonWithIcon } from '@/components/commom/ButtonWithIcon'
+import { IconButton } from '@mui/material'
+import type { IIdAndName } from '@/types'
 
 const INITIAL_PATINATION = {
   page: 0,
   pageSize: 10,
 }
+
+type TModal = 'create' | 'edit' | 'delete' | null
 
 // Mock
 const mockStoresData = [
@@ -26,6 +31,7 @@ const mockStoresData = [
     low_flow: 19,
     active_orders_count: 3,
     active_promotions: 12,
+    manager: 'Fulano',
   },
   {
     id: 2,
@@ -34,6 +40,7 @@ const mockStoresData = [
     low_flow: 11,
     active_orders_count: 11,
     active_promotions: 17,
+    manager: 'Fulano',
   },
   {
     id: 3,
@@ -42,6 +49,7 @@ const mockStoresData = [
     low_flow: 14,
     active_orders_count: 14,
     active_promotions: 8,
+    manager: 'Fulano',
   },
   {
     id: 4,
@@ -50,6 +58,7 @@ const mockStoresData = [
     low_flow: 3,
     active_orders_count: 3,
     active_promotions: 6,
+    manager: 'Fulano',
   },
   {
     id: 5,
@@ -58,6 +67,7 @@ const mockStoresData = [
     low_flow: 7,
     active_orders_count: 7,
     active_promotions: 1,
+    manager: 'Fulano',
   },
   {
     id: 6,
@@ -66,15 +76,28 @@ const mockStoresData = [
     low_flow: 16,
     active_orders_count: 16,
     active_promotions: 21,
+    manager: 'Fulano',
   },
 ]
 
 export const StoresPartial = () => {
   const [searchName, setSearchName] = useState('')
   const [paginationModel, setPaginationModel] = useState(INITIAL_PATINATION)
+  const [selectedItem, setSelectedItem] = useState<IIdAndName | null>(null)
+  const [showEspecificModal, setShowEspecificModal] = useState<TModal>(null)
   const navigate = useNavigate()
 
   const isStoresPage = window.location.pathname === '/lojas'
+
+  const handleClickEditStore = (item: IIdAndName) => {
+    setSelectedItem(item)
+    setShowEspecificModal('edit')
+  }
+
+  const handleClickDeleteStore = (item: IIdAndName) => {
+    setSelectedItem(item)
+    setShowEspecificModal('delete')
+  }
 
   const handlePaginationChange = (model: typeof INITIAL_PATINATION) => {
     setPaginationModel(model)
@@ -131,6 +154,27 @@ export const StoresPartial = () => {
         flex: 2,
         editable: false,
       },
+      {
+        field: 'manager',
+        headerName: 'Gerente',
+        flex: 2,
+        editable: false,
+      },
+      {
+        field: 'id',
+        headerName: 'Ações',
+        flex: 0,
+        renderCell: (params: GridRenderCellParams<any, number>) => (
+          <S.BoxButtons>
+            <IconButton onClick={() => handleClickEditStore(params.row)}>
+              <Edit color="info" />
+            </IconButton>
+            <IconButton onClick={() => handleClickDeleteStore(params.row)}>
+              <Delete color="error" />
+            </IconButton>
+          </S.BoxButtons>
+        )
+      }
     ],
     [],
   )
@@ -147,6 +191,9 @@ export const StoresPartial = () => {
               onChange={handleSearchChange}
             />
           </S.FilterInputs>
+
+          {/* ADICIONAR ONCLICK */}
+          <ButtonWithIcon children={"Adicionar loja"} icon={<Add />} variant="outlined" />
         </S.BoxFilters>
       ) : (
         <S.BoxFilters>
