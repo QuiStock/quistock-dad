@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import * as S from './styles'
 
 import { Add, Search } from '@mui/icons-material'
@@ -12,7 +12,6 @@ import { ButtonComponent } from '@/components/commom/ButtonComponent'
 import { useNavigate } from 'react-router-dom'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
 import { ButtonWithIcon } from '@/components/commom/ButtonWithIcon'
-import type { IIdAndName } from '@/types'
 import { ModalCreateAndEditTitle } from '@/components/commom/ModalCreateAndEditTitle'
 import { useSendMutation } from '@/hooks/useSendMutation'
 import { postStore } from '@/services/api-quistock'
@@ -26,6 +25,10 @@ const INITIAL_PATINATION = {
 }
 
 type TModal = 'create' | null
+
+interface IStoreResponse {
+  message: string
+}
 
 // Mock
 const mockStoresData = [
@@ -88,7 +91,6 @@ const mockStoresData = [
 export const StoresPartial = () => {
   const [searchName, setSearchName] = useState('')
   const [paginationModel, setPaginationModel] = useState(INITIAL_PATINATION)
-  const [, setSelectedItem] = useState<IIdAndName | null>(null)
   const [showEspecificModal, setShowEspecificModal] = useState<TModal>(null)
   const navigate = useNavigate()
 
@@ -101,12 +103,11 @@ export const StoresPartial = () => {
     runFetchCreateStore,
     clearResponseCreateStore,
     isLoadingCreateStore,
-  } = useSendMutation<any, 'CreateStore'>({ suffix: 'CreateStore' })
+  } = useSendMutation<IStoreResponse, 'CreateStore'>({ suffix: 'CreateStore' })
 
   const handleSaveStore = (name: string) => {
     runFetchCreateStore(postStore({ name }))
 
-    setSelectedItem(null)
     setShowEspecificModal(null)
   }
 
@@ -175,18 +176,22 @@ export const StoresPartial = () => {
     [],
   )
 
-  useEffect(() => {
+  const handleResponseCreateStore = useCallback(() => {
     if (!responseCreateStore) return
 
     emitNotification({
       type: 'success',
       message: responseCreateStore.message || 'Operação realizada com sucesso!',
     })
-    queryClient.invalidateQueries({
+    void queryClient.invalidateQueries({
       queryKey: ['/stores'],
     })
     clearResponseCreateStore()
-  }, [responseCreateStore])
+  }, [responseCreateStore, clearResponseCreateStore, queryClient])
+
+  useEffect(() => {
+    handleResponseCreateStore()
+  }, [handleResponseCreateStore])
 
   return (
     <S.Wrapper>
