@@ -69,13 +69,13 @@ const Page = ({ children, title }: IPage) => {
 
               <S.CustomLink href={'/lojas'}>
                 <S.MenuItem>
-                  <StoreOutlinedIcon /> {'Minhas lojas'}
+                  <StoreOutlinedIcon /> {'Lojas'}
                 </S.MenuItem>
               </S.CustomLink>
 
               <S.CustomLink href={'/gerentes'}>
                 <S.MenuItem>
-                  <PeopleAltOutlinedIcon /> {'Meus gerentes'}
+                  <PeopleAltOutlinedIcon /> {'Gerentes'}
                 </S.MenuItem>
               </S.CustomLink>
             </S.StyledContainer>
