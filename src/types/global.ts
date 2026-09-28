@@ -11,6 +11,10 @@ export interface IId {
   id: number
 }
 
+export interface IName {
+  name: string
+}
+
 export interface IIdAndName extends IId {
   name: string
 }

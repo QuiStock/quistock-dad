@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import type { IServerDerivativePagination } from '@/types'
+import type { IName, IServerDerivativePagination } from '@/types'
 import { buildQueryParams } from '@/utils/buildQueryParams'
 
 const apiUrl: string =
@@ -19,4 +19,8 @@ export const getStoresList = ({
       limit,
     })}`,
   )
+}
+
+export const postStore = ({ name }: IName) => {
+  return axios.post(`${apiUrl}/stores`, { name })
 }
