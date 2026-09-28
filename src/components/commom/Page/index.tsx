@@ -2,7 +2,7 @@ import { type ReactNode, useState } from 'react'
 import * as S from './styles'
 
 import InsertChartOutlinedOutlinedIcon from '@mui/icons-material/InsertChartOutlinedOutlined'
-import AssistantOutlinedIcon from '@mui/icons-material/AssistantOutlined'
+import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import { Container } from '@mui/material'
 import { HouseOutlined } from '@mui/icons-material'
@@ -15,7 +15,7 @@ interface IPage {
 const Page = ({ children, title }: IPage) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const handleClickUserAvatar = () => {}
+  const handleClickUserAvatar = () => { }
 
   const handleClickMenuButton = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -67,17 +67,18 @@ const Page = ({ children, title }: IPage) => {
                 </S.MenuItem>
               </S.CustomLink>
 
+              <S.CustomLink href={'/lojas'}>
+                <S.MenuItem>
+                  <StoreOutlinedIcon /> {'Minhas lojas'}
+                </S.MenuItem>
+              </S.CustomLink>
+
               <S.CustomLink href={'/gerentes'}>
                 <S.MenuItem>
                   <PeopleAltOutlinedIcon /> {'Meus gerentes'}
                 </S.MenuItem>
               </S.CustomLink>
 
-              <S.CustomLink href={'/fefo'}>
-                <S.MenuItem>
-                  <AssistantOutlinedIcon /> {'FEFO'}
-                </S.MenuItem>
-              </S.CustomLink>
             </S.StyledContainer>
           </S.MenuDrawer>
         </S.TopBar>
