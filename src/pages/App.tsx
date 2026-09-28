@@ -14,6 +14,7 @@ import NotFound from '@/pages/404'
 import { AuthenticationPage } from '@/components/auth/AuthenticationPage'
 import { LoginFlow } from '@/components/auth/LoginFlow'
 import Home from './home'
+import Dashboards from '@/pages/dashboards'
 const queryClient = new QueryClient()
 
 export default function App() {
@@ -48,6 +49,7 @@ export default function App() {
             />
             <Route path="/home" element={<Home />} />
             <Route path="/lojas" element={<Stores />} />
+            <Route path="/dashboards" element={<Dashboards />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
