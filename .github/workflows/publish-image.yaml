@@ -102,4 +102,3 @@ jobs:
             Imagem publicada: `ghcr.io/quistock/web-frontend@${{ steps.image.outputs.digest }}`.
 
             O rolling update começa depois do merge desta PR, quando o Argo CD sincronizar o Infra.
-
