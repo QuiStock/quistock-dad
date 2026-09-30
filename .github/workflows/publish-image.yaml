@@ -95,10 +95,11 @@ jobs:
           base: main
           branch: deploy/web-frontend-${{ github.event.release.tag_name }}
           delete-branch: true
-          commit-message: "deploy(web-frontend): ${{ github.event.release.tag_name }}"
-          title: "deploy(web-frontend): ${{ github.event.release.tag_name }}"
+          commit-message: 'deploy(web-frontend): ${{ github.event.release.tag_name }}'
+          title: 'deploy(web-frontend): ${{ github.event.release.tag_name }}'
           body: |
             Atualiza o frontend para a release [${{ github.event.release.tag_name }}](${{ github.event.release.html_url }}).
             Imagem publicada: `ghcr.io/quistock/web-frontend@${{ steps.image.outputs.digest }}`.
 
             O rolling update começa depois do merge desta PR, quando o Argo CD sincronizar o Infra.
+
