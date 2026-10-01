@@ -242,7 +242,7 @@ export const StyledItemFloatMenu = styled(ItemFloatMenu)(
 
     svg {
       font-size: ${theme.font.size.body2};
-      color: ${theme.colors.golden};
+      color: ${theme.colors.darkBlue};
       transform: translateY(-0.2rem);
     }
   `,
