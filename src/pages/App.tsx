@@ -17,6 +17,7 @@ import Home from './home'
 import Dashboards from '@/pages/dashboards'
 import Managers from './managers'
 import Profile from './profile'
+import Notifications from './notifications'
 
 const queryClient = new QueryClient()
 
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="/dashboards" element={<Dashboards />} />
             <Route path="/gerentes" element={<Managers />} />
             <Route path="/perfil" element={<Profile />} />
+            <Route path="/notificações" element={<Notifications />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

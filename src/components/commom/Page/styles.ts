@@ -97,10 +97,31 @@ export const Notifications = styled(NotificationsNone)(
 export const AvatarButton = styled(Avatar)(
   ({ theme }) => css`
     && {
-      background-color: ${theme.colors.darkBlue};
+      background-color: #7F3AEF;
       width: 4rem;
       height: 4rem;
       cursor: pointer;
+
+      @media (max-width: ${theme.screen.small}) {
+        width: 3rem;
+        height: 3rem;
+      }
+    }
+  `,
+)
+
+export const NotificationButton = styled(IconButton)(
+  ({ theme }) => css`
+    && {
+      background-color: #7F3AEF;
+      color: white;
+      width: 4rem;
+      height: 4rem;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #6a2eb8; /* Um roxo um pouco mais escuro pro hover */
+      }
 
       @media (max-width: ${theme.screen.small}) {
         width: 3rem;
