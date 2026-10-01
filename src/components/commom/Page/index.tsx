@@ -5,7 +5,12 @@ import InsertChartOutlinedOutlinedIcon from '@mui/icons-material/InsertChartOutl
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import { Badge, Container } from '@mui/material'
-import { HouseOutlined, PersonOutlined, Logout, Notifications } from '@mui/icons-material'
+import {
+  HouseOutlined,
+  PersonOutlined,
+  Logout,
+  Notifications,
+} from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 
 interface IPage {
@@ -46,7 +51,7 @@ const Page = ({ children, title }: IPage) => {
   }
 
   // ver se tem como pegar esse count
-  const notificationsCount = 0;
+  const notificationsCount = 0
 
   return (
     <>
