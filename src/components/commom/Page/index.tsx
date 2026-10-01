@@ -4,8 +4,8 @@ import * as S from './styles'
 import InsertChartOutlinedOutlinedIcon from '@mui/icons-material/InsertChartOutlinedOutlined'
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
-import { Container } from '@mui/material'
-import { HouseOutlined, PersonOutlined, Logout } from '@mui/icons-material'
+import { Badge, Container } from '@mui/material'
+import { HouseOutlined, PersonOutlined, Logout, Notifications } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 
 interface IPage {
@@ -41,6 +41,13 @@ const Page = ({ children, title }: IPage) => {
     setIsMenuOpen(!isMenuOpen)
   }
 
+  const handleNotificationsClick = () => {
+    void navigate('/notificações')
+  }
+
+  // ver se tem como pegar esse count
+  const notificationsCount = 0;
+
   return (
     <>
       <title>{`QuiStock | ${title}`}</title>
@@ -62,6 +69,11 @@ const Page = ({ children, title }: IPage) => {
               </S.BoxItens>
 
               <S.BoxItens>
+                <Badge badgeContent={notificationsCount} color="error">
+                  <S.NotificationButton onClick={handleNotificationsClick}>
+                    <Notifications />
+                  </S.NotificationButton>
+                </Badge>
                 <S.AvatarButton onClick={handleOpenUserMenu}>
                   {'Q'}
                 </S.AvatarButton>
