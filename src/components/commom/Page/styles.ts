@@ -97,10 +97,14 @@ export const Notifications = styled(NotificationsNone)(
 export const AvatarButton = styled(Avatar)(
   ({ theme }) => css`
     && {
-      background-color: #7F3AEF;
+      background-color: #7f3aef;
       width: 4rem;
       height: 4rem;
       cursor: pointer;
+
+      &:hover {
+        background-color: #6a2eb8;
+      }
 
       @media (max-width: ${theme.screen.small}) {
         width: 3rem;
@@ -113,7 +117,7 @@ export const AvatarButton = styled(Avatar)(
 export const NotificationButton = styled(IconButton)(
   ({ theme }) => css`
     && {
-      background-color: #7F3AEF;
+      background-color: #7f3aef;
       color: white;
       width: 4rem;
       height: 4rem;
