@@ -1,17 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Modal } from '@mui/material'
 
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
 import { TextInputComponent } from '@/components/commom/TextInputComponent'
 
 import * as S from './styles'
+import type { IStoreItem } from '../index'
+
+const getStr = (val?: string | null) => val || ''
 
 interface IStoreModal {
   open: boolean
   type: 'create' | 'edit' | 'details' | null
-  item?: any // using any for now, or define IStoreItem
+  item?: IStoreItem | null
   onClose: () => void
-  onSave: (data: any) => void
+  onSave: (data: IStoreItem) => void
 }
 
 export const StoreModal = ({
@@ -33,32 +36,51 @@ export const StoreModal = ({
   const [number, setNumber] = useState('')
   const [complement, setComplement] = useState('')
 
-  useEffect(() => {
-    if (open) {
-      if (type === 'create') {
-        setName('')
-        setCep('')
-        setState('')
-        setCity('')
-        setStreet('')
-        setNumber('')
-        setComplement('')
-        setIsEditing(true)
-      } else if (item) {
-        setName(item.name || '')
-        setCep(item.cep || '')
-        setState(item.state || '')
-        setCity(item.city || '')
-        setStreet(item.street || '')
-        setNumber(item.number || '')
-        setComplement(item.complement || '')
-        setIsEditing(type === 'edit')
-      }
+  const [prevOpen, setPrevOpen] = useState(open)
+  const [prevItem, setPrevItem] = useState(item)
+  const [prevType, setPrevType] = useState(type)
+
+  const syncState = () => {
+    if (open === prevOpen && item === prevItem && type === prevType) return
+    setPrevOpen(open)
+    setPrevItem(item)
+    setPrevType(type)
+
+    if (!open) return
+
+    if (type === 'create') {
+      setName('')
+      setCep('')
+      setState('')
+      setCity('')
+      setStreet('')
+      setNumber('')
+      setComplement('')
+      setIsEditing(true)
+    } else if (item) {
+      setName(getStr(item.name))
+      setCep(getStr(item.cep))
+      setState(getStr(item.state))
+      setCity(getStr(item.city))
+      setStreet(getStr(item.street))
+      setNumber(getStr(item.number))
+      setComplement(getStr(item.complement))
+      setIsEditing(type === 'edit')
     }
-  }, [open, type, item])
+  }
+  syncState()
 
   const handleSave = () => {
-    onSave({ name, cep, state, city, street, number, complement })
+    onSave({
+      id: item?.id || 0,
+      name,
+      cep,
+      state,
+      city,
+      street,
+      number,
+      complement,
+    })
   }
 
   return (

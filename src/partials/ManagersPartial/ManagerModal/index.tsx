@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Modal, MenuItem } from '@mui/material'
 
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
 import { TextInputComponent } from '@/components/commom/TextInputComponent'
-import { mockStoresData } from '../../StoresPartial'
+import { mockStoresData } from '../../StoresPartial/mock'
 import type { IManagerItem } from '../index'
 
 import * as S from './styles'
@@ -30,28 +30,35 @@ export const ManagerModal = ({
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [, setRole] = useState('')
   const [store, setStore] = useState('')
 
-  useEffect(() => {
-    if (open) {
-      if (type === 'create') {
-        setName('')
-        setEmail('')
-        setPassword('Quistock@123')
-        setRole('Gerente')
-        setStore('')
-        setIsEditing(true)
-      } else if (item) {
-        setName(item.name || '')
-        setEmail('email@example.com')
-        setPassword('******')
-        setRole('Gerente')
-        setStore(item.store || '')
-        setIsEditing(type === 'edit')
-      }
+  const [prevOpen, setPrevOpen] = useState(open)
+  const [prevItem, setPrevItem] = useState(item)
+  const [prevType, setPrevType] = useState(type)
+
+  const syncState = () => {
+    if (open === prevOpen && item === prevItem && type === prevType) return
+    setPrevOpen(open)
+    setPrevItem(item)
+    setPrevType(type)
+
+    if (!open) return
+
+    if (type === 'create') {
+      setName('')
+      setEmail('')
+      setPassword('Quistock@123')
+      setStore('')
+      setIsEditing(true)
+    } else if (item) {
+      setName(item.name || '')
+      setEmail('email@example.com')
+      setPassword('******')
+      setStore(item.store || '')
+      setIsEditing(type === 'edit')
     }
-  }, [open, type, item])
+  }
+  syncState()
 
   const handleSave = () => {
     onSave(name)
