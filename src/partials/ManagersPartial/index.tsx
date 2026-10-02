@@ -43,8 +43,7 @@ const ActionMenu = ({ onDetails }: { onDetails: () => void }) => {
     setAnchorEl(event.currentTarget)
   }
 
-  const handleClose = (event?: React.MouseEvent) => {
-    event?.stopPropagation()
+  const handleClose = () => {
     setAnchorEl(null)
   }
 
@@ -200,7 +199,7 @@ export const ManagersPartial = () => {
         renderCell: (params: GridRenderCellParams) => (
           <ActionMenu
             onDetails={() => {
-              setSelectedItem(params.row)
+              setSelectedItem(params.row as IManagerItem)
               setShowEspecificModal('details')
             }}
           />

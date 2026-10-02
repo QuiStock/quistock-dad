@@ -39,8 +39,7 @@ const ActionMenu = ({ onDetails }: { onDetails: () => void }) => {
     setAnchorEl(event.currentTarget)
   }
 
-  const handleClose = (event?: React.MouseEvent) => {
-    event?.stopPropagation()
+  const handleClose = () => {
     setAnchorEl(null)
   }
 
@@ -71,105 +70,29 @@ interface IStoreResponse {
   message: string
 }
 
-// Mock
-export const mockStoresData = [
-  {
-    id: 1,
-    name: 'Swift - Marginal Tietê',
-    high_flow: 16,
-    low_flow: 19,
-    active_orders_count: 3,
-    active_promotions: 12,
-    manager: 'Fulano',
-    cep: '05033-001',
-    state: 'São Paulo',
-    city: 'São Paulo',
-    street: 'Av. Embaixador Macedo Soares',
-    number: '123',
-    complement: 'Marginal Tietê',
-  },
-  {
-    id: 2,
-    name: 'Swift - Guaipá',
-    high_flow: 14,
-    low_flow: 11,
-    active_orders_count: 11,
-    active_promotions: 17,
-    manager: 'Fulano',
-    cep: '05089-001',
-    state: 'São Paulo',
-    city: 'São Paulo',
-    street: 'Rua Guaipá',
-    number: '456',
-    complement: 'Vila Leopoldina',
-  },
-  {
-    id: 3,
-    name: 'Swift - Pirituba',
-    high_flow: 2,
-    low_flow: 14,
-    active_orders_count: 14,
-    active_promotions: 8,
-    manager: 'Fulano',
-    cep: '02935-000',
-    state: 'São Paulo',
-    city: 'São Paulo',
-    street: 'Av. Paula Ferreira',
-    number: '789',
-    complement: 'Pirituba',
-  },
-  {
-    id: 4,
-    name: 'Swift - Marginal Tietê',
-    high_flow: 8,
-    low_flow: 3,
-    active_orders_count: 3,
-    active_promotions: 6,
-    manager: 'Fulano',
-    cep: '05033-001',
-    state: 'São Paulo',
-    city: 'São Paulo',
-    street: 'Av. Embaixador Macedo Soares',
-    number: '123',
-    complement: 'Marginal Tietê',
-  },
-  {
-    id: 5,
-    name: 'Swift - Guaipá',
-    high_flow: 11,
-    low_flow: 7,
-    active_orders_count: 7,
-    active_promotions: 1,
-    manager: 'Fulano',
-    cep: '05089-001',
-    state: 'São Paulo',
-    city: 'São Paulo',
-    street: 'Rua Guaipá',
-    number: '456',
-    complement: 'Vila Leopoldina',
-  },
-  {
-    id: 6,
-    name: 'Swift - Pirituba',
-    high_flow: 0,
-    low_flow: 16,
-    active_orders_count: 16,
-    active_promotions: 21,
-    manager: 'Fulano',
-    cep: '02935-000',
-    state: 'São Paulo',
-    city: 'São Paulo',
-    street: 'Av. Paula Ferreira',
-    number: '789',
-    complement: 'Pirituba',
-  },
-]
+export interface IStoreItem {
+  id: number
+  name: string
+  high_flow?: number
+  low_flow?: number
+  active_orders_count?: number
+  active_promotions?: number
+  manager?: string
+  cep?: string
+  state?: string
+  city?: string
+  street?: string
+  number?: string
+  complement?: string
+}
+
+import { mockStoresData } from './mock'
 
 export const StoresPartial = () => {
   const [searchName, setSearchName] = useState('')
   const [paginationModel, setPaginationModel] = useState(INITIAL_PATINATION)
   const [showEspecificModal, setShowEspecificModal] = useState<TModal>(null)
-  const [selectedItem, setSelectedItem] = useState<any>(null)
+  const [selectedItem, setSelectedItem] = useState<IStoreItem | null>(null)
   const navigate = useNavigate()
 
   const queryClient = useQueryClient()
@@ -258,7 +181,7 @@ export const StoresPartial = () => {
         renderCell: (params: GridRenderCellParams) => (
           <ActionMenu
             onDetails={() => {
-              setSelectedItem(params.row)
+              setSelectedItem(params.row as IStoreItem)
               setShowEspecificModal('details')
             }}
           />
