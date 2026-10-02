@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import * as S from './styles'
 
-import { Add, Edit, Search } from '@mui/icons-material'
+import {
+  Add,
+  Search,
+  MoreVertOutlined,
+  ArticleOutlined,
+} from '@mui/icons-material'
 import { type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
+import { IconButton, Menu } from '@mui/material'
 
 import { DatagridComponent } from '@/components/commom/DatagridComponent'
 import { IconsComponent } from '@/components/commom/IconsComponent'
@@ -16,7 +22,6 @@ import { LoadingMask } from '@/components/commom/LoadingMask'
 import { useQueryClient } from '@tanstack/react-query'
 import { ManagerStatusEnum } from '@/types/enums'
 import { postManager, putManager } from '@/services/api-quistock'
-import { IconButton } from '@mui/material'
 import type { IIdAndName } from '@/types'
 
 export interface IManagerItem extends IIdAndName {
@@ -29,7 +34,42 @@ const INITIAL_PATINATION = {
   pageSize: 10,
 }
 
-type TModal = 'create' | 'edit' | null
+const ActionMenu = ({ onDetails }: { onDetails: () => void }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = (event?: React.MouseEvent) => {
+    event?.stopPropagation()
+    setAnchorEl(null)
+  }
+
+  const handleDetails = (event: React.MouseEvent) => {
+    event.stopPropagation()
+    handleClose()
+    onDetails()
+  }
+
+  return (
+    <>
+      <IconButton onClick={handleClick}>
+        <MoreVertOutlined />
+      </IconButton>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <S.StyledItemFloatMenu onClick={handleDetails}>
+          <ArticleOutlined />
+          <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
+        </S.StyledItemFloatMenu>
+      </Menu>
+    </>
+  )
+}
+
+type TModal = 'create' | 'edit' | 'details' | null
 
 interface IManagerResponse {
   message: string
@@ -119,11 +159,6 @@ export const ManagersPartial = () => {
     setPaginationModel((prev) => ({ ...prev, page: 0 }))
   }
 
-  const handleClickEditManager = (item: IManagerItem) => {
-    setSelectedItem(item)
-    setShowEspecificModal('edit')
-  }
-
   // Mock
   const filteredManagers = useMemo(() => {
     let result = mockManagersData
@@ -158,15 +193,17 @@ export const ManagersPartial = () => {
         editable: true,
       },
       {
-        field: 'id',
+        field: 'actions',
         headerName: '',
         flex: 0,
-        renderCell: (params: GridRenderCellParams<IManagerItem, number>) => (
-          <S.BoxButtons>
-            <IconButton onClick={() => handleClickEditManager(params.row)}>
-              <Edit color="info" />
-            </IconButton>
-          </S.BoxButtons>
+        sortable: false,
+        renderCell: (params: GridRenderCellParams) => (
+          <ActionMenu
+            onDetails={() => {
+              setSelectedItem(params.row)
+              setShowEspecificModal('details')
+            }}
+          />
         ),
       },
     ],
@@ -242,7 +279,7 @@ export const ManagersPartial = () => {
       )}
 
       <ManagerModal
-        open={showEspecificModal === 'edit' || showEspecificModal === 'create'}
+        open={!!showEspecificModal}
         type={showEspecificModal}
         item={selectedItem}
         onClose={() => setShowEspecificModal(null)}
