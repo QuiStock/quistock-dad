@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import * as S from './styles'
 
-import { Add, Search } from '@mui/icons-material'
-import { type GridColDef } from '@mui/x-data-grid'
+import {
+  Add,
+  Search,
+  MoreVertOutlined,
+  ArticleOutlined,
+} from '@mui/icons-material'
+import { type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
+import { IconButton, Menu } from '@mui/material'
 
 import { DatagridComponent } from '@/components/commom/DatagridComponent'
 import { IconsComponent } from '@/components/commom/IconsComponent'
@@ -12,7 +18,7 @@ import { ButtonComponent } from '@/components/commom/ButtonComponent'
 import { useNavigate } from 'react-router-dom'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
 import { ButtonWithIcon } from '@/components/commom/ButtonWithIcon'
-import { ModalCreateAndEditTitle } from '@/components/commom/ModalCreateAndEditTitle'
+import { StoreModal } from './StoreModal'
 import { useSendMutation } from '@/hooks/useSendMutation'
 import { postStore } from '@/services/api-quistock'
 import emitNotification from '@/events/emitNotification'
@@ -24,74 +30,69 @@ const INITIAL_PATINATION = {
   pageSize: 10,
 }
 
-type TModal = 'create' | null
+const ActionMenu = ({ onDetails }: { onDetails: () => void }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const handleDetails = (event: React.MouseEvent) => {
+    event.stopPropagation()
+    handleClose()
+    onDetails()
+  }
+
+  return (
+    <>
+      <IconButton onClick={handleClick}>
+        <MoreVertOutlined />
+      </IconButton>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <S.StyledItemFloatMenu onClick={handleDetails}>
+          <ArticleOutlined />
+          <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
+        </S.StyledItemFloatMenu>
+      </Menu>
+    </>
+  )
+}
+
+type TModal = 'create' | 'edit' | 'details' | null
 
 interface IStoreResponse {
   message: string
 }
 
-// Mock
-const mockStoresData = [
-  {
-    id: 1,
-    name: 'Swift - Marginal Tietê',
-    high_flow: 16,
-    low_flow: 19,
-    active_orders_count: 3,
-    active_promotions: 12,
-    manager: 'Fulano',
-  },
-  {
-    id: 2,
-    name: 'Swift - Guaipá',
-    high_flow: 14,
-    low_flow: 11,
-    active_orders_count: 11,
-    active_promotions: 17,
-    manager: 'Fulano',
-  },
-  {
-    id: 3,
-    name: 'Swift - Pirituba',
-    high_flow: 2,
-    low_flow: 14,
-    active_orders_count: 14,
-    active_promotions: 8,
-    manager: 'Fulano',
-  },
-  {
-    id: 4,
-    name: 'Swift - Marginal Tietê',
-    high_flow: 8,
-    low_flow: 3,
-    active_orders_count: 3,
-    active_promotions: 6,
-    manager: 'Fulano',
-  },
-  {
-    id: 5,
-    name: 'Swift - Guaipá',
-    high_flow: 11,
-    low_flow: 7,
-    active_orders_count: 7,
-    active_promotions: 1,
-    manager: 'Fulano',
-  },
-  {
-    id: 6,
-    name: 'Swift - Pirituba',
-    high_flow: 0,
-    low_flow: 16,
-    active_orders_count: 16,
-    active_promotions: 21,
-    manager: 'Fulano',
-  },
-]
+export interface IStoreItem {
+  id: number
+  name: string
+  high_flow?: number
+  low_flow?: number
+  active_orders_count?: number
+  active_promotions?: number
+  manager?: string
+  cep?: string
+  state?: string
+  city?: string
+  street?: string
+  number?: string
+  complement?: string
+}
+
+import { mockStoresData } from './mock'
 
 export const StoresPartial = () => {
   const [searchName, setSearchName] = useState('')
   const [paginationModel, setPaginationModel] = useState(INITIAL_PATINATION)
   const [showEspecificModal, setShowEspecificModal] = useState<TModal>(null)
+  const [selectedItem, setSelectedItem] = useState<IStoreItem | null>(null)
   const navigate = useNavigate()
 
   const queryClient = useQueryClient()
@@ -172,6 +173,20 @@ export const StoresPartial = () => {
         flex: 2,
         editable: false,
       },
+      {
+        field: 'actions',
+        headerName: '',
+        flex: 0,
+        sortable: false,
+        renderCell: (params: GridRenderCellParams) => (
+          <ActionMenu
+            onDetails={() => {
+              setSelectedItem(params.row as IStoreItem)
+              setShowEspecificModal('details')
+            }}
+          />
+        ),
+      },
     ],
     [],
   )
@@ -249,15 +264,13 @@ export const StoresPartial = () => {
         />
       )}
 
-      {showEspecificModal === 'create' && (
-        <ModalCreateAndEditTitle
-          open={!!showEspecificModal}
-          modalTitle={'Adicionar loja'}
-          placeholder="Nome da loja"
-          onCancel={() => setShowEspecificModal(null)}
-          onSave={handleSaveStore}
-        />
-      )}
+      <StoreModal
+        open={!!showEspecificModal}
+        type={showEspecificModal}
+        item={selectedItem}
+        onClose={() => setShowEspecificModal(null)}
+        onSave={(data) => handleSaveStore(data.name)}
+      />
 
       <LoadingMask isLoading={isLoadingCreateStore} />
     </S.Wrapper>
