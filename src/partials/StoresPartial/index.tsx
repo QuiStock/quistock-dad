@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import * as S from './styles'
 
-import { Add, Search } from '@mui/icons-material'
-import { type GridColDef } from '@mui/x-data-grid'
+import {
+  Add,
+  Search,
+  MoreVertOutlined,
+  ArticleOutlined,
+} from '@mui/icons-material'
+import { type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
+import { IconButton, Menu } from '@mui/material'
 
 import { DatagridComponent } from '@/components/commom/DatagridComponent'
 import { IconsComponent } from '@/components/commom/IconsComponent'
@@ -12,7 +18,7 @@ import { ButtonComponent } from '@/components/commom/ButtonComponent'
 import { useNavigate } from 'react-router-dom'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
 import { ButtonWithIcon } from '@/components/commom/ButtonWithIcon'
-import { ModalCreateAndEditTitle } from '@/components/commom/ModalCreateAndEditTitle'
+import { StoreModal } from './StoreModal'
 import { useSendMutation } from '@/hooks/useSendMutation'
 import { postStore } from '@/services/api-quistock'
 import emitNotification from '@/events/emitNotification'
@@ -24,14 +30,49 @@ const INITIAL_PATINATION = {
   pageSize: 10,
 }
 
-type TModal = 'create' | null
+const ActionMenu = ({ onDetails }: { onDetails: () => void }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = (event?: React.MouseEvent) => {
+    event?.stopPropagation()
+    setAnchorEl(null)
+  }
+
+  const handleDetails = (event: React.MouseEvent) => {
+    event.stopPropagation()
+    handleClose()
+    onDetails()
+  }
+
+  return (
+    <>
+      <IconButton onClick={handleClick}>
+        <MoreVertOutlined />
+      </IconButton>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <S.StyledItemFloatMenu onClick={handleDetails}>
+          <ArticleOutlined />
+          <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
+        </S.StyledItemFloatMenu>
+      </Menu>
+    </>
+  )
+}
+
+type TModal = 'create' | 'edit' | 'details' | null
 
 interface IStoreResponse {
   message: string
 }
 
 // Mock
-const mockStoresData = [
+export const mockStoresData = [
   {
     id: 1,
     name: 'Swift - Marginal Tietê',
@@ -40,6 +81,12 @@ const mockStoresData = [
     active_orders_count: 3,
     active_promotions: 12,
     manager: 'Fulano',
+    cep: '05033-001',
+    state: 'São Paulo',
+    city: 'São Paulo',
+    street: 'Av. Embaixador Macedo Soares',
+    number: '123',
+    complement: 'Marginal Tietê',
   },
   {
     id: 2,
@@ -49,6 +96,12 @@ const mockStoresData = [
     active_orders_count: 11,
     active_promotions: 17,
     manager: 'Fulano',
+    cep: '05089-001',
+    state: 'São Paulo',
+    city: 'São Paulo',
+    street: 'Rua Guaipá',
+    number: '456',
+    complement: 'Vila Leopoldina',
   },
   {
     id: 3,
@@ -58,6 +111,12 @@ const mockStoresData = [
     active_orders_count: 14,
     active_promotions: 8,
     manager: 'Fulano',
+    cep: '02935-000',
+    state: 'São Paulo',
+    city: 'São Paulo',
+    street: 'Av. Paula Ferreira',
+    number: '789',
+    complement: 'Pirituba',
   },
   {
     id: 4,
@@ -67,6 +126,12 @@ const mockStoresData = [
     active_orders_count: 3,
     active_promotions: 6,
     manager: 'Fulano',
+    cep: '05033-001',
+    state: 'São Paulo',
+    city: 'São Paulo',
+    street: 'Av. Embaixador Macedo Soares',
+    number: '123',
+    complement: 'Marginal Tietê',
   },
   {
     id: 5,
@@ -76,6 +141,12 @@ const mockStoresData = [
     active_orders_count: 7,
     active_promotions: 1,
     manager: 'Fulano',
+    cep: '05089-001',
+    state: 'São Paulo',
+    city: 'São Paulo',
+    street: 'Rua Guaipá',
+    number: '456',
+    complement: 'Vila Leopoldina',
   },
   {
     id: 6,
@@ -85,6 +156,12 @@ const mockStoresData = [
     active_orders_count: 16,
     active_promotions: 21,
     manager: 'Fulano',
+    cep: '02935-000',
+    state: 'São Paulo',
+    city: 'São Paulo',
+    street: 'Av. Paula Ferreira',
+    number: '789',
+    complement: 'Pirituba',
   },
 ]
 
@@ -92,6 +169,7 @@ export const StoresPartial = () => {
   const [searchName, setSearchName] = useState('')
   const [paginationModel, setPaginationModel] = useState(INITIAL_PATINATION)
   const [showEspecificModal, setShowEspecificModal] = useState<TModal>(null)
+  const [selectedItem, setSelectedItem] = useState<any>(null)
   const navigate = useNavigate()
 
   const queryClient = useQueryClient()
@@ -172,6 +250,20 @@ export const StoresPartial = () => {
         flex: 2,
         editable: false,
       },
+      {
+        field: 'actions',
+        headerName: '',
+        flex: 0,
+        sortable: false,
+        renderCell: (params: GridRenderCellParams) => (
+          <ActionMenu
+            onDetails={() => {
+              setSelectedItem(params.row)
+              setShowEspecificModal('details')
+            }}
+          />
+        ),
+      },
     ],
     [],
   )
@@ -249,15 +341,13 @@ export const StoresPartial = () => {
         />
       )}
 
-      {showEspecificModal === 'create' && (
-        <ModalCreateAndEditTitle
-          open={!!showEspecificModal}
-          modalTitle={'Adicionar loja'}
-          placeholder="Nome da loja"
-          onCancel={() => setShowEspecificModal(null)}
-          onSave={handleSaveStore}
-        />
-      )}
+      <StoreModal
+        open={!!showEspecificModal}
+        type={showEspecificModal}
+        item={selectedItem}
+        onClose={() => setShowEspecificModal(null)}
+        onSave={(data) => handleSaveStore(data.name)}
+      />
 
       <LoadingMask isLoading={isLoadingCreateStore} />
     </S.Wrapper>
