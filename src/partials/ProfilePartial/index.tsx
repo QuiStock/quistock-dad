@@ -4,8 +4,11 @@ import { IconsComponent } from '@/components/commom/IconsComponent'
 
 import Skeleton from '@mui/material/Skeleton'
 import QuestionMarkOutlinedIcon from '@mui/icons-material/QuestionMarkOutlined'
+import { useNavigate } from 'react-router-dom'
 
 export const ProfilePartial = () => {
+  const navigate = useNavigate()
+
   const mockProfileData = [
     {
       id: 1,
@@ -63,7 +66,7 @@ export const ProfilePartial = () => {
           <ButtonWithIcon
             icon={<QuestionMarkOutlinedIcon />}
             variant="contained"
-            onClick={() => {}}
+            onClick={() => navigate('/contato')}
           >
             Dúvidas sobre o QuiStock?
           </ButtonWithIcon>
