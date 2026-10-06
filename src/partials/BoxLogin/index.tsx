@@ -46,7 +46,11 @@ const BoxLogin = ({ setUserDocument, setVerifiedUser }: IBoxLogin) => {
         label={'Senha'}
         placeholder="Digite a sua senha"
         type={showPassword ? 'text' : 'password'}
-        helperText={<span>Esqueceu a senha? <strong>Contate o QuiStock.</strong></span>}
+        helperText={
+          <span>
+            Esqueceu a senha? <strong>Contate o QuiStock.</strong>
+          </span>
+        }
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           setPassword(e.target.value)
         }}

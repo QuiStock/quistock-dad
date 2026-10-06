@@ -66,7 +66,7 @@ export const ProfilePartial = () => {
           <ButtonWithIcon
             icon={<QuestionMarkOutlinedIcon />}
             variant="contained"
-            onClick={() => navigate('/contato')}
+            onClick={() => void navigate('/contato')}
           >
             Dúvidas sobre o QuiStock?
           </ButtonWithIcon>
