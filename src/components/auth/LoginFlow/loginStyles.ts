@@ -52,6 +52,25 @@ export const UserInput = styled(TextInputComponent)(
   () => css`
     && {
       margin-top: 4rem;
+
+      .MuiOutlinedInput-root {
+        fieldset {
+          border-color: #a855f7;
+        }
+        &:hover fieldset {
+          border-color: #7f3aef;
+        }
+        &.Mui-focused fieldset {
+          border-color: #7f3aef;
+        }
+      }
+
+      label {
+        color: #a855f7;
+      }
+      label.Mui-focused {
+        color: #7f3aef;
+      }
     }
   `,
 )
@@ -60,6 +79,31 @@ export const UserPassword = styled(TextInputWithIcon)(
   () => css`
     && {
       margin-top: 4rem;
+
+      .MuiOutlinedInput-root {
+        fieldset {
+          border-color: #a855f7;
+        }
+        &:hover fieldset {
+          border-color: #7f3aef;
+        }
+        &.Mui-focused fieldset {
+          border-color: #7f3aef;
+        }
+      }
+
+      label {
+        color: #a855f7;
+      }
+      label.Mui-focused {
+        color: #7f3aef;
+      }
+
+      .MuiFormHelperText-root {
+        font-size: 1.4rem;
+        text-align: right;
+        margin-right: 0;
+      }
     }
   `,
 )
