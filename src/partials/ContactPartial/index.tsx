@@ -9,10 +9,8 @@ export const ContactPartial = () => {
 
   const handleSubmit = () => {
     const mailtoLink = `mailto:quistockinterdisciplinar@gmail.com?subject=${encodeURIComponent(
-      problema
-    )}&body=${encodeURIComponent(
-      `${mensagem}`
-    )}`
+      problema,
+    )}&body=${encodeURIComponent(mensagem)}`
     window.location.href = mailtoLink
   }
 
@@ -23,13 +21,17 @@ export const ContactPartial = () => {
           label="Problema"
           placeholder="Ex: Não consigo ver os dados da minha região"
           value={problema}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProblema(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setProblema(e.target.value)
+          }
         />
         <S.UserInput
           label="Mensagem"
           placeholder="Descreva o problema para a gente"
           value={mensagem}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMensagem(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setMensagem(e.target.value)
+          }
           multiline
           rows={6}
         />
