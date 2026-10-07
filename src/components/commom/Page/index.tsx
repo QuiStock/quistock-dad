@@ -7,6 +7,7 @@ import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import { Container } from '@mui/material'
 import { HouseOutlined, PersonOutlined, Logout } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface IPage {
   children: ReactNode
@@ -15,6 +16,7 @@ interface IPage {
 
 const Page = ({ children, title }: IPage) => {
   const navigate = useNavigate()
+  const { logout } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
@@ -32,8 +34,9 @@ const Page = ({ children, title }: IPage) => {
     void navigate('/perfil')
   }
 
-  const handleClickLogout = () => {
+  const handleClickLogout = async () => {
     handleCloseUserMenu()
+    await logout()
     void navigate('/login')
   }
 
@@ -77,7 +80,9 @@ const Page = ({ children, title }: IPage) => {
                     <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
                   </S.StyledItemFloatMenu>
 
-                  <S.StyledItemFloatMenu onClick={handleClickLogout}>
+                  <S.StyledItemFloatMenu
+                    onClick={() => void handleClickLogout()}
+                  >
                     <Logout />
                     <S.TextItemMenuFloat>Sair</S.TextItemMenuFloat>
                   </S.StyledItemFloatMenu>

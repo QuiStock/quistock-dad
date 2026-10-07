@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from 'styled-components'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -44,21 +45,23 @@ export default function App() {
         <GlobalStyles />
 
         <BrowserRouter>
-          <Routes>
-            <Route
-              path="/login"
-              element={
-                <AuthenticationPage title="Login" children={<LoginFlow />} />
-              }
-            />
-            <Route path="/home" element={<Home />} />
-            <Route path="/lojas" element={<Stores />} />
-            <Route path="/dashboards" element={<Dashboards />} />
-            <Route path="/gerentes" element={<Managers />} />
-            <Route path="/perfil" element={<Profile />} />
-            <Route path="/contato" element={<Contact />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AuthProvider>
+            <Routes>
+              <Route
+                path="/login"
+                element={
+                  <AuthenticationPage title="Login" children={<LoginFlow />} />
+                }
+              />
+              <Route path="/home" element={<Home />} />
+              <Route path="/lojas" element={<Stores />} />
+              <Route path="/dashboards" element={<Dashboards />} />
+              <Route path="/gerentes" element={<Managers />} />
+              <Route path="/perfil" element={<Profile />} />
+              <Route path="/contato" element={<Contact />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
         </BrowserRouter>
 
         <ToastNotification notifications={notifications} />
