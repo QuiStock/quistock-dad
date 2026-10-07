@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import * as S from './styles'
 
 import {
-  Add,
   Search,
   MoreVertOutlined,
   ArticleOutlined,
@@ -14,16 +13,8 @@ import { DatagridComponent } from '@/components/commom/DatagridComponent'
 import { IconsComponent } from '@/components/commom/IconsComponent'
 
 import { TextInputWithIcon } from '@/components/commom/TextInputWithIcon'
-import { ButtonComponent } from '@/components/commom/ButtonComponent'
-import { useNavigate } from 'react-router-dom'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
-import { ButtonWithIcon } from '@/components/commom/ButtonWithIcon'
 import { StoreModal } from './StoreModal'
-import { useSendMutation } from '@/hooks/useSendMutation'
-import { postStore } from '@/services/api-quistock'
-import emitNotification from '@/events/emitNotification'
-import { LoadingMask } from '@/components/commom/LoadingMask'
-import { useQueryClient } from '@tanstack/react-query'
 
 const INITIAL_PATINATION = {
   page: 0,
@@ -64,12 +55,6 @@ const ActionMenu = ({ onDetails }: { onDetails: () => void }) => {
   )
 }
 
-type TModal = 'create' | 'edit' | 'details' | null
-
-interface IStoreResponse {
-  message: string
-}
-
 export interface IStoreItem {
   id: number
   name: string
@@ -87,30 +72,19 @@ export interface IStoreItem {
 }
 
 import { mockStoresData } from './mock'
+import { ButtonComponent } from '@/components/commom/ButtonComponent'
+import { useNavigate } from 'react-router-dom'
 
 export const StoresPartial = () => {
   const [searchName, setSearchName] = useState('')
   const [paginationModel, setPaginationModel] = useState(INITIAL_PATINATION)
-  const [showEspecificModal, setShowEspecificModal] = useState<TModal>(null)
-  const [selectedItem, setSelectedItem] = useState<IStoreItem | null>(null)
+
   const navigate = useNavigate()
 
-  const queryClient = useQueryClient()
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<IStoreItem | null>(null)
 
   const isStoresPage = window.location.pathname === '/lojas'
-
-  const {
-    responseCreateStore,
-    runFetchCreateStore,
-    clearResponseCreateStore,
-    isLoadingCreateStore,
-  } = useSendMutation<IStoreResponse, 'CreateStore'>({ suffix: 'CreateStore' })
-
-  const handleSaveStore = (name: string) => {
-    runFetchCreateStore(postStore({ name }))
-
-    setShowEspecificModal(null)
-  }
 
   const handlePaginationChange = (model: typeof INITIAL_PATINATION) => {
     setPaginationModel(model)
@@ -121,7 +95,6 @@ export const StoresPartial = () => {
     setPaginationModel((prev) => ({ ...prev, page: 0 }))
   }
 
-  // Mock
   const filteredStores = useMemo(() => {
     let result = mockStoresData
 
@@ -131,7 +104,6 @@ export const StoresPartial = () => {
       )
     }
 
-    // Se não estiver na página de lojas, limita a 5 resultados
     return isStoresPage ? result : result.slice(0, 5)
   }, [searchName, isStoresPage])
 
@@ -182,7 +154,7 @@ export const StoresPartial = () => {
           <ActionMenu
             onDetails={() => {
               setSelectedItem(params.row as IStoreItem)
-              setShowEspecificModal('details')
+              setIsDetailsModalOpen(true)
             }}
           />
         ),
@@ -190,23 +162,6 @@ export const StoresPartial = () => {
     ],
     [],
   )
-
-  const handleResponseCreateStore = useCallback(() => {
-    if (!responseCreateStore) return
-
-    emitNotification({
-      type: 'success',
-      message: responseCreateStore.message || 'Operação realizada com sucesso!',
-    })
-    void queryClient.invalidateQueries({
-      queryKey: ['/stores'],
-    })
-    clearResponseCreateStore()
-  }, [responseCreateStore, clearResponseCreateStore, queryClient])
-
-  useEffect(() => {
-    handleResponseCreateStore()
-  }, [handleResponseCreateStore])
 
   return (
     <S.Wrapper>
@@ -220,13 +175,6 @@ export const StoresPartial = () => {
               onChange={handleSearchChange}
             />
           </S.FilterInputs>
-
-          <ButtonWithIcon
-            children={'Adicionar loja'}
-            icon={<Add />}
-            variant="outlined"
-            onClick={() => setShowEspecificModal('create')}
-          />
         </S.BoxFilters>
       ) : (
         <S.BoxFilters>
@@ -265,14 +213,10 @@ export const StoresPartial = () => {
       )}
 
       <StoreModal
-        open={!!showEspecificModal}
-        type={showEspecificModal}
+        open={isDetailsModalOpen}
         item={selectedItem}
-        onClose={() => setShowEspecificModal(null)}
-        onSave={(data) => handleSaveStore(data.name)}
+        onClose={() => setIsDetailsModalOpen(false)}
       />
-
-      <LoadingMask isLoading={isLoadingCreateStore} />
     </S.Wrapper>
   )
 }
