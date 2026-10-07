@@ -14,11 +14,7 @@ interface IStoreModal {
   onClose: () => void
 }
 
-export const StoreModal = ({
-  open,
-  item,
-  onClose,
-}: IStoreModal) => {
+export const StoreModal = ({ open, item, onClose }: IStoreModal) => {
   return (
     <Modal open={open} onClose={onClose} data-testid="modal-store">
       <S.BoxModal>
@@ -30,11 +26,7 @@ export const StoreModal = ({
             value={getStr(item?.name)}
             disabled
           />
-          <TextInputComponent
-            label="CEP"
-            value={getStr(item?.cep)}
-            disabled
-          />
+          <TextInputComponent label="CEP" value={getStr(item?.cep)} disabled />
           <div style={{ display: 'flex', gap: '16px' }}>
             <TextInputComponent
               label="Estado"
