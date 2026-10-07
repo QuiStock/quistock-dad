@@ -2,6 +2,8 @@ import * as S from '@/components/auth/LoginFlow/loginStyles'
 import { useState } from 'react'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { IconButton } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface IBoxLogin {
   setUserDocument?: (document: string) => void
@@ -12,16 +14,19 @@ const BoxLogin = ({ setUserDocument, setVerifiedUser }: IBoxLogin) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
+  const { login, isLoading } = useAuth()
 
   const handleClickShowInputValue = () => setShowPassword((curr) => !curr)
 
-  const handleLogin = () => {
-    // Aqui você integraria a lógica de login com os dois campos (email e password)
-    // Exemplo:
+  const handleLogin = async () => {
+    if (!email || !password || isLoading) return
+
     setUserDocument?.(email)
-    // Para simplificar, estamos apenas avançando para o próximo passo se tiver dados
-    if (email && password) {
+    const success = await login(email, password)
+    if (success) {
       setVerifiedUser?.(true)
+      void navigate('/home')
     }
   }
 
@@ -55,7 +60,7 @@ const BoxLogin = ({ setUserDocument, setVerifiedUser }: IBoxLogin) => {
           setPassword(e.target.value)
         }}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') handleLogin()
+          if (e.key === 'Enter') void handleLogin()
         }}
         icon={
           <IconButton onClick={() => handleClickShowInputValue()}>
@@ -65,7 +70,10 @@ const BoxLogin = ({ setUserDocument, setVerifiedUser }: IBoxLogin) => {
       />
 
       <S.LoginButtonContainer>
-        <S.SubmitButton onClick={handleLogin} disabled={!email || !password}>
+        <S.SubmitButton
+          onClick={() => void handleLogin()}
+          disabled={!email || !password || isLoading}
+        >
           Entrar
         </S.SubmitButton>
       </S.LoginButtonContainer>
