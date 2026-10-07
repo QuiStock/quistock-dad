@@ -9,7 +9,7 @@ import {
   Menu as FloatMenu,
   Link,
 } from '@mui/material'
-import { Menu, NotificationsNone } from '@mui/icons-material'
+import { Menu } from '@mui/icons-material'
 
 export const TopBar = styled(Box)(
   ({ theme }) => css`
@@ -85,15 +85,6 @@ export const MenuButton = styled(Menu)(
   `,
 )
 
-export const Notifications = styled(NotificationsNone)(
-  ({ theme }) => css`
-    && {
-      font-size: ${theme.font.size.bigTitle};
-      margin-left: auto;
-    }
-  `,
-)
-
 export const AvatarButton = styled(Avatar)(
   ({ theme }) => css`
     && {
@@ -104,27 +95,6 @@ export const AvatarButton = styled(Avatar)(
 
       &:hover {
         background-color: #6a2eb8;
-      }
-
-      @media (max-width: ${theme.screen.small}) {
-        width: 3rem;
-        height: 3rem;
-      }
-    }
-  `,
-)
-
-export const NotificationButton = styled(IconButton)(
-  ({ theme }) => css`
-    && {
-      background-color: #7f3aef;
-      color: white;
-      width: 4rem;
-      height: 4rem;
-      cursor: pointer;
-
-      &:hover {
-        background-color: #6a2eb8; /* Um roxo um pouco mais escuro pro hover */
       }
 
       @media (max-width: ${theme.screen.small}) {
