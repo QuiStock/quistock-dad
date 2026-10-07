@@ -5,11 +5,7 @@ import InsertChartOutlinedOutlinedIcon from '@mui/icons-material/InsertChartOutl
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import { Container } from '@mui/material'
-import {
-  HouseOutlined,
-  PersonOutlined,
-  Logout,
-} from '@mui/icons-material'
+import { HouseOutlined, PersonOutlined, Logout } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 
 interface IPage {

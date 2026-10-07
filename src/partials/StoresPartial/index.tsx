@@ -1,11 +1,7 @@
 import { useMemo, useState } from 'react'
 import * as S from './styles'
 
-import {
-  Search,
-  MoreVertOutlined,
-  ArticleOutlined,
-} from '@mui/icons-material'
+import { Search, MoreVertOutlined, ArticleOutlined } from '@mui/icons-material'
 import { type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
 import { IconButton, Menu } from '@mui/material'
 
