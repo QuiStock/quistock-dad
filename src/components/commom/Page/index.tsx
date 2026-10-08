@@ -1,11 +1,12 @@
-import { type ReactNode, useState } from 'react'
+import { type ReactNode, useState, type MouseEvent } from 'react'
 import * as S from './styles'
 
 import InsertChartOutlinedOutlinedIcon from '@mui/icons-material/InsertChartOutlinedOutlined'
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import { Container } from '@mui/material'
-import { HouseOutlined } from '@mui/icons-material'
+import { HouseOutlined, PersonOutlined, Logout } from '@mui/icons-material'
+import { useNavigate } from 'react-router-dom'
 
 interface IPage {
   children: ReactNode
@@ -13,9 +14,28 @@ interface IPage {
 }
 
 const Page = ({ children, title }: IPage) => {
+  const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const handleClickUserAvatar = () => {}
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
+
+  const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget)
+  }
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null)
+  }
+
+  const handleClickDetails = () => {
+    handleCloseUserMenu()
+    void navigate('/perfil')
+  }
+
+  const handleClickLogout = () => {
+    handleCloseUserMenu()
+    void navigate('/login')
+  }
 
   const handleClickMenuButton = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -31,7 +51,7 @@ const Page = ({ children, title }: IPage) => {
               <S.BoxItens>
                 <S.MenuButton onClick={handleClickMenuButton} />
 
-                <S.CustomLink href={'/'}>
+                <S.CustomLink href={'/home'}>
                   <S.LogoJBS
                     src="src/assets/quistock.svg"
                     alt="Logo QuiStock"
@@ -42,9 +62,26 @@ const Page = ({ children, title }: IPage) => {
               </S.BoxItens>
 
               <S.BoxItens>
-                <S.AvatarButton onClick={handleClickUserAvatar}>
+                <S.AvatarButton onClick={handleOpenUserMenu}>
                   {'Q'}
                 </S.AvatarButton>
+                <S.StyledFloatMenu
+                  open={Boolean(anchorElUser)}
+                  anchorEl={anchorElUser}
+                  onClose={handleCloseUserMenu}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
+                  <S.StyledItemFloatMenu onClick={handleClickDetails}>
+                    <PersonOutlined />
+                    <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
+                  </S.StyledItemFloatMenu>
+
+                  <S.StyledItemFloatMenu onClick={handleClickLogout}>
+                    <Logout />
+                    <S.TextItemMenuFloat>Sair</S.TextItemMenuFloat>
+                  </S.StyledItemFloatMenu>
+                </S.StyledFloatMenu>
               </S.BoxItens>
             </S.BoxTopBar>
           </Container>

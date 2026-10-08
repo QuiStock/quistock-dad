@@ -16,6 +16,9 @@ import { LoginFlow } from '@/components/auth/LoginFlow'
 import Home from './home'
 import Dashboards from '@/pages/dashboards'
 import Managers from './managers'
+import Profile from './profile'
+import Contact from './contact'
+
 const queryClient = new QueryClient()
 
 export default function App() {
@@ -43,7 +46,7 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route
-              path="/auth"
+              path="/login"
               element={
                 <AuthenticationPage title="Login" children={<LoginFlow />} />
               }
@@ -52,6 +55,8 @@ export default function App() {
             <Route path="/lojas" element={<Stores />} />
             <Route path="/dashboards" element={<Dashboards />} />
             <Route path="/gerentes" element={<Managers />} />
+            <Route path="/perfil" element={<Profile />} />
+            <Route path="/contato" element={<Contact />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

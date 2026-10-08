@@ -9,7 +9,7 @@ import {
   Menu as FloatMenu,
   Link,
 } from '@mui/material'
-import { Menu, NotificationsNone } from '@mui/icons-material'
+import { Menu } from '@mui/icons-material'
 
 export const TopBar = styled(Box)(
   ({ theme }) => css`
@@ -85,22 +85,17 @@ export const MenuButton = styled(Menu)(
   `,
 )
 
-export const Notifications = styled(NotificationsNone)(
-  ({ theme }) => css`
-    && {
-      font-size: ${theme.font.size.bigTitle};
-      margin-left: auto;
-    }
-  `,
-)
-
 export const AvatarButton = styled(Avatar)(
   ({ theme }) => css`
     && {
-      background-color: ${theme.colors.darkBlue};
+      background-color: #7f3aef;
       width: 4rem;
       height: 4rem;
       cursor: pointer;
+
+      &:hover {
+        background-color: #6a2eb8;
+      }
 
       @media (max-width: ${theme.screen.small}) {
         width: 3rem;
@@ -242,7 +237,7 @@ export const StyledItemFloatMenu = styled(ItemFloatMenu)(
 
     svg {
       font-size: ${theme.font.size.body2};
-      color: ${theme.colors.golden};
+      color: ${theme.colors.darkBlue};
       transform: translateY(-0.2rem);
     }
   `,

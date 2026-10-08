@@ -3,40 +3,17 @@ import { Modal, MenuItem } from '@mui/material'
 
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
 import { TextInputComponent } from '@/components/commom/TextInputComponent'
-import { ManagerStatusEnum } from '@/types/enums'
+import { mockStoresData } from '../../StoresPartial/mock'
 import type { IManagerItem } from '../index'
 
 import * as S from './styles'
 
 interface IManagerModal {
   open: boolean
-  type: 'create' | 'edit' | null
+  type: 'create' | 'edit' | 'details' | null
   item?: IManagerItem | null
   onClose: () => void
-  onSave: (name: string, status: string) => void
-}
-
-function useModalState(item: IManagerItem | null | undefined, open: boolean) {
-  const defaultName = item ? item.name : ''
-  const defaultStatus =
-    item && item.status ? item.status : ManagerStatusEnum.ACTIVE
-
-  const [name, setName] = useState(defaultName)
-  const [status, setStatus] = useState(defaultStatus)
-
-  const [prevOpen, setPrevOpen] = useState(open)
-  const [prevItem, setPrevItem] = useState(item)
-
-  if (open !== prevOpen || item !== prevItem) {
-    setPrevOpen(open)
-    setPrevItem(item)
-    if (open) {
-      setName(defaultName)
-      setStatus(defaultStatus)
-    }
-  }
-
-  return { name, setName, status, setStatus }
+  onSave: (name: string, status?: string) => void
 }
 
 export const ManagerModal = ({
@@ -46,56 +23,124 @@ export const ManagerModal = ({
   onClose,
   onSave,
 }: IManagerModal) => {
-  const { name, setName, status, setStatus } = useModalState(item, open)
+  const [isEditing, setIsEditing] = useState(
+    type === 'create' || type === 'edit',
+  )
+
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [store, setStore] = useState('')
+
+  const [prevOpen, setPrevOpen] = useState(open)
+  const [prevItem, setPrevItem] = useState(item)
+  const [prevType, setPrevType] = useState(type)
+
+  const syncState = () => {
+    if (open === prevOpen && item === prevItem && type === prevType) return
+    setPrevOpen(open)
+    setPrevItem(item)
+    setPrevType(type)
+
+    if (!open) return
+
+    if (type === 'create') {
+      setName('')
+      setEmail('')
+      setPassword('Quistock@123')
+      setStore('')
+      setIsEditing(true)
+    } else if (item) {
+      setName(item.name || '')
+      setEmail('email@example.com')
+      setPassword('******')
+      setStore(item.store || '')
+      setIsEditing(type === 'edit')
+    }
+  }
+  syncState()
+
+  const handleSave = () => {
+    onSave(name)
+  }
 
   return (
     <Modal open={open} data-testid="modal-manager">
       <S.BoxModal>
         <S.Title>
-          {type === 'edit' ? 'Editar gerente' : 'Adicionar gerente'}
+          {type === 'create' ? 'Cadastrar novo gerente' : 'Detalhes do gerente'}
         </S.Title>
+        {type === 'create' && (
+          <S.Helper>Por favor, insira as informações do novo gerente.</S.Helper>
+        )}
 
         <S.FormContainer>
           <TextInputComponent
-            label="Nome do gerente"
+            label="Nome"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            disabled={!isEditing}
+          />
+          <TextInputComponent
+            label="E-mail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={!isEditing}
+          />
+          <TextInputComponent
+            label="Senha Gerada"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={!isEditing}
           />
 
           <TextInputComponent
             select
             fullWidth
-            label="Status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            label="Loja"
+            value={store}
+            onChange={(e) => setStore(e.target.value)}
+            disabled={!isEditing}
             sx={{ '& .MuiInputLabel-root': { fontSize: '1.6rem' } }}
           >
-            <MenuItem
-              sx={{ fontSize: '1.6rem' }}
-              value={ManagerStatusEnum.ACTIVE}
-            >
-              Ativo
+            <MenuItem value="" disabled sx={{ fontSize: '1.6rem' }}>
+              Selecionar loja
             </MenuItem>
-            <MenuItem
-              sx={{ fontSize: '1.6rem' }}
-              value={ManagerStatusEnum.INACTIVE}
-            >
-              Desativado
-            </MenuItem>
+            {mockStoresData.map((s) => (
+              <MenuItem key={s.id} sx={{ fontSize: '1.6rem' }} value={s.name}>
+                {s.name}
+              </MenuItem>
+            ))}
           </TextInputComponent>
         </S.FormContainer>
 
         <S.BoxButtons>
-          <ButtonComponent variant="outlined" onClick={onClose}>
-            {'Cancelar'}
-          </ButtonComponent>
-          <ButtonComponent
-            variant="contained"
-            onClick={() => onSave(name, status)}
-            disabled={!name}
-          >
-            {'Salvar'}
-          </ButtonComponent>
+          {isEditing ? (
+            <>
+              <ButtonComponent variant="outlined" onClick={onClose}>
+                Cancelar
+              </ButtonComponent>
+              <ButtonComponent
+                variant="contained"
+                onClick={handleSave}
+                disabled={!name}
+              >
+                {type === 'create' ? 'Cadastrar' : 'Salvar'}
+              </ButtonComponent>
+            </>
+          ) : (
+            <>
+              <ButtonComponent variant="outlined" onClick={onClose}>
+                Fechar
+              </ButtonComponent>
+              <ButtonComponent
+                variant="contained"
+                onClick={() => setIsEditing(true)}
+              >
+                Editar
+              </ButtonComponent>
+            </>
+          )}
         </S.BoxButtons>
       </S.BoxModal>
     </Modal>
