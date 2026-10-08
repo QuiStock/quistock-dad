@@ -159,3 +159,8 @@ npm run test:e2e
 ```
 
 Se apenas um job falhar, execute localmente o comando correspondente antes de repetir o CI.
+
+## Publicação de imagem ARM64
+
+Veja [publicação e preparação do Infra](docs/container-release.md) para releases,
+execução manual, referência por digest e permissões do GHCR/Infra.
