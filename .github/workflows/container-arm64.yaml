@@ -17,6 +17,7 @@ on:
       - vitest.config.ts
       - playwright.config.ts
       - .github/workflows/container-arm64.yaml
+      - .github/workflows/publish-image.yaml
   workflow_dispatch:
 
 permissions:
@@ -35,3 +36,12 @@ jobs:
           context: .
           platforms: linux/arm64
           push: false
+          load: true
+          tags: quistock-website:arm64-ci
+
+      - name: Verify ARM64 architecture
+        shell: bash
+        run: test "$(docker image inspect --format '{{.Architecture}}' quistock-website:arm64-ci)" = arm64
+
+      - name: Verify unprivileged Nginx configuration
+        run: docker run --rm --platform linux/arm64 --entrypoint nginx quistock-website:arm64-ci -t

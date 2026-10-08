@@ -1,30 +1,35 @@
-name: Publish frontend image
+name: Publish website image
 
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      infra_ref:
+        description: 'Infra base branch (main or the branch of the infrastructure PR)'
+        required: true
+        default: main
+        type: string
 
 permissions:
   contents: read
   packages: write
 
+concurrency:
+  group: publish-website-${{ github.event.release.tag_name || github.sha }}
+  cancel-in-progress: false
+
 jobs:
   publish:
-    if: ${{ !github.event.release.prerelease }}
+    if: ${{ github.event_name != 'release' || !github.event.release.prerelease }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      INFRA_REPO_TOKEN: ${{ secrets.INFRA_REPO_TOKEN }}
+      INFRA_BASE_REF: ${{ inputs.infra_ref || 'main' }}
+      IMAGE_TAG: ${{ github.event.release.tag_name || format('sha-{0}', github.sha) }}
     steps:
-      - name: Check Infra token
-        env:
-          INFRA_REPO_TOKEN: ${{ secrets.INFRA_REPO_TOKEN }}
-        shell: bash
-        run: |
-          if [ -z "$INFRA_REPO_TOKEN" ]; then
-            echo "Configure INFRA_REPO_TOKEN before publishing a release."
-            exit 1
-          fi
-
-      - name: Check out release commit
+      - name: Check out source commit
         uses: actions/checkout@v7
 
       - name: Set up QEMU
@@ -47,22 +52,34 @@ jobs:
           context: .
           platforms: linux/arm64
           push: true
-          tags: ghcr.io/quistock/web-frontend:${{ github.event.release.tag_name }}
+          tags: ghcr.io/quistock/web-frontend:${{ env.IMAGE_TAG }}
           build-args: |
             VITE_API_URL=/api
           labels: |
             org.opencontainers.image.source=https://github.com/QuiStock/quistock-dad
             org.opencontainers.image.revision=${{ github.sha }}
 
+      - name: Record immutable image reference
+        env:
+          IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
+        shell: bash
+        run: |
+          printf 'ARM64 image: %s\n' "ghcr.io/quistock/web-frontend@$IMAGE_DIGEST" >> "$GITHUB_STEP_SUMMARY"
+          if [ -z "$INFRA_REPO_TOKEN" ]; then
+            printf 'No INFRA_REPO_TOKEN configured: fill this digest in Infra manually.\n' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Check out Infra repository
+        if: ${{ env.INFRA_REPO_TOKEN != '' }}
         uses: actions/checkout@v7
         with:
           repository: QuiStock/QuiStock-Infra
-          ref: main
+          ref: ${{ env.INFRA_BASE_REF }}
           path: infra
           token: ${{ secrets.INFRA_REPO_TOKEN }}
 
       - name: Update desired image in Infra
+        if: ${{ env.INFRA_REPO_TOKEN != '' }}
         env:
           IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
         shell: bash
@@ -74,31 +91,33 @@ jobs:
 
           digest = os.environ["IMAGE_DIGEST"]
           if not re.fullmatch(r"sha256:[0-9a-f]{64}", digest):
-              raise SystemExit(f"Unexpected image digest: {digest!r}")
+              raise SystemExit("Expected a SHA-256 image digest")
 
-          path = Path("infra/clusters/expotech/apps/web-frontend/deployment.yaml")
+          path = Path("infra/clusters/us-east1/apps/website/deployment.yaml")
           manifest = path.read_text(encoding="utf-8")
           image = f"ghcr.io/quistock/web-frontend@{digest}"
-          pattern = r"(?m)^([ \t]*image:[ \t]*)ghcr\.io/quistock/web-frontend(?:[:@])[^\s]+$"
+          pattern = r"(?m)^([ \t]*image:[ \t]*)(?:ghcr\.io/quistock/web-frontend(?:[:@])[^\s]+|REPLACE_WITH_WEBSITE_ARM64_IMAGE_DIGEST)$"
           updated, count = re.subn(pattern, lambda match: match.group(1) + image, manifest)
           if count != 1:
-              raise SystemExit(f"Expected one frontend image, found {count}")
+              raise SystemExit(f"Expected exactly one website image in {path}, found {count}")
           path.write_text(updated, encoding="utf-8")
           PY
 
       - name: Open deployment PR in Infra
+        if: ${{ env.INFRA_REPO_TOKEN != '' }}
         uses: peter-evans/create-pull-request@v8
         with:
           path: infra
           token: ${{ secrets.INFRA_REPO_TOKEN }}
-          add-paths: clusters/expotech/apps/web-frontend/deployment.yaml
-          base: main
-          branch: deploy/web-frontend-${{ github.event.release.tag_name }}
+          add-paths: clusters/us-east1/apps/website/deployment.yaml
+          base: ${{ env.INFRA_BASE_REF }}
+          branch: codex/deploy-website-${{ env.IMAGE_TAG }}
           delete-branch: true
-          commit-message: 'deploy(web-frontend): ${{ github.event.release.tag_name }}'
-          title: 'deploy(web-frontend): ${{ github.event.release.tag_name }}'
+          commit-message: 'deploy(website): ${{ env.IMAGE_TAG }}'
+          title: 'deploy(website): ${{ env.IMAGE_TAG }}'
           body: |
-            Atualiza o frontend para a release [${{ github.event.release.tag_name }}](${{ github.event.release.html_url }}).
-            Imagem publicada: `ghcr.io/quistock/web-frontend@${{ steps.image.outputs.digest }}`.
+            Atualiza website com a imagem ARM64 `ghcr.io/quistock/web-frontend@${{ steps.image.outputs.digest }}`.
+            Origem: https://github.com/QuiStock/quistock-dad/commit/${{ github.sha }}.
 
-            O rolling update começa depois do merge desta PR, quando o Argo CD sincronizar o Infra.
+            O workflow altera somente o digest. Secrets e IDs Bitwarden continuam no bootstrap/Infra.
+            Argo CD acompanha main; aplicar depende do merge das PRs de Infra e do preenchimento dos Secrets.
