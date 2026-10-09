@@ -19,8 +19,8 @@ export const postLogin = ({
   email: string
   password: string
   platform?: AuthPlatform
-}) => authApi.post('/auth/login', { email, password, platform })
+}) => authApi.post('/login', { email, password, platform })
 
-export const postRefresh = () => authApi.post('/auth/refresh')
+export const postRefresh = () => authApi.post('/refresh')
 
-export const postLogout = () => authApi.post('/auth/logout')
+export const postLogout = () => authApi.post('/logout')
