@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import { AuthProvider } from '@/contexts/AuthProvider'
 import { ThemeProvider } from 'styled-components'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import theme from '@/styles/theme'
@@ -13,6 +14,7 @@ import Stores from '@/pages/stores'
 import NotFound from '@/pages/404'
 import { AuthenticationPage } from '@/components/auth/AuthenticationPage'
 import { LoginFlow } from '@/components/auth/LoginFlow'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import Home from './home'
 import Dashboards from '@/pages/dashboards'
 import Managers from './managers'
@@ -44,21 +46,26 @@ export default function App() {
         <GlobalStyles />
 
         <BrowserRouter>
-          <Routes>
-            <Route
-              path="/login"
-              element={
-                <AuthenticationPage title="Login" children={<LoginFlow />} />
-              }
-            />
-            <Route path="/home" element={<Home />} />
-            <Route path="/lojas" element={<Stores />} />
-            <Route path="/dashboards" element={<Dashboards />} />
-            <Route path="/gerentes" element={<Managers />} />
-            <Route path="/perfil" element={<Profile />} />
-            <Route path="/contato" element={<Contact />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route
+                path="/login"
+                element={
+                  <AuthenticationPage title="Login" children={<LoginFlow />} />
+                }
+              />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/home" element={<Home />} />
+                <Route path="/lojas" element={<Stores />} />
+                <Route path="/dashboards" element={<Dashboards />} />
+                <Route path="/gerentes" element={<Managers />} />
+                <Route path="/perfil" element={<Profile />} />
+                <Route path="/contato" element={<Contact />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
         </BrowserRouter>
 
         <ToastNotification notifications={notifications} />
