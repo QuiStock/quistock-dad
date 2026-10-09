@@ -1,0 +1,47 @@
+name: Container image (ARM64)
+
+on:
+  pull_request:
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - nginx.conf
+      - package.json
+      - package-lock.json
+      - index.html
+      - public/**
+      - src/**
+      - tests/**
+      - tsconfig*.json
+      - vite.config.ts
+      - vitest.config.ts
+      - playwright.config.ts
+      - .github/workflows/container-arm64.yaml
+      - .github/workflows/publish-image.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/arm64
+          push: false
+          load: true
+          tags: quistock-website:arm64-ci
+
+      - name: Verify ARM64 architecture
+        shell: bash
+        run: test "$(docker image inspect --format '{{.Architecture}}' quistock-website:arm64-ci)" = arm64
+
+      - name: Verify unprivileged Nginx configuration
+        run: docker run --rm --platform linux/arm64 --entrypoint nginx quistock-website:arm64-ci -t
