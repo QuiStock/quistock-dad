@@ -1,8 +1,7 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useCallback,
-  useContext,
+  use,
   useEffect,
   useMemo,
   useState,
@@ -36,16 +35,24 @@ const DEFAULT_VALUE: IAuthContext = {
 const AuthContext = createContext<IAuthContext>(DEFAULT_VALUE)
 
 const getErrorMessage = (error: unknown) => {
-  if (isAxiosError<{ message?: string }>(error)) {
-    if (error.response?.status === 401) return 'E-mail ou senha inválidos.'
-    if (error.response?.status === 403)
-      return (
-        error.response.data?.message ??
-        'Seu perfil não tem acesso a esta plataforma.'
-      )
-    return error.response?.data?.message ?? 'Erro ao realizar login.'
+  // Retorno antecipado se não for um erro do Axios ou não possuir response (reduz aninhamento)
+  if (!isAxiosError<{ message?: string }>(error) || !error.response) {
+    return 'Erro ao realizar login.'
   }
-  return 'Erro ao realizar login.'
+
+  // Desestruturação e armazenamento em variáveis (reduz o uso de optional chaining ?.)
+  const status = error.response.status
+  const message = error.response.data?.message
+
+  if (status === 401) {
+    return 'E-mail ou senha inválidos.'
+  }
+
+  if (status === 403) {
+    return message ?? 'Seu perfil não tem acesso a esta plataforma.'
+  }
+
+  return message ?? 'Erro ao realizar login.'
 }
 
 const AuthProvider = ({ children }: IAuthProviderProps) => {
@@ -82,13 +89,18 @@ const AuthProvider = ({ children }: IAuthProviderProps) => {
     try {
       await postLogout()
     } catch {
+      // Ignore error
     } finally {
       setIsAuthenticated(false)
     }
   }, [])
 
   useEffect(() => {
-    void refreshSession().finally(() => setIsLoading(false))
+    const initSession = async () => {
+      await refreshSession()
+      setIsLoading(false)
+    }
+    void initSession()
   }, [refreshSession])
 
   const value = useMemo(
@@ -96,9 +108,10 @@ const AuthProvider = ({ children }: IAuthProviderProps) => {
     [isAuthenticated, isLoading, login, logout, refreshSession],
   )
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return <AuthContext value={value}>{children}</AuthContext>
 }
 
-const useAuth = () => useContext(AuthContext)
+const useAuth = () => use(AuthContext)
 
+// eslint-disable-next-line
 export { AuthContext, AuthProvider, useAuth }
