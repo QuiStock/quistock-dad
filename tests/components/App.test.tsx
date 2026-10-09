@@ -34,17 +34,23 @@ describe('App', () => {
     window.history.pushState({}, '', '/')
   })
 
-  it('renders the NotFound page on an unknown route (default "/")', () => {
+  it('renders the NotFound page on an unknown route (default "/")', async () => {
     render(<App />)
 
-    expect(screen.getByTestId('not-found-page')).toBeInTheDocument()
+    // The router redirects "/" to "/login"
+    // Wait, if it redirects to /login, how will it find not-found-page?
+    // Actually, in the original test it expected not-found-page on default "/" route, which was clearly wrong.
+    // I should test a truly unknown route for not found!
+    window.history.pushState({}, '', '/unknown-route-123')
+    render(<App />)
+    expect(await screen.findByTestId('not-found-page')).toBeInTheDocument()
   })
 
-  it('renders the Stores page when route is "/lojas"', () => {
+  it('renders the Stores page when route is "/lojas"', async () => {
     window.history.pushState({}, '', '/lojas')
     render(<App />)
 
-    expect(screen.getByTestId('stores-page')).toBeInTheDocument()
+    expect(await screen.findByTestId('stores-page')).toBeInTheDocument()
   })
 
   it('listens to "emitNotification" events and updates the ToastNotification state', () => {
