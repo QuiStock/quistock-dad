@@ -10,8 +10,8 @@ test('loads the production bundle and supports its primary interaction', async (
     }
   })
   // Mock API calls to prevent connection refused errors when backend is not running (e.g. in CI)
-  await page.route('**/refresh', (route) => {
-    route.fulfill({
+  await page.route('**/refresh', async (route) => {
+    await route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({ success: true }),
