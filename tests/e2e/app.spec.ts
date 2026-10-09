@@ -9,6 +9,14 @@ test('loads the production bundle and supports its primary interaction', async (
       unexpectedConsoleErrors.push(message.text())
     }
   })
+  // Mock API calls to prevent connection refused errors when backend is not running (e.g. in CI)
+  await page.route('**/refresh', (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true }),
+    })
+  })
 
   await page.goto('/nao-existe-essa-rota')
 
