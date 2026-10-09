@@ -1,4 +1,4 @@
-import { screen, fireEvent } from '@testing-library/react'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { renderWithTheme } from '@/utils/__tests__/helpers'
 import { BoxLogin } from '.'
@@ -51,7 +51,7 @@ describe('<BoxLogin />', () => {
     expect(passwordInput).toHaveAttribute('type', 'password')
   })
 
-  it('should call setVerifiedUser and setUserDocument on submit', () => {
+  it('should call setVerifiedUser and setUserDocument on submit', async () => {
     const setUserDocument = vi.fn()
     const setVerifiedUser = vi.fn()
 
@@ -69,13 +69,17 @@ describe('<BoxLogin />', () => {
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
     fireEvent.change(passwordInput, { target: { value: 'password123' } })
 
+    await waitFor(() => expect(submitButton).not.toBeDisabled())
     fireEvent.click(submitButton)
 
-    expect(setUserDocument).toHaveBeenCalledWith('test@example.com')
-    expect(setVerifiedUser).toHaveBeenCalledWith(true)
+    // Wait for the login async function to complete and call the mocks
+    await waitFor(() => {
+      expect(setUserDocument).toHaveBeenCalledWith('test@example.com')
+      expect(setVerifiedUser).toHaveBeenCalledWith(true)
+    })
   })
 
-  it('should call handleLogin when Enter is pressed on password field', () => {
+  it('should call handleLogin when Enter is pressed on password field', async () => {
     const setUserDocument = vi.fn()
     const setVerifiedUser = vi.fn()
 
@@ -92,9 +96,14 @@ describe('<BoxLogin />', () => {
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
     fireEvent.change(passwordInput, { target: { value: 'password123' } })
 
+    const submitButton = screen.getByRole('button', { name: /entrar/i })
+    await waitFor(() => expect(submitButton).not.toBeDisabled())
+
     fireEvent.keyDown(passwordInput, { key: 'Enter', code: 'Enter' })
 
-    expect(setUserDocument).toHaveBeenCalledWith('test@example.com')
-    expect(setVerifiedUser).toHaveBeenCalledWith(true)
+    await waitFor(() => {
+      expect(setUserDocument).toHaveBeenCalledWith('test@example.com')
+      expect(setVerifiedUser).toHaveBeenCalledWith(true)
+    })
   })
 })

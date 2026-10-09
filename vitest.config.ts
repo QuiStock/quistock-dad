@@ -34,11 +34,13 @@ export default defineConfig({
         statements: 20,
       },
     },
-    environment: 'jsdom',
+    environment: 'happy-dom',
     exclude: ['tests/e2e/**'],
     include: ['tests/**/*.{test,spec}.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
     server: {
-      deps: { inline: ['@csstools/css-calc', '@asamuzakjp/css-color'] },
+      deps: {
+        inline: ['@csstools/css-calc', '@asamuzakjp/css-color'],
+      },
     },
     pool: 'threads',
     maxWorkers: 1,
