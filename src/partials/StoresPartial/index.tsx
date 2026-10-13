@@ -7,12 +7,18 @@ import { IconButton, Menu } from '@mui/material'
 
 import { DatagridComponent } from '@/components/commom/DatagridComponent'
 import { IconsComponent } from '@/components/commom/IconsComponent'
+import { LoadingMask } from '@/components/commom/LoadingMask'
 
 import { TextInputWithIcon } from '@/components/commom/TextInputWithIcon'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
 import { StoreModal } from './StoreModal'
+import { ButtonComponent } from '@/components/commom/ButtonComponent'
+import { useNavigate } from 'react-router-dom'
+import { useSendQuery } from '@/hooks/useSendQuery'
+import { getBranches, BRANCHES_QUERY_KEY } from '@/services/api-branches'
+import type { IBranch } from '@/types'
 
-const INITIAL_PATINATION = {
+const INITIAL_PAGINATION = {
   page: 0,
   pageSize: 10,
 }
@@ -52,8 +58,9 @@ const ActionMenu = ({ onDetails }: { onDetails: () => void }) => {
 }
 
 export interface IStoreItem {
-  id: number
+  id: string | number
   name: string
+  store_id?: number
   high_flow?: number
   low_flow?: number
   active_orders_count?: number
@@ -65,15 +72,12 @@ export interface IStoreItem {
   street?: string
   number?: string
   complement?: string
+  address?: string
 }
-
-import { mockStoresData } from './mock'
-import { ButtonComponent } from '@/components/commom/ButtonComponent'
-import { useNavigate } from 'react-router-dom'
 
 export const StoresPartial = () => {
   const [searchName, setSearchName] = useState('')
-  const [paginationModel, setPaginationModel] = useState(INITIAL_PATINATION)
+  const [paginationModel, setPaginationModel] = useState(INITIAL_PAGINATION)
 
   const navigate = useNavigate()
 
@@ -82,7 +86,16 @@ export const StoresPartial = () => {
 
   const isStoresPage = window.location.pathname === '/lojas'
 
-  const handlePaginationChange = (model: typeof INITIAL_PATINATION) => {
+  const {
+    responseBranches: branchesData,
+    isLoadingBranches,
+  } = useSendQuery<IBranch[], 'Branches'>({
+    queryKey: BRANCHES_QUERY_KEY,
+    apiPromise: getBranches,
+    suffix: 'Branches',
+  })
+
+  const handlePaginationChange = (model: typeof INITIAL_PAGINATION) => {
     setPaginationModel(model)
   }
 
@@ -91,53 +104,63 @@ export const StoresPartial = () => {
     setPaginationModel((prev) => ({ ...prev, page: 0 }))
   }
 
-  const filteredStores = useMemo(() => {
-    let result = mockStoresData
+  const storeItems: IStoreItem[] = useMemo(() => {
+    if (!branchesData || !Array.isArray(branchesData)) return []
+
+    const list: IStoreItem[] = branchesData.map((branch) => ({
+      id: branch.id,
+      store_id: branch.store_id,
+      name: branch.name,
+      city: branch.city ?? '-',
+      state: branch.state ?? '-',
+      address: branch.address ?? '-',
+      high_flow: 0,
+      low_flow: 0,
+      active_orders_count: 0,
+      active_promotions: 0,
+      manager: '-',
+    }))
 
     if (searchName) {
-      result = result.filter((store) =>
-        store.name.toLowerCase().includes(searchName.toLowerCase()),
+      const query = searchName.toLowerCase()
+      return list.filter(
+        (store) =>
+          store.name.toLowerCase().includes(query) ||
+          (store.city && store.city.toLowerCase().includes(query)) ||
+          (store.state && store.state.toLowerCase().includes(query)),
       )
     }
 
-    return isStoresPage ? result : result.slice(0, 5)
-  }, [searchName, isStoresPage])
+    return list
+  }, [branchesData, searchName])
+
+  const displayedStores = useMemo(() => {
+    return isStoresPage ? storeItems : storeItems.slice(0, 5)
+  }, [storeItems, isStoresPage])
 
   const columns: GridColDef[] = useMemo(
     () => [
       {
         field: 'name',
-        headerName: 'Nome',
+        headerName: 'Nome da Filial',
         flex: 2,
         editable: false,
       },
       {
-        field: 'high_flow',
-        headerName: 'Fluxo Alto',
-        flex: 2,
+        field: 'city',
+        headerName: 'Cidade',
+        flex: 1.5,
         editable: false,
       },
       {
-        field: 'low_flow',
-        headerName: 'Fluxo Baixo',
-        flex: 2,
+        field: 'state',
+        headerName: 'Estado',
+        flex: 1,
         editable: false,
       },
       {
-        field: 'active_orders_count',
-        headerName: 'Pedidos Ativos',
-        flex: 2,
-        editable: false,
-      },
-      {
-        field: 'active_promotions',
-        headerName: 'Promoções Ativas',
-        flex: 2,
-        editable: false,
-      },
-      {
-        field: 'manager',
-        headerName: 'Gerente',
+        field: 'address',
+        headerName: 'Endereço',
         flex: 2,
         editable: false,
       },
@@ -190,7 +213,7 @@ export const StoresPartial = () => {
         </S.BoxFilters>
       )}
 
-      {filteredStores.length === 0 ? (
+      {displayedStores.length === 0 && !isLoadingBranches ? (
         <IconsComponent type="Empty">
           <p>{'Nenhuma loja encontrada'}</p>
         </IconsComponent>
@@ -199,7 +222,7 @@ export const StoresPartial = () => {
           isNotMobileFixed
           disableColumnMenu
           columns={columns}
-          rows={filteredStores}
+          rows={displayedStores}
           pageSizeOptions={[10, 25, 50]}
           paginationModel={paginationModel}
           paginationMode="client"
@@ -213,6 +236,8 @@ export const StoresPartial = () => {
         item={selectedItem}
         onClose={() => setIsDetailsModalOpen(false)}
       />
+
+      <LoadingMask isLoading={isLoadingBranches} />
     </S.Wrapper>
   )
 }

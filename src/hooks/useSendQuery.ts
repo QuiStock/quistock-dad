@@ -20,7 +20,7 @@ interface IUseSendQueryInitialProps<Res> {
   suffix: string
   options?: Omit<
     UseQueryOptions<Res, AxiosError<IErrorResponseData>>,
-    'queryKey' | 'queryFn' | 'enabled'
+    'queryKey' | 'queryFn'
   >
 }
 

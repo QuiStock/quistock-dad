@@ -6,7 +6,8 @@ import { TextInputComponent } from '@/components/commom/TextInputComponent'
 import * as S from './styles'
 import type { IStoreItem } from '../index'
 
-const getStr = (val?: string | null) => val || ''
+const getStr = (val?: string | number | null) =>
+  val !== undefined && val !== null ? String(val) : '-'
 
 interface IStoreModal {
   open: boolean
@@ -22,11 +23,15 @@ export const StoreModal = ({ open, item, onClose }: IStoreModal) => {
 
         <S.FormContainer>
           <TextInputComponent
-            label="Nome"
+            label="Nome da Filial"
             value={getStr(item?.name)}
             disabled
           />
-          <TextInputComponent label="CEP" value={getStr(item?.cep)} disabled />
+          <TextInputComponent
+            label="Código ERP / ID"
+            value={getStr(item?.id)}
+            disabled
+          />
           <div style={{ display: 'flex', gap: '16px' }}>
             <TextInputComponent
               label="Estado"
@@ -41,23 +46,9 @@ export const StoreModal = ({ open, item, onClose }: IStoreModal) => {
               style={{ flex: 1 }}
             />
           </div>
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <TextInputComponent
-              label="Rua"
-              value={getStr(item?.street)}
-              disabled
-              style={{ flex: 2 }}
-            />
-            <TextInputComponent
-              label="Número"
-              value={getStr(item?.number)}
-              disabled
-              style={{ flex: 1 }}
-            />
-          </div>
           <TextInputComponent
-            label="Complemento"
-            value={getStr(item?.complement)}
+            label="Endereço"
+            value={getStr(item?.address || item?.street)}
             disabled
           />
         </S.FormContainer>
