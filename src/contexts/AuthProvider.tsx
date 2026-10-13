@@ -9,6 +9,7 @@ import { isAxiosError } from 'axios'
 
 import emitError from '@/events/emitError'
 import { postLogin, postLogout, postRefresh } from '@/services/api-auth'
+import { SESSION_EXPIRED_EVENT } from '@/services/api-client'
 import { AuthContext } from './AuthContext'
 
 interface IAuthProviderProps {
@@ -81,6 +82,14 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
     }
     void initSession()
   }, [refreshSession])
+
+  useEffect(() => {
+    const handleSessionExpired = () => setIsAuthenticated(false)
+
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired)
+    return () =>
+      window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired)
+  }, [])
 
   const value = useMemo(
     () => ({ isAuthenticated, isLoading, login, logout, refreshSession }),

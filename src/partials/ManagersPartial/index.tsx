@@ -15,21 +15,31 @@ import { IconsComponent } from '@/components/commom/IconsComponent'
 
 import { TextInputWithIcon } from '@/components/commom/TextInputWithIcon'
 import { ButtonWithIcon } from '@/components/commom/ButtonWithIcon'
-import { ManagerModal } from './ManagerModal'
+import { ManagerModal, type ISaveManagerData } from './ManagerModal'
 import { useSendMutation } from '@/hooks/useSendMutation'
+import { useSendQuery } from '@/hooks/useSendQuery'
 import emitNotification from '@/events/emitNotification'
 import { LoadingMask } from '@/components/commom/LoadingMask'
 import { useQueryClient } from '@tanstack/react-query'
 import { ManagerStatusEnum } from '@/types/enums'
-import { postManager, putManager } from '@/services/api-quistock'
-import type { IIdAndName } from '@/types'
+import {
+  getManagers,
+  createManager,
+  updateManager,
+  MANAGERS_QUERY_KEY,
+} from '@/services/api-managers'
+import type { IManager } from '@/types'
 
-export interface IManagerItem extends IIdAndName {
-  status?: string
-  store?: string
+export interface IManagerTableRow {
+  id: string
+  name: string
+  email: string
+  store: string
+  status: string
+  rawItem: IManager
 }
 
-const INITIAL_PATINATION = {
+const INITIAL_PAGINATION = {
   page: 0,
   pageSize: 10,
 }
@@ -70,64 +80,29 @@ const ActionMenu = ({ onDetails }: { onDetails: () => void }) => {
 
 type TModal = 'create' | 'edit' | 'details' | null
 
-interface IManagerResponse {
-  message: string
-}
-
-// Mock
-const mockManagersData = [
-  {
-    id: 1,
-    name: 'Paulo Santos',
-    store: 'Swift - Marginal Tietê',
-    status: ManagerStatusEnum.ACTIVE,
-  },
-  {
-    id: 2,
-    name: 'Paulo Santos',
-    store: 'Swift - Marginal Tietê',
-    status: ManagerStatusEnum.ACTIVE,
-  },
-  {
-    id: 3,
-    name: 'Paulo Santos',
-    store: 'Swift - Marginal Tietê',
-    status: ManagerStatusEnum.ACTIVE,
-  },
-  {
-    id: 4,
-    name: 'Paulo Santos',
-    store: 'Swift - Marginal Tietê',
-    status: ManagerStatusEnum.ACTIVE,
-  },
-  {
-    id: 5,
-    name: 'Paulo Santos',
-    store: 'Swift - Marginal Tietê',
-    status: ManagerStatusEnum.ACTIVE,
-  },
-  {
-    id: 6,
-    name: 'Paulo Santos',
-    store: 'Swift - Marginal Tietê',
-    status: ManagerStatusEnum.ACTIVE,
-  },
-]
-
 export const ManagersPartial = () => {
   const [searchName, setSearchName] = useState('')
-  const [paginationModel, setPaginationModel] = useState(INITIAL_PATINATION)
+  const [paginationModel, setPaginationModel] = useState(INITIAL_PAGINATION)
   const [showEspecificModal, setShowEspecificModal] = useState<TModal>(null)
-  const [selectedItem, setSelectedItem] = useState<IManagerItem | null>(null)
+  const [selectedItem, setSelectedItem] = useState<IManager | null>(null)
 
   const queryClient = useQueryClient()
+
+  const {
+    responseManagers: managersData,
+    isLoadingManagers,
+  } = useSendQuery<IManager[], 'Managers'>({
+    queryKey: MANAGERS_QUERY_KEY,
+    apiPromise: getManagers,
+    suffix: 'Managers',
+  })
 
   const {
     responseCreateManager,
     runFetchCreateManager,
     clearResponseCreateManager,
     isLoadingCreateManager,
-  } = useSendMutation<IManagerResponse, 'CreateManager'>({
+  } = useSendMutation<IManager, 'CreateManager'>({
     suffix: 'CreateManager',
   })
 
@@ -136,20 +111,34 @@ export const ManagersPartial = () => {
     runFetchEditManager,
     clearResponseEditManager,
     isLoadingEditManager,
-  } = useSendMutation<IManagerResponse, 'EditManager'>({
+  } = useSendMutation<IManager, 'EditManager'>({
     suffix: 'EditManager',
   })
 
-  const handleSaveManager = (name: string, status?: string) => {
+  const handleSaveManager = (data: ISaveManagerData) => {
     if (selectedItem) {
-      runFetchEditManager(putManager({ id: selectedItem.id, name, status }))
-    } else runFetchCreateManager(postManager({ name }))
+      runFetchEditManager(
+        updateManager(selectedItem.id, {
+          name: data.name,
+          email: data.email,
+          status: data.status,
+        }),
+      )
+    } else {
+      runFetchCreateManager(
+        createManager({
+          name: data.name,
+          email: data.email,
+          password: data.password ?? '',
+        }),
+      )
+    }
 
     setSelectedItem(null)
     setShowEspecificModal(null)
   }
 
-  const handlePaginationChange = (model: typeof INITIAL_PATINATION) => {
+  const handlePaginationChange = (model: typeof INITIAL_PAGINATION) => {
     setPaginationModel(model)
   }
 
@@ -158,18 +147,33 @@ export const ManagersPartial = () => {
     setPaginationModel((prev) => ({ ...prev, page: 0 }))
   }
 
-  // Mock
-  const filteredManagers = useMemo(() => {
-    let result = mockManagersData
+  const tableRows: IManagerTableRow[] = useMemo(() => {
+    if (!managersData || !Array.isArray(managersData)) return []
+
+    let list = managersData.map((m) => ({
+      id: String(m.id),
+      name: m.name,
+      email: m.email,
+      store: m.store_name || '-',
+      status:
+        m.status === 'ACTIVE'
+          ? ManagerStatusEnum.ACTIVE
+          : ManagerStatusEnum.INACTIVE,
+      rawItem: m,
+    }))
 
     if (searchName) {
-      result = result.filter((manager) =>
-        manager.name.toLowerCase().includes(searchName.toLowerCase()),
+      const query = searchName.toLowerCase()
+      list = list.filter(
+        (m) =>
+          m.name.toLowerCase().includes(query) ||
+          m.email.toLowerCase().includes(query) ||
+          m.store.toLowerCase().includes(query),
       )
     }
 
-    return result
-  }, [searchName])
+    return list
+  }, [managersData, searchName])
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -180,16 +184,22 @@ export const ManagersPartial = () => {
         editable: false,
       },
       {
+        field: 'email',
+        headerName: 'E-mail',
+        flex: 2,
+        editable: false,
+      },
+      {
         field: 'store',
         headerName: 'Loja',
         flex: 2,
-        editable: true,
+        editable: false,
       },
       {
         field: 'status',
         headerName: 'Status',
-        flex: 2,
-        editable: true,
+        flex: 1.5,
+        editable: false,
       },
       {
         field: 'actions',
@@ -199,7 +209,8 @@ export const ManagersPartial = () => {
         renderCell: (params: GridRenderCellParams) => (
           <ActionMenu
             onDetails={() => {
-              setSelectedItem(params.row as IManagerItem)
+              const row = params.row as IManagerTableRow
+              setSelectedItem(row.rawItem)
               setShowEspecificModal('details')
             }}
           />
@@ -214,11 +225,10 @@ export const ManagersPartial = () => {
 
     emitNotification({
       type: 'success',
-      message:
-        responseCreateManager.message || 'Operação realizada com sucesso!',
+      message: 'Gerente cadastrado com sucesso!',
     })
     void queryClient.invalidateQueries({
-      queryKey: ['/stores'],
+      queryKey: MANAGERS_QUERY_KEY,
     })
     clearResponseCreateManager()
   }, [responseCreateManager, clearResponseCreateManager, queryClient])
@@ -232,10 +242,10 @@ export const ManagersPartial = () => {
 
     emitNotification({
       type: 'success',
-      message: 'Operação realizada com sucesso!',
+      message: 'Gerente atualizado com sucesso!',
     })
     void queryClient.invalidateQueries({
-      queryKey: ['/manager'],
+      queryKey: MANAGERS_QUERY_KEY,
     })
     clearResponseEditManager()
   }, [responseEditManager, clearResponseEditManager, queryClient])
@@ -256,11 +266,14 @@ export const ManagersPartial = () => {
           children={'Adicionar gerente'}
           icon={<Add />}
           variant="outlined"
-          onClick={() => setShowEspecificModal('create')}
+          onClick={() => {
+            setSelectedItem(null)
+            setShowEspecificModal('create')
+          }}
         />
       </S.BoxFilters>
 
-      {filteredManagers.length === 0 ? (
+      {tableRows.length === 0 && !isLoadingManagers ? (
         <IconsComponent type="Empty">
           <p>{'Nenhum gerente encontrado'}</p>
         </IconsComponent>
@@ -269,7 +282,7 @@ export const ManagersPartial = () => {
           isNotMobileFixed
           disableColumnMenu
           columns={columns}
-          rows={filteredManagers}
+          rows={tableRows}
           pageSizeOptions={[10, 25, 50]}
           paginationModel={paginationModel}
           paginationMode="client"
@@ -285,7 +298,13 @@ export const ManagersPartial = () => {
         onSave={handleSaveManager}
       />
 
-      <LoadingMask isLoading={isLoadingCreateManager || isLoadingEditManager} />
+      <LoadingMask
+        isLoading={
+          isLoadingManagers ||
+          isLoadingCreateManager ||
+          isLoadingEditManager
+        }
+      />
     </S.Wrapper>
   )
 }
