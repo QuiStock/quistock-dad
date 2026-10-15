@@ -3,7 +3,7 @@ import axios from 'axios'
 export type AuthPlatform = 'mobile' | 'website'
 
 const authApiUrl: string =
-  (import.meta.env.AUTH_API_URL as string | undefined) ??
+  (import.meta.env.AUTH_API_URL as string | undefined)?.trim() ||
   'http://localhost:3000'
 
 const authApi = axios.create({

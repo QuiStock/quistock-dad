@@ -15,7 +15,7 @@ const CSRF_HEADER_NAME = 'X-XSRF-TOKEN'
 const MUTATING_METHODS = ['post', 'put', 'patch', 'delete']
 
 export const coreApiUrl: string =
-  (import.meta.env.CORE_API_URL as string | undefined) ??
+  (import.meta.env.CORE_API_URL as string | undefined)?.trim() ||
   'http://localhost:8080'
 
 export const coreApi = axios.create({
