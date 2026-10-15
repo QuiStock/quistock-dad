@@ -88,10 +88,10 @@ export const ManagersPartial = () => {
 
   const queryClient = useQueryClient()
 
-  const {
-    responseManagers: managersData,
-    isLoadingManagers,
-  } = useSendQuery<IManager[], 'Managers'>({
+  const { responseManagers: managersData, isLoadingManagers } = useSendQuery<
+    IManager[],
+    'Managers'
+  >({
     queryKey: MANAGERS_QUERY_KEY,
     apiPromise: getManagers,
     suffix: 'Managers',
@@ -300,9 +300,7 @@ export const ManagersPartial = () => {
 
       <LoadingMask
         isLoading={
-          isLoadingManagers ||
-          isLoadingCreateManager ||
-          isLoadingEditManager
+          isLoadingManagers || isLoadingCreateManager || isLoadingEditManager
         }
       />
     </S.Wrapper>

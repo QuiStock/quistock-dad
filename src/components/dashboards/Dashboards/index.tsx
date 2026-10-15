@@ -174,7 +174,13 @@ const RiskDistributionChart = ({
   isLoading: boolean
 }) => {
   if (isLoading) {
-    return <Skeleton variant="rectangular" height={160} sx={{ borderRadius: '0.8rem' }} />
+    return (
+      <Skeleton
+        variant="rectangular"
+        height={160}
+        sx={{ borderRadius: '0.8rem' }}
+      />
+    )
   }
 
   const s = summary ?? DEFAULT_SUMMARY
@@ -189,7 +195,10 @@ const RiskDistributionChart = ({
             <span>{item.valueLabel}</span>
           </S.ProgressBarHeader>
           <S.ProgressBarTrack>
-            <S.ProgressBarFill $percentage={item.percentage} $color={item.color} />
+            <S.ProgressBarFill
+              $percentage={item.percentage}
+              $color={item.color}
+            />
           </S.ProgressBarTrack>
         </S.ProgressBarWrapper>
       ))}
@@ -236,7 +245,13 @@ const OperationalActionsChart = ({
   isLoading: boolean
 }) => {
   if (isLoading) {
-    return <Skeleton variant="rectangular" height={160} sx={{ borderRadius: '0.8rem' }} />
+    return (
+      <Skeleton
+        variant="rectangular"
+        height={160}
+        sx={{ borderRadius: '0.8rem' }}
+      />
+    )
   }
 
   const s = summary ?? DEFAULT_SUMMARY
@@ -251,7 +266,10 @@ const OperationalActionsChart = ({
             <span>{item.valueLabel}</span>
           </S.ProgressBarHeader>
           <S.ProgressBarTrack>
-            <S.ProgressBarFill $percentage={item.percentage} $color={item.color} />
+            <S.ProgressBarFill
+              $percentage={item.percentage}
+              $color={item.color}
+            />
           </S.ProgressBarTrack>
         </S.ProgressBarWrapper>
       ))}
@@ -288,7 +306,10 @@ const Dashboards = () => {
         <S.Header>
           <TabsCompoundComponent.Root>
             <TabsCompoundComponent.List>
-              <TabsCompoundComponent.Tab label={'Gráficos & Distribuição'} index={0} />
+              <TabsCompoundComponent.Tab
+                label={'Gráficos & Distribuição'}
+                index={0}
+              />
             </TabsCompoundComponent.List>
           </TabsCompoundComponent.Root>
         </S.Header>
@@ -301,7 +322,10 @@ const Dashboards = () => {
 
             <S.ChartCard>
               <S.ChartTitle>Recomendações e Ações Operacionais</S.ChartTitle>
-              <OperationalActionsChart summary={summary} isLoading={isLoading} />
+              <OperationalActionsChart
+                summary={summary}
+                isLoading={isLoading}
+              />
             </S.ChartCard>
           </S.ChartsContainer>
         </S.Content>

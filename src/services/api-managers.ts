@@ -9,7 +9,10 @@ import type {
 } from '@/types'
 
 export const MANAGERS_QUERY_KEY = ['/managers']
-export const managerDetailQueryKey = (id: string | number) => ['/managers', String(id)]
+export const managerDetailQueryKey = (id: string | number) => [
+  '/managers',
+  String(id),
+]
 export const TEAM_MEMBERS_QUERY_KEY = ['/team-members']
 export const teamMemberDetailQueryKey = (id: string | number) => [
   '/team-members',

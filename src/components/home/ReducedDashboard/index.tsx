@@ -78,7 +78,11 @@ const StockFlowColumn = ({
   if (isLoading) {
     return (
       <S.CardContainer>
-        <Skeleton variant="rectangular" height={160} sx={{ borderRadius: '0.8rem' }} />
+        <Skeleton
+          variant="rectangular"
+          height={160}
+          sx={{ borderRadius: '0.8rem' }}
+        />
       </S.CardContainer>
     )
   }
@@ -156,7 +160,11 @@ const MiniKpisColumn = ({
   if (isLoading) {
     return (
       <S.CardContainer>
-        <Skeleton variant="rectangular" height={160} sx={{ borderRadius: '0.8rem' }} />
+        <Skeleton
+          variant="rectangular"
+          height={160}
+          sx={{ borderRadius: '0.8rem' }}
+        />
       </S.CardContainer>
     )
   }
