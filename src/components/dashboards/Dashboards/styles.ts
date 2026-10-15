@@ -51,7 +51,9 @@ export const KpiCard = styled('div')<{ $borderColor?: string }>(
     flex-direction: column;
     gap: 0.8rem;
     border-top: 4px solid ${$borderColor || '#7623E1'};
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
 
     &:hover {
       transform: translateY(-2px);
@@ -149,7 +151,10 @@ export const ProgressBarTrack = styled('div')(
   `,
 )
 
-export const ProgressBarFill = styled('div')<{ $percentage: number; $color: string }>(
+export const ProgressBarFill = styled('div')<{
+  $percentage: number
+  $color: string
+}>(
   ({ $percentage, $color }) => css`
     width: ${Math.min(100, Math.max(0, $percentage))}%;
     height: 100%;

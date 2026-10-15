@@ -53,7 +53,8 @@ export const ProfilePartial = () => {
     )
   }
 
-  const avatarUrl = user.profile_photo_url || '/images/image-course-fallback.png'
+  const avatarUrl =
+    user.profile_photo_url || '/images/image-course-fallback.png'
   const avatarLetter = user.name ? user.name[0].toUpperCase() : 'Sem Nome'
   const roleLabel = UserRoleLabel[user.role] || user.role
 

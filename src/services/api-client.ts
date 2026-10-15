@@ -41,9 +41,7 @@ const readCsrfCookie = (): string | null => {
 
 const fetchCsrfToken = async (): Promise<string | null> => {
   try {
-    const { data } = await coreApi.get<{ token?: string } | undefined>(
-      '/csrf',
-    )
+    const { data } = await coreApi.get<{ token?: string } | undefined>('/csrf')
     return data?.token ?? readCsrfCookie()
   } catch {
     return readCsrfCookie()
@@ -148,7 +146,8 @@ export const normalizeApiError = (
 
   if (error.response) {
     const resolvedMessage = extractErrorMessage(error.response, fallbackMessage)
-    const existingData = typeof error.response.data === 'object' ? error.response.data : {}
+    const existingData =
+      typeof error.response.data === 'object' ? error.response.data : {}
 
     error.response.data = {
       ...existingData,

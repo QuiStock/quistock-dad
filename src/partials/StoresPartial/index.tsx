@@ -86,10 +86,10 @@ export const StoresPartial = () => {
 
   const isStoresPage = window.location.pathname === '/lojas'
 
-  const {
-    responseBranches: branchesData,
-    isLoadingBranches,
-  } = useSendQuery<IBranch[], 'Branches'>({
+  const { responseBranches: branchesData, isLoadingBranches } = useSendQuery<
+    IBranch[],
+    'Branches'
+  >({
     queryKey: BRANCHES_QUERY_KEY,
     apiPromise: getBranches,
     suffix: 'Branches',

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Modal, MenuItem } from '@mui/material'
 
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
@@ -99,7 +99,9 @@ const FormFields = ({
         </TextInputComponent>
       )}
 
-      {store && <TextInputComponent label="Loja Vinculada" value={store} disabled />}
+      {store && (
+        <TextInputComponent label="Loja Vinculada" value={store} disabled />
+      )}
 
       {type === 'create' && branches && branches.length > 0 && (
         <TextInputComponent
@@ -149,7 +151,11 @@ const ActionButtons = ({
         <ButtonComponent variant="outlined" onClick={onClose}>
           Cancelar
         </ButtonComponent>
-        <ButtonComponent variant="contained" onClick={onSave} disabled={!isFormValid}>
+        <ButtonComponent
+          variant="contained"
+          onClick={onSave}
+          disabled={!isFormValid}
+        >
           {saveLabel}
         </ButtonComponent>
       </S.BoxButtons>
@@ -168,48 +174,51 @@ const ActionButtons = ({
   )
 }
 
-export const ManagerModal = ({
+export const ManagerModal = (props: IManagerModal) =>
+  props.open ? (
+    <ManagerModalContent
+      key={`${props.type}:${props.item?.id ?? ''}`}
+      {...props}
+    />
+  ) : null
+
+const getInitialFormValues = (
+  type: TModalType,
+  item?: IManager | null,
+): { name: string; email: string; status: TAccountStatus; store: string } => {
+  if (type === 'create' || !item) {
+    return { name: '', email: '', status: 'ACTIVE', store: '' }
+  }
+
+  return {
+    name: item.name || '',
+    email: item.email || '',
+    status: item.status || 'ACTIVE',
+    store: item.store_name || '',
+  }
+}
+
+const ManagerModalContent = ({
   open,
   type,
   item,
   onClose,
   onSave,
 }: IManagerModal) => {
-  const [isEditing, setIsEditing] = useState(false)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
+  const isCreating = type === 'create'
+  const initialValues = getInitialFormValues(type, item)
+  const [isEditing, setIsEditing] = useState(isCreating || type === 'edit')
+  const [name, setName] = useState(initialValues.name)
+  const [email, setEmail] = useState(initialValues.email)
   const [password, setPassword] = useState('')
-  const [status, setStatus] = useState<TAccountStatus>('ACTIVE')
-  const [store, setStore] = useState('')
+  const [status, setStatus] = useState(initialValues.status)
+  const [store, setStore] = useState(initialValues.store)
 
   const { responseBranches: branches } = useSendQuery<IBranch[], 'Branches'>({
     queryKey: BRANCHES_QUERY_KEY,
     apiPromise: getBranches,
     suffix: 'Branches',
   })
-
-  useEffect(() => {
-    if (!open) return
-
-    if (type === 'create') {
-      setName('')
-      setEmail('')
-      setPassword('')
-      setStatus('ACTIVE')
-      setStore('')
-      setIsEditing(true)
-      return
-    }
-
-    if (item) {
-      setName(item.name || '')
-      setEmail(item.email || '')
-      setPassword('******')
-      setStatus(item.status || 'ACTIVE')
-      setStore(item.store_name || '')
-      setIsEditing(type === 'edit')
-    }
-  }, [open, type, item])
 
   const handleSave = () => {
     onSave({
@@ -225,7 +234,8 @@ export const ManagerModal = ({
   const hasPassword = type !== 'create' || password.trim().length > 0
   const isFormValid = hasName && hasEmail && hasPassword
 
-  const title = type === 'create' ? 'Cadastrar novo gerente' : 'Detalhes do gerente'
+  const title =
+    type === 'create' ? 'Cadastrar novo gerente' : 'Detalhes do gerente'
 
   return (
     <Modal open={open} onClose={onClose} data-testid="modal-manager">
