@@ -24,7 +24,11 @@ const AuthStatus = () => {
   return (
     <>
       <output>
-        {isLoading ? 'loading' : isAuthenticated ? 'authenticated' : 'anonymous'}
+        {isLoading
+          ? 'loading'
+          : isAuthenticated
+            ? 'authenticated'
+            : 'anonymous'}
       </output>
       <button onClick={() => void login('user@example.com', 'password')}>
         Login
