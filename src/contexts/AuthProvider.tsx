@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
     try {
       await postLogout()
     } catch {
+      // Falha no logout no servidor: o token local é limpo mesmo assim
     } finally {
       clearAuthToken()
       setIsAuthenticated(false)
