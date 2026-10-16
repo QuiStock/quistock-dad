@@ -261,6 +261,62 @@ const getInitialFormValues = (
   }
 }
 
+const getReplacementManagers = (
+  managers: IManager[],
+  itemId: IManager['id'] | undefined,
+  storeId: TStoreSelection,
+  isDeactivating: boolean,
+) => {
+  if (!isDeactivating || storeId === '') return []
+
+  return managers.filter(
+    (manager) =>
+      manager.id !== itemId &&
+      manager.status === 'ACTIVE' &&
+      manager.store_id === storeId,
+  )
+}
+
+const getManagerSaveData = (
+  type: TModalType,
+  name: string,
+  email: string,
+  password: string,
+  status: TAccountStatus,
+  storeId: number,
+  isDeactivating: boolean,
+  replacementManagerId: TStoreSelection,
+): ISaveManagerData => ({
+  name,
+  email,
+  password: type === 'create' ? password : undefined,
+  status,
+  store_id: storeId,
+  replacement_manager_id:
+    isDeactivating && replacementManagerId !== ''
+      ? replacementManagerId
+      : undefined,
+})
+
+const isManagerFormValid = (conditions: boolean[]) => conditions.every(Boolean)
+
+const isManagerDeactivating = (
+  item: IManager | null | undefined,
+  status: TAccountStatus,
+  isEditing: boolean,
+) => item?.status === 'ACTIVE' && status === 'INACTIVE' && isEditing
+
+const getInitialEditingState = (type: TModalType) =>
+  type === 'create' || type === 'edit'
+
+const getModalTitle = (type: TModalType) =>
+  type === 'create' ? 'Cadastrar novo gerente' : 'Detalhes do gerente'
+
+const ManagerModalHelper = ({ type }: { type: TModalType }) =>
+  type === 'create' ? (
+    <S.Helper>Por favor, insira as informações do novo gerente.</S.Helper>
+  ) : null
+
 const ManagerModalContent = ({
   open,
   type,
@@ -270,9 +326,8 @@ const ManagerModalContent = ({
   onClose,
   onSave,
 }: IManagerModal) => {
-  const isCreating = type === 'create'
   const initialValues = getInitialFormValues(type, item)
-  const [isEditing, setIsEditing] = useState(isCreating || type === 'edit')
+  const [isEditing, setIsEditing] = useState(() => getInitialEditingState(type))
   const [name, setName] = useState(initialValues.name)
   const [email, setEmail] = useState(initialValues.email)
   const [password, setPassword] = useState('')
@@ -291,35 +346,27 @@ const ManagerModalContent = ({
   })
   const branches = branchesData ?? []
 
-  const isDeactivating =
-    item?.status === 'ACTIVE' && status === 'INACTIVE' && isEditing
+  const isDeactivating = isManagerDeactivating(item, status, isEditing)
   const replacementManagers = useMemo(
-    () =>
-      isDeactivating
-        ? managers.filter(
-          (manager) =>
-            manager.id !== item?.id &&
-            manager.status === 'ACTIVE' &&
-            manager.store_id === storeId,
-        )
-        : [],
+    () => getReplacementManagers(managers, item?.id, storeId, isDeactivating),
     [isDeactivating, item?.id, managers, storeId],
   )
 
   const handleSave = () => {
     if (storeId === '') return
 
-    onSave({
-      name,
-      email,
-      password: type === 'create' ? password : undefined,
-      status,
-      store_id: storeId,
-      replacement_manager_id:
-        isDeactivating && replacementManagerId !== ''
-          ? replacementManagerId
-          : undefined,
-    })
+    onSave(
+      getManagerSaveData(
+        type,
+        name,
+        email,
+        password,
+        status,
+        storeId,
+        isDeactivating,
+        replacementManagerId,
+      ),
+    )
   }
 
   const hasName = name.trim().length > 0
@@ -329,26 +376,22 @@ const ManagerModalContent = ({
   const hasRequiredStore = !needsStore || storeId !== ''
   const hasRequiredReplacement =
     replacementManagers.length === 0 || replacementManagerId !== ''
-  const isFormValid =
-    hasName &&
-    hasEmail &&
-    hasPassword &&
-    hasRequiredStore &&
-    hasRequiredReplacement
+  const isFormValid = isManagerFormValid([
+    hasName,
+    hasEmail,
+    hasPassword,
+    hasRequiredStore,
+    hasRequiredReplacement,
+  ])
   const handleClose = () => {
     if (!isSaving) onClose()
   }
 
-  const title =
-    type === 'create' ? 'Cadastrar novo gerente' : 'Detalhes do gerente'
-
   return (
     <Modal open={open} onClose={handleClose} data-testid="modal-manager">
       <S.BoxModal>
-        <S.Title>{title}</S.Title>
-        {type === 'create' && (
-          <S.Helper>Por favor, insira as informações do novo gerente.</S.Helper>
-        )}
+        <S.Title>{getModalTitle(type)}</S.Title>
+        <ManagerModalHelper type={type} />
 
         <FormFields
           type={type}

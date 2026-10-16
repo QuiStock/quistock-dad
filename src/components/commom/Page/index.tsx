@@ -125,12 +125,12 @@ const Page = ({ children, title }: IPage) => {
 
               {(profile?.role === 'ADMIN' ||
                 profile?.role === 'REGIONAL_MANAGER') && (
-                  <S.CustomLink href={'/gerentes'}>
-                    <S.MenuItem>
-                      <PeopleAltOutlinedIcon /> {'Gerentes'}
-                    </S.MenuItem>
-                  </S.CustomLink>
-                )}
+                <S.CustomLink href={'/gerentes'}>
+                  <S.MenuItem>
+                    <PeopleAltOutlinedIcon /> {'Gerentes'}
+                  </S.MenuItem>
+                </S.CustomLink>
+              )}
             </S.StyledContainer>
           </S.MenuDrawer>
         </S.TopBar>
