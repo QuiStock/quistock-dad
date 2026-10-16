@@ -6,6 +6,7 @@ import axios, {
 } from 'axios'
 
 import { postRefresh } from '@/services/api-auth'
+import { clearAuthToken, getAuthToken } from '@/services/auth-token'
 import type { IApiErrorResponse } from '@/types'
 
 export const SESSION_EXPIRED_EVENT = 'authSessionExpired'
@@ -63,6 +64,12 @@ const isMutation = (config: InternalAxiosRequestConfig) =>
   MUTATING_METHODS.includes((config.method ?? 'get').toLowerCase())
 
 coreApi.interceptors.request.use(async (config) => {
+  const authToken = getAuthToken()
+  if (authToken) {
+    config.headers = AxiosHeaders.from(config.headers)
+    config.headers.set('Authorization', `Bearer ${authToken}`)
+  }
+
   if (!isMutation(config)) return config
 
   const token = await getCsrfToken()
@@ -79,7 +86,10 @@ let refreshRequest: Promise<boolean> | null = null
 const refreshSession = (): Promise<boolean> => {
   refreshRequest ??= postRefresh()
     .then(() => true)
-    .catch(() => false)
+    .catch(() => {
+      clearAuthToken()
+      return false
+    })
     .finally(() => {
       refreshRequest = null
     })

@@ -15,6 +15,8 @@ import NotFound from '@/pages/404'
 import { AuthenticationPage } from '@/components/auth/AuthenticationPage'
 import { LoginFlow } from '@/components/auth/LoginFlow'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { LoadingMask } from '@/components/commom/LoadingMask'
+import { useAuth } from '@/contexts/AuthContext'
 import Home from './home'
 import Dashboards from '@/pages/dashboards'
 import Managers from './managers'
@@ -22,6 +24,15 @@ import Profile from './profile'
 import Contact from './contact'
 
 const queryClient = new QueryClient()
+
+const LoginRoute = () => {
+  const { isAuthenticated, isLoading } = useAuth()
+
+  if (isLoading) return <LoadingMask isLoading={true} />
+  if (isAuthenticated) return <Navigate to="/home" replace />
+
+  return <AuthenticationPage title="Login" children={<LoginFlow />} />
+}
 
 export default function App() {
   const [notifications, setNotifications] = useState<INotificationProps[]>([])
@@ -48,13 +59,8 @@ export default function App() {
         <BrowserRouter>
           <AuthProvider>
             <Routes>
-              <Route path="/" element={<Navigate to="/login" replace />} />
-              <Route
-                path="/login"
-                element={
-                  <AuthenticationPage title="Login" children={<LoginFlow />} />
-                }
-              />
+              <Route path="/" element={<Navigate to="/home" replace />} />
+              <Route path="/login" element={<LoginRoute />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/home" element={<Home />} />
                 <Route path="/lojas" element={<Stores />} />

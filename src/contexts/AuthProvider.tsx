@@ -9,6 +9,11 @@ import { isAxiosError } from 'axios'
 
 import emitError from '@/events/emitError'
 import { postLogin, postLogout, postRefresh } from '@/services/api-auth'
+import {
+  clearAuthToken,
+  getAuthToken,
+  isAuthTokenExpired,
+} from '@/services/auth-token'
 import { SESSION_EXPIRED_EVENT } from '@/services/api-client'
 import { AuthContext } from './AuthContext'
 
@@ -45,6 +50,7 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
       setIsAuthenticated(true)
       return true
     } catch {
+      clearAuthToken()
       setIsAuthenticated(false)
       return false
     }
@@ -69,22 +75,39 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
     try {
       await postLogout()
     } catch {
-      // Ignore error
     } finally {
+      clearAuthToken()
       setIsAuthenticated(false)
     }
   }, [])
 
   useEffect(() => {
+    let isMounted = true
+
     const initSession = async () => {
-      await refreshSession()
-      setIsLoading(false)
+      const token = getAuthToken()
+      if (token && !isAuthTokenExpired(token)) {
+        setIsAuthenticated(true)
+      } else {
+        if (token) clearAuthToken()
+        await refreshSession()
+      }
+
+      if (isMounted) setIsLoading(false)
     }
+
     void initSession()
+
+    return () => {
+      isMounted = false
+    }
   }, [refreshSession])
 
   useEffect(() => {
-    const handleSessionExpired = () => setIsAuthenticated(false)
+    const handleSessionExpired = () => {
+      clearAuthToken()
+      setIsAuthenticated(false)
+    }
 
     window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired)
     return () =>
