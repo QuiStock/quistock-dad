@@ -1,6 +1,11 @@
-import axios from 'axios'
+import axios, { type AxiosResponse } from 'axios'
+import { clearAuthToken, setAuthToken } from '@/services/auth-token'
 
 export type AuthPlatform = 'mobile' | 'website'
+
+interface IAuthResponse {
+  token?: unknown
+}
 
 const authApiUrl: string =
   (import.meta.env.AUTH_API_URL as string | undefined)?.trim() ||
@@ -11,7 +16,19 @@ const authApi = axios.create({
   withCredentials: true,
 })
 
-export const postLogin = ({
+const persistToken = (response: AxiosResponse<IAuthResponse>) => {
+  const token = response.data?.token
+
+  if (typeof token === 'string' && token.length > 0) {
+    setAuthToken(token)
+  } else {
+    clearAuthToken()
+  }
+
+  return response
+}
+
+export const postLogin = async ({
   email,
   password,
   platform = 'website',
@@ -19,8 +36,28 @@ export const postLogin = ({
   email: string
   password: string
   platform?: AuthPlatform
-}) => authApi.post('/login', { email, password, platform })
+}) =>
+  persistToken(
+    await authApi.post<IAuthResponse>('/login', { email, password, platform }),
+  )
 
-export const postRefresh = () => authApi.post('/refresh')
+let refreshRequest: Promise<AxiosResponse<IAuthResponse>> | null = null
 
-export const postLogout = () => authApi.post('/logout')
+export const postRefresh = (): Promise<AxiosResponse<IAuthResponse>> => {
+  refreshRequest ??= authApi
+    .post<IAuthResponse>('/refresh')
+    .then(persistToken)
+    .finally(() => {
+      refreshRequest = null
+    })
+
+  return refreshRequest
+}
+
+export const postLogout = async () => {
+  try {
+    return await authApi.post('/logout')
+  } finally {
+    clearAuthToken()
+  }
+}
