@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Modal, MenuItem } from '@mui/material'
 
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
@@ -11,18 +11,23 @@ import type { IBranch, IManager, TAccountStatus } from '@/types'
 import * as S from './styles'
 
 type TModalType = 'create' | 'edit' | 'details' | null
+type TStoreSelection = number | ''
 
 export interface ISaveManagerData {
   name: string
   email: string
   password?: string
   status?: TAccountStatus
+  store_id: number
+  replacement_manager_id?: number
 }
 
 interface IManagerModal {
   open: boolean
   type: TModalType
   item?: IManager | null
+  managers?: IManager[]
+  isSaving?: boolean
   onClose: () => void
   onSave: (data: ISaveManagerData) => void
 }
@@ -38,9 +43,13 @@ interface IFormFieldsProps {
   setPassword: (v: string) => void
   status: TAccountStatus
   setStatus: (v: TAccountStatus) => void
-  store: string
-  setStore: (v: string) => void
-  branches: IBranch[] | null
+  storeId: TStoreSelection
+  setStoreId: (v: TStoreSelection) => void
+  replacementManagerId: TStoreSelection
+  setReplacementManagerId: (v: TStoreSelection) => void
+  replacementManagers: IManager[]
+  branches: IBranch[]
+  storeName: string
 }
 
 const FormFields = ({
@@ -54,9 +63,13 @@ const FormFields = ({
   setPassword,
   status,
   setStatus,
-  store,
-  setStore,
+  storeId,
+  setStoreId,
+  replacementManagerId,
+  setReplacementManagerId,
+  replacementManagers,
   branches,
+  storeName,
 }: IFormFieldsProps) => {
   return (
     <S.FormContainer>
@@ -99,26 +112,69 @@ const FormFields = ({
         </TextInputComponent>
       )}
 
-      {store && (
-        <TextInputComponent label="Loja Vinculada" value={store} disabled />
-      )}
-
-      {type === 'create' && branches && branches.length > 0 && (
+      {isEditing ? (
         <TextInputComponent
           select
           fullWidth
-          label="Loja de Atuação (Opcional)"
-          value={store}
-          onChange={(e) => setStore(e.target.value)}
+          required
+          label="Filial *"
+          value={storeId}
+          onChange={(e) => {
+            const value = e.target.value
+            setStoreId(value === '' ? '' : Number(value))
+            setReplacementManagerId('')
+          }}
           disabled={!isEditing}
           sx={{ '& .MuiInputLabel-root': { fontSize: '1.6rem' } }}
         >
           <MenuItem value="" sx={{ fontSize: '1.6rem' }}>
-            Nenhuma loja selecionada
+            Selecione uma filial
           </MenuItem>
-          {branches.map((b) => (
-            <MenuItem key={b.id} sx={{ fontSize: '1.6rem' }} value={b.name}>
-              {b.name}
+          {branches.map((branch) => (
+            <MenuItem
+              key={branch.store_id}
+              sx={{ fontSize: '1.6rem' }}
+              value={branch.store_id}
+            >
+              {branch.name}
+            </MenuItem>
+          ))}
+        </TextInputComponent>
+      ) : (
+        <TextInputComponent
+          label="Loja Vinculada"
+          value={
+            branches.find((branch) => branch.store_id === storeId)?.name ??
+            storeName
+          }
+          disabled
+        />
+      )}
+
+      {replacementManagers.length > 0 && (
+        <TextInputComponent
+          select
+          fullWidth
+          required
+          label="Gerente substituto *"
+          value={replacementManagerId}
+          onChange={(e) => {
+            const value = e.target.value
+            setReplacementManagerId(value === '' ? '' : Number(value))
+          }}
+          disabled={!isEditing}
+          sx={{ '& .MuiInputLabel-root': { fontSize: '1.6rem' } }}
+        >
+          <MenuItem value="" sx={{ fontSize: '1.6rem' }}>
+            Selecione um gerente
+          </MenuItem>
+          {replacementManagers.map((manager) => (
+            <MenuItem
+              key={manager.id}
+              sx={{ fontSize: '1.6rem' }}
+              value={Number(manager.id)}
+            >
+              {manager.name}
             </MenuItem>
           ))}
         </TextInputComponent>
@@ -130,6 +186,7 @@ const FormFields = ({
 interface IActionButtonsProps {
   isEditing: boolean
   isFormValid: boolean
+  isSaving: boolean
   type: TModalType
   onClose: () => void
   onSave: () => void
@@ -139,6 +196,7 @@ interface IActionButtonsProps {
 const ActionButtons = ({
   isEditing,
   isFormValid,
+  isSaving,
   type,
   onClose,
   onSave,
@@ -154,7 +212,7 @@ const ActionButtons = ({
         <ButtonComponent
           variant="contained"
           onClick={onSave}
-          disabled={!isFormValid}
+          disabled={!isFormValid || isSaving}
         >
           {saveLabel}
         </ButtonComponent>
@@ -185,16 +243,21 @@ export const ManagerModal = (props: IManagerModal) =>
 const getInitialFormValues = (
   type: TModalType,
   item?: IManager | null,
-): { name: string; email: string; status: TAccountStatus; store: string } => {
+): {
+  name: string
+  email: string
+  status: TAccountStatus
+  storeId: TStoreSelection
+} => {
   if (type === 'create' || !item) {
-    return { name: '', email: '', status: 'ACTIVE', store: '' }
+    return { name: '', email: '', status: 'ACTIVE', storeId: '' }
   }
 
   return {
     name: item.name || '',
     email: item.email || '',
     status: item.status || 'ACTIVE',
-    store: item.store_name || '',
+    storeId: item.store_id ?? '',
   }
 }
 
@@ -202,6 +265,8 @@ const ManagerModalContent = ({
   open,
   type,
   item,
+  managers = [],
+  isSaving = false,
   onClose,
   onSave,
 }: IManagerModal) => {
@@ -212,33 +277,73 @@ const ManagerModalContent = ({
   const [email, setEmail] = useState(initialValues.email)
   const [password, setPassword] = useState('')
   const [status, setStatus] = useState(initialValues.status)
-  const [store, setStore] = useState(initialValues.store)
+  const [storeId, setStoreId] = useState<TStoreSelection>(initialValues.storeId)
+  const [replacementManagerId, setReplacementManagerId] =
+    useState<TStoreSelection>('')
 
-  const { responseBranches: branches } = useSendQuery<IBranch[], 'Branches'>({
+  const { responseBranches: branchesData } = useSendQuery<
+    IBranch[],
+    'Branches'
+  >({
     queryKey: BRANCHES_QUERY_KEY,
     apiPromise: getBranches,
     suffix: 'Branches',
   })
+  const branches = branchesData ?? []
+
+  const isDeactivating =
+    item?.status === 'ACTIVE' && status === 'INACTIVE' && isEditing
+  const replacementManagers = useMemo(
+    () =>
+      isDeactivating
+        ? managers.filter(
+          (manager) =>
+            manager.id !== item?.id &&
+            manager.status === 'ACTIVE' &&
+            manager.store_id === storeId,
+        )
+        : [],
+    [isDeactivating, item?.id, managers, storeId],
+  )
 
   const handleSave = () => {
+    if (storeId === '') return
+
     onSave({
       name,
       email,
       password: type === 'create' ? password : undefined,
       status,
+      store_id: storeId,
+      replacement_manager_id:
+        isDeactivating && replacementManagerId !== ''
+          ? replacementManagerId
+          : undefined,
     })
   }
 
   const hasName = name.trim().length > 0
   const hasEmail = email.trim().length > 0
   const hasPassword = type !== 'create' || password.trim().length > 0
-  const isFormValid = hasName && hasEmail && hasPassword
+  const needsStore = isEditing
+  const hasRequiredStore = !needsStore || storeId !== ''
+  const hasRequiredReplacement =
+    replacementManagers.length === 0 || replacementManagerId !== ''
+  const isFormValid =
+    hasName &&
+    hasEmail &&
+    hasPassword &&
+    hasRequiredStore &&
+    hasRequiredReplacement
+  const handleClose = () => {
+    if (!isSaving) onClose()
+  }
 
   const title =
     type === 'create' ? 'Cadastrar novo gerente' : 'Detalhes do gerente'
 
   return (
-    <Modal open={open} onClose={onClose} data-testid="modal-manager">
+    <Modal open={open} onClose={handleClose} data-testid="modal-manager">
       <S.BoxModal>
         <S.Title>{title}</S.Title>
         {type === 'create' && (
@@ -255,17 +360,25 @@ const ManagerModalContent = ({
           password={password}
           setPassword={setPassword}
           status={status}
-          setStatus={setStatus}
-          store={store}
-          setStore={setStore}
+          setStatus={(nextStatus) => {
+            setStatus(nextStatus)
+            setReplacementManagerId('')
+          }}
+          storeId={storeId}
+          setStoreId={setStoreId}
+          replacementManagerId={replacementManagerId}
+          setReplacementManagerId={setReplacementManagerId}
+          replacementManagers={replacementManagers}
           branches={branches}
+          storeName={item?.store_name ?? ''}
         />
 
         <ActionButtons
           isEditing={isEditing}
           isFormValid={isFormValid}
+          isSaving={isSaving}
           type={type}
-          onClose={onClose}
+          onClose={handleClose}
           onSave={handleSave}
           onStartEditing={() => setIsEditing(true)}
         />

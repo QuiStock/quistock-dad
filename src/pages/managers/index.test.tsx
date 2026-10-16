@@ -22,6 +22,12 @@ vi.mock('@/components/commom/TabsCompoundComponent', () => ({
 vi.mock('@/partials/ManagersPartial', () => ({
   ManagersPartial: () => <div data-testid="managers-partial" />,
 }))
+vi.mock('@/hooks/useSendQuery', () => ({
+  useSendQuery: () => ({
+    responseProfile: { role: 'ADMIN' },
+    isLoadingProfile: false,
+  }),
+}))
 
 describe('Managers', () => {
   it('renders correctly', () => {

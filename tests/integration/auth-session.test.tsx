@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useAuth } from '@/contexts/AuthContext'
 import { AuthProvider } from '@/contexts/AuthProvider'
+import { postLogout } from '@/services/api-auth'
 import { coreApi } from '@/services/api-client'
 import { server } from '@test/mocks/server'
 
@@ -82,13 +83,18 @@ describe('AuthProvider', () => {
   it('refreshes an expired token and persists the replacement', async () => {
     const refreshedToken = createToken(Math.floor(Date.now() / 1000) + 120)
     const refreshRequest = vi.fn()
+    const csrfRequest = vi.fn()
     window.localStorage.setItem(
       TOKEN_KEY,
       createToken(Math.floor(Date.now() / 1000) - 60),
     )
     server.use(
-      http.post('*/refresh', () => {
-        refreshRequest()
+      http.get('*/csrf', ({ request }) => {
+        csrfRequest(request.credentials)
+        return HttpResponse.json({ token: 'auth-csrf-token' })
+      }),
+      http.post('*/refresh', ({ request }) => {
+        refreshRequest(request.headers.get('X-CSRF-TOKEN'))
         return HttpResponse.json({ token: refreshedToken })
       }),
     )
@@ -97,11 +103,31 @@ describe('AuthProvider', () => {
 
     expect(await screen.findByText('authenticated')).toBeInTheDocument()
     expect(refreshRequest).toHaveBeenCalledOnce()
+    expect(refreshRequest).toHaveBeenCalledWith('auth-csrf-token')
+    expect(csrfRequest).toHaveBeenCalledWith('include')
     expect(window.localStorage.getItem(TOKEN_KEY)).toBe(refreshedToken)
+  })
+
+  it('fetches the Auth CSRF token and sends it on logout', async () => {
+    const logoutRequest = vi.fn()
+    server.use(
+      http.get('*/csrf', () =>
+        HttpResponse.json({ token: 'logout-csrf-token' }),
+      ),
+      http.post('*/logout', ({ request }) => {
+        logoutRequest(request.headers.get('X-CSRF-TOKEN'))
+        return HttpResponse.json({ success: true })
+      }),
+    )
+
+    await postLogout()
+
+    expect(logoutRequest).toHaveBeenCalledWith('logout-csrf-token')
   })
 
   it('persists the token returned by login', async () => {
     renderAuthProvider()
+    expect(await screen.findByText('authenticated')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Login' }))
 
     await waitFor(() => {

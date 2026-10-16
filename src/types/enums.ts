@@ -15,7 +15,7 @@ export const AccountStatusLabel: Record<TAccountStatus, ManagerStatusEnum> = {
 
 export const UserRoleLabel: Record<TUserRole, string> = {
   ADMIN: 'Administrador',
-  GERENTE: 'Gerente',
-  GERENTE_REGIONAL: 'Gerente regional',
-  FUNCIONARIO: 'Funcionário',
+  MANAGER: 'Gerente',
+  REGIONAL_MANAGER: 'Gerente regional',
+  EMPLOYEE: 'Funcionário',
 }
