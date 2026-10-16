@@ -8,6 +8,9 @@ import { Container } from '@mui/material'
 import { HouseOutlined, PersonOutlined, Logout } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import { useSendQuery } from '@/hooks/useSendQuery'
+import { getProfile, PROFILE_QUERY_KEY } from '@/services/api-profile'
+import type { IProfile } from '@/types'
 
 interface IPage {
   children: ReactNode
@@ -18,6 +21,11 @@ const Page = ({ children, title }: IPage) => {
   const navigate = useNavigate()
   const { logout } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { responseProfile: profile } = useSendQuery<IProfile, 'Profile'>({
+    queryKey: PROFILE_QUERY_KEY,
+    apiPromise: getProfile,
+    suffix: 'Profile',
+  })
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
 
@@ -115,11 +123,14 @@ const Page = ({ children, title }: IPage) => {
                 </S.MenuItem>
               </S.CustomLink>
 
-              <S.CustomLink href={'/gerentes'}>
-                <S.MenuItem>
-                  <PeopleAltOutlinedIcon /> {'Gerentes'}
-                </S.MenuItem>
-              </S.CustomLink>
+              {(profile?.role === 'ADMIN' ||
+                profile?.role === 'REGIONAL_MANAGER') && (
+                  <S.CustomLink href={'/gerentes'}>
+                    <S.MenuItem>
+                      <PeopleAltOutlinedIcon /> {'Gerentes'}
+                    </S.MenuItem>
+                  </S.CustomLink>
+                )}
             </S.StyledContainer>
           </S.MenuDrawer>
         </S.TopBar>

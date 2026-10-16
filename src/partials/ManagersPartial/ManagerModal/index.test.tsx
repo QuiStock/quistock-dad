@@ -7,17 +7,30 @@ import type { IManager } from '@/types'
 import { ManagerModal } from '.'
 
 vi.mock('@/hooks/useSendQuery', () => ({
-  useSendQuery: () => ({ responseBranches: [] }),
+  useSendQuery: () => ({
+    responseBranches: [
+      {
+        id: '17',
+        store_id: 17,
+        name: 'Loja Centro',
+        address: null,
+        city: null,
+        state: null,
+        latitude: null,
+        longitude: null,
+      },
+    ],
+  }),
 }))
 
 const manager: IManager = {
   id: '1',
   name: 'Maria',
   email: 'maria@example.com',
-  role: 'GERENTE',
+  role: 'MANAGER',
   status: 'INACTIVE',
   profile_photo_url: null,
-  store_id: '1',
+  store_id: 17,
   store_code: '001',
   store_name: 'Loja Centro',
   region_id: null,
@@ -52,6 +65,8 @@ describe('ManagerModal', () => {
     fireEvent.change(screen.getByLabelText('Senha Inicial'), {
       target: { value: 'temporary-password' },
     })
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Filial *' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Loja Centro' }))
     expect(screen.getByRole('button', { name: 'Cadastrar' })).toBeEnabled()
 
     rerender(renderModal({ open: false }))
@@ -124,6 +139,66 @@ describe('ManagerModal', () => {
       email: manager.email,
       status: manager.status,
       password: undefined,
+      store_id: 17,
+      replacement_manager_id: undefined,
     })
+  })
+
+  it('requires and submits a branch when creating a manager', () => {
+    const onSave = vi.fn()
+    render(renderModal({ onSave }))
+
+    fireEvent.change(screen.getByLabelText('Nome'), {
+      target: { value: 'Novo gerente' },
+    })
+    fireEvent.change(screen.getByLabelText('E-mail'), {
+      target: { value: 'novo@example.com' },
+    })
+    fireEvent.change(screen.getByLabelText('Senha Inicial'), {
+      target: { value: 'temporary-password' },
+    })
+    expect(screen.getByRole('button', { name: 'Cadastrar' })).toBeDisabled()
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Filial *' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Loja Centro' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Cadastrar' }))
+
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ store_id: 17 }),
+    )
+  })
+
+  it('requires an active replacement from the same branch when deactivating', () => {
+    const onSave = vi.fn()
+    const replacement = {
+      ...manager,
+      id: '2',
+      name: 'Joao',
+      status: 'ACTIVE' as const,
+    }
+    render(
+      renderModal({
+        type: 'edit',
+        item: { ...manager, status: 'ACTIVE' },
+        managers: [manager, replacement],
+        onSave,
+      }),
+    )
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Status' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Desativado' }))
+    expect(
+      screen.getByRole('combobox', { name: 'Gerente substituto *' }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Salvar' })).toBeDisabled()
+
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Gerente substituto *' }),
+    )
+    fireEvent.click(screen.getByRole('option', { name: 'Joao' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar' }))
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ replacement_manager_id: 2 }),
+    )
   })
 })

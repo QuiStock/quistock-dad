@@ -1,4 +1,4 @@
-export type TUserRole = 'ADMIN' | 'GERENTE' | 'GERENTE_REGIONAL' | 'FUNCIONARIO'
+export type TUserRole = 'ADMIN' | 'MANAGER' | 'REGIONAL_MANAGER' | 'EMPLOYEE'
 
 export type TAccountStatus = 'ACTIVE' | 'INACTIVE'
 
@@ -15,10 +15,10 @@ export interface IUserAccount {
   role: TUserRole
   status: TAccountStatus
   profile_photo_url: string | null
-  store_id: string | null
+  store_id: number | null
   store_code: string | null
   store_name: string | null
-  region_id: string | null
+  region_id: number | null
   region_code: string | null
   region_name: string | null
 }
@@ -31,12 +31,14 @@ export interface ICreateManagerPayload {
   name: string
   email: string
   password: string
+  store_id: number
 }
 
 export interface IUpdateManagerPayload {
   name?: string
   email?: string
   status?: TAccountStatus
+  store_id?: number
   replacement_manager_id?: number
 }
 
@@ -48,9 +50,10 @@ interface ICreateTeamMemberBase {
   password: string
 }
 
-export type ICreateTeamMemberPayload =
-  | (ICreateTeamMemberBase & { role: 'FUNCIONARIO'; store_id: number })
-  | (ICreateTeamMemberBase & { role: 'GERENTE_REGIONAL'; region_id: number })
+export type ICreateTeamMemberPayload = ICreateTeamMemberBase & {
+  role: 'FUNCIONARIO'
+  store_id: number
+}
 
 export interface IUpdateTeamMemberPayload {
   name?: string

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import * as S from './styles'
 
 import {
@@ -87,6 +87,15 @@ export const ManagersPartial = () => {
   const [selectedItem, setSelectedItem] = useState<IManager | null>(null)
 
   const queryClient = useQueryClient()
+  const handleManagerSuccess = useCallback(
+    (message: string) => {
+      emitNotification({ type: 'success', message })
+      setSelectedItem(null)
+      setShowEspecificModal(null)
+      void queryClient.invalidateQueries({ queryKey: MANAGERS_QUERY_KEY })
+    },
+    [queryClient],
+  )
 
   const { responseManagers: managersData, isLoadingManagers } = useSendQuery<
     IManager[],
@@ -97,22 +106,20 @@ export const ManagersPartial = () => {
     suffix: 'Managers',
   })
 
-  const {
-    responseCreateManager,
-    runFetchCreateManager,
-    clearResponseCreateManager,
-    isLoadingCreateManager,
-  } = useSendMutation<IManager, 'CreateManager'>({
+  const { runFetchCreateManager, isLoadingCreateManager } = useSendMutation<
+    IManager,
+    'CreateManager'
+  >({
     suffix: 'CreateManager',
+    onSuccess: () => handleManagerSuccess('Gerente cadastrado com sucesso!'),
   })
 
-  const {
-    responseEditManager,
-    runFetchEditManager,
-    clearResponseEditManager,
-    isLoadingEditManager,
-  } = useSendMutation<IManager, 'EditManager'>({
+  const { runFetchEditManager, isLoadingEditManager } = useSendMutation<
+    IManager,
+    'EditManager'
+  >({
     suffix: 'EditManager',
+    onSuccess: () => handleManagerSuccess('Gerente atualizado com sucesso!'),
   })
 
   const handleSaveManager = (data: ISaveManagerData) => {
@@ -122,6 +129,8 @@ export const ManagersPartial = () => {
           name: data.name,
           email: data.email,
           status: data.status,
+          store_id: data.store_id,
+          replacement_manager_id: data.replacement_manager_id,
         }),
       )
     } else {
@@ -130,12 +139,10 @@ export const ManagersPartial = () => {
           name: data.name,
           email: data.email,
           password: data.password ?? '',
+          store_id: data.store_id,
         }),
       )
     }
-
-    setSelectedItem(null)
-    setShowEspecificModal(null)
   }
 
   const handlePaginationChange = (model: typeof INITIAL_PAGINATION) => {
@@ -220,36 +227,6 @@ export const ManagersPartial = () => {
     [],
   )
 
-  const handleResponseCreateManager = useCallback(() => {
-    if (!responseCreateManager) return
-
-    emitNotification({
-      type: 'success',
-      message: 'Gerente cadastrado com sucesso!',
-    })
-    void queryClient.invalidateQueries({
-      queryKey: MANAGERS_QUERY_KEY,
-    })
-    clearResponseCreateManager()
-  }, [responseCreateManager, clearResponseCreateManager, queryClient])
-
-  useEffect(() => {
-    handleResponseCreateManager()
-  }, [handleResponseCreateManager])
-
-  useEffect(() => {
-    if (!responseEditManager) return
-
-    emitNotification({
-      type: 'success',
-      message: 'Gerente atualizado com sucesso!',
-    })
-    void queryClient.invalidateQueries({
-      queryKey: MANAGERS_QUERY_KEY,
-    })
-    clearResponseEditManager()
-  }, [responseEditManager, clearResponseEditManager, queryClient])
-
   return (
     <S.Wrapper>
       <S.BoxFilters>
@@ -294,6 +271,8 @@ export const ManagersPartial = () => {
         open={!!showEspecificModal}
         type={showEspecificModal}
         item={selectedItem}
+        managers={managersData ?? []}
+        isSaving={isLoadingCreateManager || isLoadingEditManager}
         onClose={() => setShowEspecificModal(null)}
         onSave={handleSaveManager}
       />
