@@ -1,9 +1,11 @@
 import * as S from '@/components/auth/LoginFlow/loginStyles'
-import { useState } from 'react'
+import { useState, type ChangeEvent } from 'react'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { IconButton } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import type { ILoginCredentials } from '@/types'
+import { validateLoginCredentials } from '@/utils/validateForms'
 
 interface IBoxLogin {
   setUserDocument?: (document: string) => void
@@ -11,19 +13,33 @@ interface IBoxLogin {
 }
 
 const BoxLogin = ({ setUserDocument, setVerifiedUser }: IBoxLogin) => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [credentials, setCredentials] = useState<ILoginCredentials>({
+    email: '',
+    password: '',
+  })
   const [showPassword, setShowPassword] = useState(false)
+  const [showValidationErrors, setShowValidationErrors] = useState(false)
   const navigate = useNavigate()
   const { login, isLoading } = useAuth()
 
   const handleClickShowInputValue = () => setShowPassword((curr) => !curr)
 
-  const handleLogin = async () => {
-    if (!email || !password || isLoading) return
+  const { email, password } = credentials
+  const validationErrors = validateLoginCredentials(credentials)
 
-    setUserDocument?.(email)
-    const success = await login(email, password)
+  const handleFieldChange =
+    (field: keyof ILoginCredentials) => (e: ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target
+      setCredentials((prev) => ({ ...prev, [field]: value }))
+    }
+
+  const handleLogin = async () => {
+    setShowValidationErrors(true)
+    if (Object.keys(validationErrors).length > 0 || isLoading) return
+
+    const normalizedEmail = email.trim()
+    setUserDocument?.(normalizedEmail)
+    const success = await login(normalizedEmail, password)
     if (success) {
       setVerifiedUser?.(true)
       void navigate('/home')
@@ -41,9 +57,10 @@ const BoxLogin = ({ setUserDocument, setVerifiedUser }: IBoxLogin) => {
         label={'E-mail'}
         placeholder="Ex: seunome@gmail.com"
         value={email}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          setEmail(e.target.value)
-        }}
+        error={showValidationErrors && Boolean(validationErrors.email)}
+        helperText={showValidationErrors ? validationErrors.email : undefined}
+        slotProps={{ htmlInput: { maxLength: 254 } }}
+        onChange={handleFieldChange('email')}
       />
 
       <S.LoginPassword
@@ -52,18 +69,27 @@ const BoxLogin = ({ setUserDocument, setVerifiedUser }: IBoxLogin) => {
         placeholder="Digite a sua senha"
         type={showPassword ? 'text' : 'password'}
         helperText={
-          <span>
-            Esqueceu a senha? <strong>Contate o QuiStock.</strong>
-          </span>
+          showValidationErrors && validationErrors.password ? (
+            validationErrors.password
+          ) : (
+            <span>
+              Esqueceu a senha? <strong>Contate o QuiStock.</strong>
+            </span>
+          )
         }
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          setPassword(e.target.value)
-        }}
+        error={showValidationErrors && Boolean(validationErrors.password)}
+        slotProps={{ htmlInput: { maxLength: 128 } }}
+        onChange={handleFieldChange('password')}
         onKeyDown={(e) => {
           if (e.key === 'Enter') void handleLogin()
         }}
         icon={
-          <IconButton onClick={() => handleClickShowInputValue()}>
+          <IconButton
+            aria-label={
+              showPassword ? 'Ocultar caracteres' : 'Exibir caracteres'
+            }
+            onClick={handleClickShowInputValue}
+          >
             {showPassword ? <VisibilityOff /> : <Visibility />}
           </IconButton>
         }
@@ -72,7 +98,7 @@ const BoxLogin = ({ setUserDocument, setVerifiedUser }: IBoxLogin) => {
       <S.LoginButtonContainer>
         <S.SubmitButton
           onClick={() => void handleLogin()}
-          disabled={!email || !password || isLoading}
+          disabled={Object.keys(validationErrors).length > 0 || isLoading}
         >
           Entrar
         </S.SubmitButton>
