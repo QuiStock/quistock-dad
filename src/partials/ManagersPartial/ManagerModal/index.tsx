@@ -1,30 +1,32 @@
-import { useMemo, useState } from 'react'
 import { Modal, MenuItem } from '@mui/material'
 
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
 import { TextInputComponent } from '@/components/commom/TextInputComponent'
-import { useSendQuery } from '@/hooks/useSendQuery'
-import { getBranches, BRANCHES_QUERY_KEY } from '@/services/api-branches'
+import { useBranches } from '@/hooks/useBranches'
+import { useManagerForm } from '@/hooks/useManagerForm'
 import { ManagerStatusEnum } from '@/types/enums'
-import type { IBranch, IManager, TAccountStatus } from '@/types'
+import type {
+  IBranch,
+  IManager,
+  IManagerFormValues,
+  ISaveManagerData,
+  TAccountStatus,
+  TManagerFormFieldChange,
+  TManagerModalType,
+  TStoreSelection,
+} from '@/types'
 
 import * as S from './styles'
 
-type TModalType = 'create' | 'edit' | 'details' | null
-type TStoreSelection = number | ''
+const MENU_ITEM_SX = { fontSize: '1.6rem' }
+const SELECT_LABEL_SX = { '& .MuiInputLabel-root': { fontSize: '1.6rem' } }
 
-export interface ISaveManagerData {
-  name: string
-  email: string
-  password?: string
-  status?: TAccountStatus
-  store_id: number
-  replacement_manager_id?: number
-}
+const toStoreSelection = (value: string | number): TStoreSelection =>
+  value === '' ? '' : Number(value)
 
 interface IManagerModal {
   open: boolean
-  type: TModalType
+  type: TManagerModalType
   item?: IManager | null
   managers?: IManager[]
   isSaving?: boolean
@@ -33,20 +35,13 @@ interface IManagerModal {
 }
 
 interface IFormFieldsProps {
-  type: TModalType
+  type: TManagerModalType
   isEditing: boolean
-  name: string
-  setName: (v: string) => void
-  email: string
-  setEmail: (v: string) => void
-  password: string
-  setPassword: (v: string) => void
-  status: TAccountStatus
-  setStatus: (v: TAccountStatus) => void
-  storeId: TStoreSelection
-  setStoreId: (v: TStoreSelection) => void
-  replacementManagerId: TStoreSelection
-  setReplacementManagerId: (v: TStoreSelection) => void
+  form: IManagerFormValues
+  validationErrors: ReturnType<typeof useManagerForm>['validationErrors']
+  onFieldChange: TManagerFormFieldChange
+  onStatusChange: (status: TAccountStatus) => void
+  onStoreChange: (storeId: TStoreSelection) => void
   replacementManagers: IManager[]
   branches: IBranch[]
   storeName: string
@@ -55,18 +50,11 @@ interface IFormFieldsProps {
 const FormFields = ({
   type,
   isEditing,
-  name,
-  setName,
-  email,
-  setEmail,
-  password,
-  setPassword,
-  status,
-  setStatus,
-  storeId,
-  setStoreId,
-  replacementManagerId,
-  setReplacementManagerId,
+  form,
+  validationErrors,
+  onFieldChange,
+  onStatusChange,
+  onStoreChange,
   replacementManagers,
   branches,
   storeName,
@@ -75,22 +63,31 @@ const FormFields = ({
     <S.FormContainer>
       <TextInputComponent
         label="Nome"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        value={form.name}
+        error={Boolean(validationErrors.name)}
+        helperText={validationErrors.name}
+        slotProps={{ htmlInput: { maxLength: 100 } }}
+        onChange={(e) => onFieldChange('name', e.target.value)}
         disabled={!isEditing}
       />
       <TextInputComponent
         label="E-mail"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        value={form.email}
+        error={Boolean(validationErrors.email)}
+        helperText={validationErrors.email}
+        slotProps={{ htmlInput: { maxLength: 254 } }}
+        onChange={(e) => onFieldChange('email', e.target.value)}
         disabled={!isEditing}
       />
       {type === 'create' ? (
         <TextInputComponent
           label="Senha Inicial"
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={form.password}
+          error={Boolean(validationErrors.password)}
+          helperText={validationErrors.password}
+          slotProps={{ htmlInput: { maxLength: 128 } }}
+          onChange={(e) => onFieldChange('password', e.target.value)}
           disabled={!isEditing}
         />
       ) : (
@@ -98,15 +95,15 @@ const FormFields = ({
           select
           fullWidth
           label="Status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value as TAccountStatus)}
+          value={form.status}
+          onChange={(e) => onStatusChange(e.target.value as TAccountStatus)}
           disabled={!isEditing}
-          sx={{ '& .MuiInputLabel-root': { fontSize: '1.6rem' } }}
+          sx={SELECT_LABEL_SX}
         >
-          <MenuItem value="ACTIVE" sx={{ fontSize: '1.6rem' }}>
+          <MenuItem value="ACTIVE" sx={MENU_ITEM_SX}>
             {ManagerStatusEnum.ACTIVE}
           </MenuItem>
-          <MenuItem value="INACTIVE" sx={{ fontSize: '1.6rem' }}>
+          <MenuItem value="INACTIVE" sx={MENU_ITEM_SX}>
             {ManagerStatusEnum.INACTIVE}
           </MenuItem>
         </TextInputComponent>
@@ -118,22 +115,20 @@ const FormFields = ({
           fullWidth
           required
           label="Filial *"
-          value={storeId}
-          onChange={(e) => {
-            const value = e.target.value
-            setStoreId(value === '' ? '' : Number(value))
-            setReplacementManagerId('')
-          }}
+          value={form.storeId}
+          error={Boolean(validationErrors.storeId)}
+          helperText={validationErrors.storeId}
+          onChange={(e) => onStoreChange(toStoreSelection(e.target.value))}
           disabled={!isEditing}
-          sx={{ '& .MuiInputLabel-root': { fontSize: '1.6rem' } }}
+          sx={SELECT_LABEL_SX}
         >
-          <MenuItem value="" sx={{ fontSize: '1.6rem' }}>
+          <MenuItem value="" sx={MENU_ITEM_SX}>
             Selecione uma filial
           </MenuItem>
           {branches.map((branch) => (
             <MenuItem
               key={branch.store_id}
-              sx={{ fontSize: '1.6rem' }}
+              sx={MENU_ITEM_SX}
               value={branch.store_id}
             >
               {branch.name}
@@ -144,7 +139,7 @@ const FormFields = ({
         <TextInputComponent
           label="Loja Vinculada"
           value={
-            branches.find((branch) => branch.store_id === storeId)?.name ??
+            branches.find((branch) => branch.store_id === form.storeId)?.name ??
             storeName
           }
           disabled
@@ -157,21 +152,25 @@ const FormFields = ({
           fullWidth
           required
           label="Gerente substituto *"
-          value={replacementManagerId}
-          onChange={(e) => {
-            const value = e.target.value
-            setReplacementManagerId(value === '' ? '' : Number(value))
-          }}
+          value={form.replacementManagerId}
+          error={Boolean(validationErrors.replacementManagerId)}
+          helperText={validationErrors.replacementManagerId}
+          onChange={(e) =>
+            onFieldChange(
+              'replacementManagerId',
+              toStoreSelection(e.target.value),
+            )
+          }
           disabled={!isEditing}
-          sx={{ '& .MuiInputLabel-root': { fontSize: '1.6rem' } }}
+          sx={SELECT_LABEL_SX}
         >
-          <MenuItem value="" sx={{ fontSize: '1.6rem' }}>
+          <MenuItem value="" sx={MENU_ITEM_SX}>
             Selecione um gerente
           </MenuItem>
           {replacementManagers.map((manager) => (
             <MenuItem
               key={manager.id}
-              sx={{ fontSize: '1.6rem' }}
+              sx={MENU_ITEM_SX}
               value={Number(manager.id)}
             >
               {manager.name}
@@ -187,7 +186,7 @@ interface IActionButtonsProps {
   isEditing: boolean
   isFormValid: boolean
   isSaving: boolean
-  type: TModalType
+  type: TManagerModalType
   onClose: () => void
   onSave: () => void
   onStartEditing: () => void
@@ -240,81 +239,19 @@ export const ManagerModal = (props: IManagerModal) =>
     />
   ) : null
 
-const getInitialFormValues = (
-  type: TModalType,
-  item?: IManager | null,
-): {
-  name: string
-  email: string
-  status: TAccountStatus
-  storeId: TStoreSelection
-} => {
-  if (type === 'create' || !item) {
-    return { name: '', email: '', status: 'ACTIVE', storeId: '' }
-  }
-
-  return {
-    name: item.name || '',
-    email: item.email || '',
-    status: item.status || 'ACTIVE',
-    storeId: item.store_id ?? '',
-  }
-}
-
-const getReplacementManagers = (
-  managers: IManager[],
-  itemId: IManager['id'] | undefined,
-  storeId: TStoreSelection,
-  isDeactivating: boolean,
-) => {
-  if (!isDeactivating || storeId === '') return []
-
-  return managers.filter(
-    (manager) =>
-      manager.id !== itemId &&
-      manager.status === 'ACTIVE' &&
-      manager.store_id === storeId,
-  )
-}
-
-const getManagerSaveData = (
-  type: TModalType,
-  name: string,
-  email: string,
-  password: string,
-  status: TAccountStatus,
-  storeId: number,
-  isDeactivating: boolean,
-  replacementManagerId: TStoreSelection,
-): ISaveManagerData => ({
-  name,
-  email,
-  password: type === 'create' ? password : undefined,
-  status,
-  store_id: storeId,
-  replacement_manager_id:
-    isDeactivating && replacementManagerId !== ''
-      ? replacementManagerId
-      : undefined,
-})
-
-const isManagerFormValid = (conditions: boolean[]) => conditions.every(Boolean)
-
-const isManagerDeactivating = (
-  item: IManager | null | undefined,
-  status: TAccountStatus,
-  isEditing: boolean,
-) => item?.status === 'ACTIVE' && status === 'INACTIVE' && isEditing
-
-const getInitialEditingState = (type: TModalType) =>
-  type === 'create' || type === 'edit'
-
-const getModalTitle = (type: TModalType) =>
+const getModalTitle = (type: TManagerModalType) =>
   type === 'create' ? 'Cadastrar novo gerente' : 'Detalhes do gerente'
 
-const ManagerModalHelper = ({ type }: { type: TModalType }) =>
+interface IManagerModalHelperProps {
+  id: string
+  type: TManagerModalType
+}
+
+const ManagerModalHelper = ({ id, type }: IManagerModalHelperProps) =>
   type === 'create' ? (
-    <S.Helper>Por favor, insira as informações do novo gerente.</S.Helper>
+    <S.Helper id={id}>
+      Por favor, insira as informações do novo gerente.
+    </S.Helper>
   ) : null
 
 const ManagerModalContent = ({
@@ -326,93 +263,53 @@ const ManagerModalContent = ({
   onClose,
   onSave,
 }: IManagerModal) => {
-  const initialValues = getInitialFormValues(type, item)
-  const [isEditing, setIsEditing] = useState(() => getInitialEditingState(type))
-  const [name, setName] = useState(initialValues.name)
-  const [email, setEmail] = useState(initialValues.email)
-  const [password, setPassword] = useState('')
-  const [status, setStatus] = useState(initialValues.status)
-  const [storeId, setStoreId] = useState<TStoreSelection>(initialValues.storeId)
-  const [replacementManagerId, setReplacementManagerId] =
-    useState<TStoreSelection>('')
-
-  const { responseBranches: branchesData } = useSendQuery<
-    IBranch[],
-    'Branches'
-  >({
-    queryKey: BRANCHES_QUERY_KEY,
-    apiPromise: getBranches,
-    suffix: 'Branches',
-  })
-  const branches = branchesData ?? []
-
-  const isDeactivating = isManagerDeactivating(item, status, isEditing)
-  const replacementManagers = useMemo(
-    () => getReplacementManagers(managers, item?.id, storeId, isDeactivating),
-    [isDeactivating, item?.id, managers, storeId],
-  )
+  const { branches } = useBranches()
+  const {
+    form,
+    isEditing,
+    isFormValid,
+    validationErrors,
+    replacementManagers,
+    setField,
+    setStatus,
+    setStoreId,
+    startEditing,
+    getSaveData,
+  } = useManagerForm({ type, item, managers })
 
   const handleSave = () => {
-    if (storeId === '') return
-
-    onSave(
-      getManagerSaveData(
-        type,
-        name,
-        email,
-        password,
-        status,
-        storeId,
-        isDeactivating,
-        replacementManagerId,
-      ),
-    )
+    const saveData = getSaveData()
+    if (saveData) onSave(saveData)
   }
 
-  const hasName = name.trim().length > 0
-  const hasEmail = email.trim().length > 0
-  const hasPassword = type !== 'create' || password.trim().length > 0
-  const needsStore = isEditing
-  const hasRequiredStore = !needsStore || storeId !== ''
-  const hasRequiredReplacement =
-    replacementManagers.length === 0 || replacementManagerId !== ''
-  const isFormValid = isManagerFormValid([
-    hasName,
-    hasEmail,
-    hasPassword,
-    hasRequiredStore,
-    hasRequiredReplacement,
-  ])
   const handleClose = () => {
     if (!isSaving) onClose()
   }
 
   return (
-    <Modal open={open} onClose={handleClose} data-testid="modal-manager">
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="manager-modal-title"
+      aria-describedby={
+        type === 'create' ? 'manager-modal-description' : undefined
+      }
+      data-testid="modal-manager"
+    >
       <S.BoxModal>
-        <S.Title>{getModalTitle(type)}</S.Title>
-        <ManagerModalHelper type={type} />
+        <S.Title id="manager-modal-title">{getModalTitle(type)}</S.Title>
+        <ManagerModalHelper id="manager-modal-description" type={type} />
 
         <FormFields
           type={type}
           isEditing={isEditing}
-          name={name}
-          setName={setName}
-          email={email}
-          setEmail={setEmail}
-          password={password}
-          setPassword={setPassword}
-          status={status}
-          setStatus={(nextStatus) => {
-            setStatus(nextStatus)
-            setReplacementManagerId('')
-          }}
-          storeId={storeId}
-          setStoreId={setStoreId}
-          replacementManagerId={replacementManagerId}
-          setReplacementManagerId={setReplacementManagerId}
+          form={form}
+          validationErrors={validationErrors}
+          onFieldChange={setField}
+          onStatusChange={setStatus}
+          onStoreChange={setStoreId}
           replacementManagers={replacementManagers}
-          branches={branches}
+          branches={branches ?? []}
           storeName={item?.store_name ?? ''}
         />
 
@@ -423,7 +320,7 @@ const ManagerModalContent = ({
           type={type}
           onClose={handleClose}
           onSave={handleSave}
-          onStartEditing={() => setIsEditing(true)}
+          onStartEditing={startEditing}
         />
       </S.BoxModal>
     </Modal>

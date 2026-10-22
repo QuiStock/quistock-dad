@@ -4,7 +4,7 @@ import { ButtonComponent } from '@/components/commom/ButtonComponent'
 import { TextInputComponent } from '@/components/commom/TextInputComponent'
 
 import * as S from './styles'
-import type { IStoreItem } from '../index'
+import type { IStoreItem } from '@/types'
 
 const getStr = (val?: string | number | null) =>
   val !== undefined && val !== null ? String(val) : '-'
@@ -32,7 +32,7 @@ export const StoreModal = ({ open, item, onClose }: IStoreModal) => {
             value={getStr(item?.id)}
             disabled
           />
-          <div style={{ display: 'flex', gap: '16px' }}>
+          <S.Row>
             <TextInputComponent
               label="Estado"
               value={getStr(item?.state)}
@@ -45,7 +45,7 @@ export const StoreModal = ({ open, item, onClose }: IStoreModal) => {
               disabled
               style={{ flex: 1 }}
             />
-          </div>
+          </S.Row>
           <TextInputComponent
             label="Endereço"
             value={getStr(item?.address || item?.street)}

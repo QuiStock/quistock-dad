@@ -1,163 +1,55 @@
 import { useCallback, useMemo, useState } from 'react'
 import * as S from './styles'
 
-import {
-  Add,
-  Search,
-  MoreVertOutlined,
-  ArticleOutlined,
-} from '@mui/icons-material'
+import { Add, Search } from '@mui/icons-material'
 import { type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
-import { IconButton, Menu } from '@mui/material'
 
 import { DatagridComponent } from '@/components/commom/DatagridComponent'
 import { IconsComponent } from '@/components/commom/IconsComponent'
-
 import { TextInputWithIcon } from '@/components/commom/TextInputWithIcon'
 import { ButtonWithIcon } from '@/components/commom/ButtonWithIcon'
-import { ManagerModal, type ISaveManagerData } from './ManagerModal'
-import { useSendMutation } from '@/hooks/useSendMutation'
-import { useSendQuery } from '@/hooks/useSendQuery'
-import emitNotification from '@/events/emitNotification'
 import { LoadingMask } from '@/components/commom/LoadingMask'
-import { useQueryClient } from '@tanstack/react-query'
+import { RowActionMenu } from '@/components/commom/RowActionMenu'
+import { ManagerModal } from './ManagerModal'
+import { useManagers } from '@/hooks/useManagers'
+import { useTableSearch } from '@/hooks/useTableSearch'
 import { ManagerStatusEnum } from '@/types/enums'
-import {
-  getManagers,
-  createManager,
-  updateManager,
-  MANAGERS_QUERY_KEY,
-} from '@/services/api-managers'
-import type { IManager } from '@/types'
+import type {
+  IManager,
+  IManagerTableRow,
+  ISaveManagerData,
+  TManagerModalType,
+} from '@/types'
 
-export interface IManagerTableRow {
-  id: string
-  name: string
-  email: string
-  store: string
-  status: string
-  rawItem: IManager
+interface IManagerModalState {
+  type: TManagerModalType
+  item: IManager | null
 }
 
-const INITIAL_PAGINATION = {
-  page: 0,
-  pageSize: 10,
-}
-
-const ActionMenu = ({ onDetails }: { onDetails: () => void }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation()
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
-  const handleDetails = (event: React.MouseEvent) => {
-    event.stopPropagation()
-    handleClose()
-    onDetails()
-  }
-
-  return (
-    <>
-      <IconButton onClick={handleClick}>
-        <MoreVertOutlined />
-      </IconButton>
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <S.StyledItemFloatMenu onClick={handleDetails}>
-          <ArticleOutlined />
-          <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
-        </S.StyledItemFloatMenu>
-      </Menu>
-    </>
-  )
-}
-
-type TModal = 'create' | 'edit' | 'details' | null
+const CLOSED_MODAL: IManagerModalState = { type: null, item: null }
 
 export const ManagersPartial = () => {
-  const [searchName, setSearchName] = useState('')
-  const [paginationModel, setPaginationModel] = useState(INITIAL_PAGINATION)
-  const [showEspecificModal, setShowEspecificModal] = useState<TModal>(null)
-  const [selectedItem, setSelectedItem] = useState<IManager | null>(null)
+  const {
+    searchName,
+    paginationModel,
+    handleSearchChange,
+    handlePaginationChange,
+  } = useTableSearch()
+  const [modal, setModal] = useState<IManagerModalState>(CLOSED_MODAL)
 
-  const queryClient = useQueryClient()
-  const handleManagerSuccess = useCallback(
-    (message: string) => {
-      emitNotification({ type: 'success', message })
-      setSelectedItem(null)
-      setShowEspecificModal(null)
-      void queryClient.invalidateQueries({ queryKey: MANAGERS_QUERY_KEY })
-    },
-    [queryClient],
-  )
-
-  const { responseManagers: managersData, isLoadingManagers } = useSendQuery<
-    IManager[],
-    'Managers'
-  >({
-    queryKey: MANAGERS_QUERY_KEY,
-    apiPromise: getManagers,
-    suffix: 'Managers',
-  })
-
-  const { runFetchCreateManager, isLoadingCreateManager } = useSendMutation<
-    IManager,
-    'CreateManager'
-  >({
-    suffix: 'CreateManager',
-    onSuccess: () => handleManagerSuccess('Gerente cadastrado com sucesso!'),
-  })
-
-  const { runFetchEditManager, isLoadingEditManager } = useSendMutation<
-    IManager,
-    'EditManager'
-  >({
-    suffix: 'EditManager',
-    onSuccess: () => handleManagerSuccess('Gerente atualizado com sucesso!'),
-  })
+  const handleSaveSuccess = useCallback(() => setModal(CLOSED_MODAL), [])
+  const { managers, isLoadingManagers, isSavingManager, saveManager } =
+    useManagers({ onSaveSuccess: handleSaveSuccess })
 
   const handleSaveManager = (data: ISaveManagerData) => {
-    if (selectedItem) {
-      runFetchEditManager(
-        updateManager(selectedItem.id, {
-          name: data.name,
-          email: data.email,
-          status: data.status,
-          store_id: data.store_id,
-          replacement_manager_id: data.replacement_manager_id,
-        }),
-      )
-    } else {
-      runFetchCreateManager(
-        createManager({
-          name: data.name,
-          email: data.email,
-          password: data.password ?? '',
-          store_id: data.store_id,
-        }),
-      )
-    }
+    saveManager(data, modal.item)
   }
 
-  const handlePaginationChange = (model: typeof INITIAL_PAGINATION) => {
-    setPaginationModel(model)
-  }
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchName(e.target.value)
-    setPaginationModel((prev) => ({ ...prev, page: 0 }))
-  }
-
+  // Keep DataGrid rows stable between unrelated modal/loading renders.
   const tableRows: IManagerTableRow[] = useMemo(() => {
-    if (!managersData || !Array.isArray(managersData)) return []
+    if (!managers || !Array.isArray(managers)) return []
 
-    let list = managersData.map((m) => ({
+    const list = managers.map((m) => ({
       id: String(m.id),
       name: m.name,
       email: m.email,
@@ -169,19 +61,18 @@ export const ManagersPartial = () => {
       rawItem: m,
     }))
 
-    if (searchName) {
-      const query = searchName.toLowerCase()
-      list = list.filter(
-        (m) =>
-          m.name.toLowerCase().includes(query) ||
-          m.email.toLowerCase().includes(query) ||
-          m.store.toLowerCase().includes(query),
-      )
-    }
+    if (!searchName) return list
 
-    return list
-  }, [managersData, searchName])
+    const query = searchName.toLowerCase()
+    return list.filter(
+      (m) =>
+        m.name.toLowerCase().includes(query) ||
+        m.email.toLowerCase().includes(query) ||
+        m.store.toLowerCase().includes(query),
+    )
+  }, [managers, searchName])
 
+  // DataGrid uses stable column references to preserve widths and sort state.
   const columns: GridColDef[] = useMemo(
     () => [
       {
@@ -213,15 +104,15 @@ export const ManagersPartial = () => {
         headerName: '',
         flex: 0,
         sortable: false,
-        renderCell: (params: GridRenderCellParams) => (
-          <ActionMenu
-            onDetails={() => {
-              const row = params.row as IManagerTableRow
-              setSelectedItem(row.rawItem)
-              setShowEspecificModal('details')
-            }}
-          />
-        ),
+        renderCell: (params: GridRenderCellParams) => {
+          const row = params.row as IManagerTableRow
+          return (
+            <RowActionMenu
+              label={`Ações do gerente ${row.name}`}
+              onDetails={() => setModal({ type: 'details', item: row.rawItem })}
+            />
+          )
+        },
       },
     ],
     [],
@@ -243,10 +134,7 @@ export const ManagersPartial = () => {
           children={'Adicionar gerente'}
           icon={<Add />}
           variant="outlined"
-          onClick={() => {
-            setSelectedItem(null)
-            setShowEspecificModal('create')
-          }}
+          onClick={() => setModal({ type: 'create', item: null })}
         />
       </S.BoxFilters>
 
@@ -268,20 +156,16 @@ export const ManagersPartial = () => {
       )}
 
       <ManagerModal
-        open={!!showEspecificModal}
-        type={showEspecificModal}
-        item={selectedItem}
-        managers={managersData ?? []}
-        isSaving={isLoadingCreateManager || isLoadingEditManager}
-        onClose={() => setShowEspecificModal(null)}
+        open={!!modal.type}
+        type={modal.type}
+        item={modal.item}
+        managers={managers ?? []}
+        isSaving={isSavingManager}
+        onClose={() => setModal((prev) => ({ ...prev, type: null }))}
         onSave={handleSaveManager}
       />
 
-      <LoadingMask
-        isLoading={
-          isLoadingManagers || isLoadingCreateManager || isLoadingEditManager
-        }
-      />
+      <LoadingMask isLoading={isLoadingManagers || isSavingManager} />
     </S.Wrapper>
   )
 }
