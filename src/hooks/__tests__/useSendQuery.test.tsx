@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { useSendQuery } from '@/hooks/useSendQuery'
 import emitError from '@/events/emitError'
-import { type AxiosResponse } from 'axios'
+import { AxiosHeaders, type AxiosResponse } from 'axios'
 
 // Mock do emissor de eventos
 vi.mock('@/events/emitError', () => ({
@@ -58,6 +58,35 @@ describe('useSendQuery', () => {
     expect(result.current.responseData).toEqual(mockData)
     expect(result.current.errorData).toBeNull()
     expect(apiPromise).toHaveBeenCalledOnce()
+  })
+
+  it('passes React Query cancellation signal to the API function', async () => {
+    let requestSignal: AbortSignal | undefined
+    const apiPromise = vi.fn(
+      (signal: AbortSignal): Promise<AxiosResponse<{ id: number }>> => {
+        requestSignal = signal
+        return Promise.resolve({
+          data: { id: 1 },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: { headers: new AxiosHeaders() },
+        })
+      },
+    )
+
+    const { result } = renderHook(
+      () =>
+        useSendQuery({
+          queryKey: ['test-abort-signal'],
+          apiPromise,
+          suffix: 'Data',
+        }),
+      { wrapper: createWrapper() },
+    )
+
+    await waitFor(() => expect(result.current.isLoadingData).toBe(false))
+    expect(requestSignal).toBeInstanceOf(AbortSignal)
   })
 
   it('handles API errors with response data and emits the error correctly', async () => {
