@@ -5,13 +5,15 @@ export {
   getManagerById,
   createManager,
   updateManager,
+  MANAGERS_QUERY_KEY,
+} from './api-managers'
+export {
   getTeamMembers,
   getTeamMemberById,
   createTeamMember,
   updateTeamMember,
-  MANAGERS_QUERY_KEY,
   TEAM_MEMBERS_QUERY_KEY,
-} from './api-managers'
+} from './api-team-members'
 export { getBranches, BRANCHES_QUERY_KEY } from './api-branches'
 export {
   getDashboardSummary,
