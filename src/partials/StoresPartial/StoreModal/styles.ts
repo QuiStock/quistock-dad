@@ -68,3 +68,8 @@ export const BoxButtons = styled('div')(
     }
   `,
 )
+
+export const Row = styled('div')`
+  display: flex;
+  gap: 16px;
+`

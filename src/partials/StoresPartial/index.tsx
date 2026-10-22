@@ -1,108 +1,46 @@
 import { useMemo, useState } from 'react'
 import * as S from './styles'
 
-import { Search, MoreVertOutlined, ArticleOutlined } from '@mui/icons-material'
+import { Search } from '@mui/icons-material'
 import { type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
-import { IconButton, Menu } from '@mui/material'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { DatagridComponent } from '@/components/commom/DatagridComponent'
 import { IconsComponent } from '@/components/commom/IconsComponent'
 import { LoadingMask } from '@/components/commom/LoadingMask'
-
+import { RowActionMenu } from '@/components/commom/RowActionMenu'
 import { TextInputWithIcon } from '@/components/commom/TextInputWithIcon'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
-import { StoreModal } from './StoreModal'
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
-import { useNavigate } from 'react-router-dom'
-import { useSendQuery } from '@/hooks/useSendQuery'
-import { getBranches, BRANCHES_QUERY_KEY } from '@/services/api-branches'
-import type { IBranch } from '@/types'
+import { StoreModal } from './StoreModal'
+import { useBranches } from '@/hooks/useBranches'
+import { useTableSearch } from '@/hooks/useTableSearch'
+import type { IStoreItem } from '@/types'
 
-const INITIAL_PAGINATION = {
-  page: 0,
-  pageSize: 10,
-}
+const STORES_PATH = '/lojas'
 
-const ActionMenu = ({ onDetails }: { onDetails: () => void }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation()
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
-  const handleDetails = (event: React.MouseEvent) => {
-    event.stopPropagation()
-    handleClose()
-    onDetails()
-  }
-
-  return (
-    <>
-      <IconButton onClick={handleClick}>
-        <MoreVertOutlined />
-      </IconButton>
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <S.StyledItemFloatMenu onClick={handleDetails}>
-          <ArticleOutlined />
-          <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
-        </S.StyledItemFloatMenu>
-      </Menu>
-    </>
-  )
-}
-
-export interface IStoreItem {
-  id: string | number
-  name: string
-  store_id?: number
-  high_flow?: number
-  low_flow?: number
-  active_orders_count?: number
-  active_promotions?: number
-  manager?: string
-  cep?: string
-  state?: string
-  city?: string
-  street?: string
-  number?: string
-  complement?: string
-  address?: string
+interface IStoreModalState {
+  isOpen: boolean
+  item: IStoreItem | null
 }
 
 export const StoresPartial = () => {
-  const [searchName, setSearchName] = useState('')
-  const [paginationModel, setPaginationModel] = useState(INITIAL_PAGINATION)
-
-  const navigate = useNavigate()
-
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
-  const [selectedItem, setSelectedItem] = useState<IStoreItem | null>(null)
-
-  const isStoresPage = window.location.pathname === '/lojas'
-
-  const { responseBranches: branchesData, isLoadingBranches } = useSendQuery<
-    IBranch[],
-    'Branches'
-  >({
-    queryKey: BRANCHES_QUERY_KEY,
-    apiPromise: getBranches,
-    suffix: 'Branches',
+  const {
+    searchName,
+    paginationModel,
+    handleSearchChange,
+    handlePaginationChange,
+  } = useTableSearch()
+  const [detailsModal, setDetailsModal] = useState<IStoreModalState>({
+    isOpen: false,
+    item: null,
   })
 
-  const handlePaginationChange = (model: typeof INITIAL_PAGINATION) => {
-    setPaginationModel(model)
-  }
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const isStoresPage = pathname === STORES_PATH
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchName(e.target.value)
-    setPaginationModel((prev) => ({ ...prev, page: 0 }))
-  }
+  const { branches: branchesData, isLoadingBranches } = useBranches()
 
   const storeItems: IStoreItem[] = useMemo(() => {
     if (!branchesData || !Array.isArray(branchesData)) return []
@@ -169,14 +107,15 @@ export const StoresPartial = () => {
         headerName: '',
         flex: 0,
         sortable: false,
-        renderCell: (params: GridRenderCellParams) => (
-          <ActionMenu
-            onDetails={() => {
-              setSelectedItem(params.row as IStoreItem)
-              setIsDetailsModalOpen(true)
-            }}
-          />
-        ),
+        renderCell: (params: GridRenderCellParams) => {
+          const row = params.row as IStoreItem
+          return (
+            <RowActionMenu
+              label={`Ações da loja ${row.name}`}
+              onDetails={() => setDetailsModal({ isOpen: true, item: row })}
+            />
+          )
+        },
       },
     ],
     [],
@@ -205,7 +144,7 @@ export const StoresPartial = () => {
           <S.SeeMoreStoresButton>
             <ButtonComponent
               variant="outlined"
-              onClick={() => void navigate('/lojas')}
+              onClick={() => void navigate(STORES_PATH)}
             >
               Ver mais lojas
             </ButtonComponent>
@@ -232,9 +171,9 @@ export const StoresPartial = () => {
       )}
 
       <StoreModal
-        open={isDetailsModalOpen}
-        item={selectedItem}
-        onClose={() => setIsDetailsModalOpen(false)}
+        open={detailsModal.isOpen}
+        item={detailsModal.item}
+        onClose={() => setDetailsModal((prev) => ({ ...prev, isOpen: false }))}
       />
 
       <LoadingMask isLoading={isLoadingBranches} />

@@ -5,22 +5,13 @@ import { IconsComponent } from '@/components/commom/IconsComponent'
 import Skeleton from '@mui/material/Skeleton'
 import QuestionMarkOutlinedIcon from '@mui/icons-material/QuestionMarkOutlined'
 import { useNavigate } from 'react-router-dom'
-import { useSendQuery } from '@/hooks/useSendQuery'
-import { getProfile, PROFILE_QUERY_KEY } from '@/services/api-profile'
+import { useProfile } from '@/hooks/useProfile'
 import { UserRoleLabel } from '@/types/enums'
-import type { IProfile } from '@/types'
 
 export const ProfilePartial = () => {
   const navigate = useNavigate()
 
-  const { responseProfile: user, isLoadingProfile } = useSendQuery<
-    IProfile,
-    'Profile'
-  >({
-    queryKey: PROFILE_QUERY_KEY,
-    apiPromise: getProfile,
-    suffix: 'Profile',
-  })
+  const { profile: user, isLoadingProfile } = useProfile()
 
   if (isLoadingProfile) {
     return (

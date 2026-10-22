@@ -2,23 +2,15 @@ import { Navigate } from 'react-router-dom'
 import { Page } from '@/components/commom/Page'
 import { LoadingMask } from '@/components/commom/LoadingMask'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
-import { useSendQuery } from '@/hooks/useSendQuery'
+import { useProfile } from '@/hooks/useProfile'
 import { ManagersPartial } from '@/partials/ManagersPartial'
-import { getProfile, PROFILE_QUERY_KEY } from '@/services/api-profile'
-import type { IProfile } from '@/types'
+import { canManageManagers } from '@/utils/permissions'
 
 const Managers = () => {
-  const { responseProfile: profile, isLoadingProfile } = useSendQuery<
-    IProfile,
-    'Profile'
-  >({
-    queryKey: PROFILE_QUERY_KEY,
-    apiPromise: getProfile,
-    suffix: 'Profile',
-  })
+  const { profile, isLoadingProfile } = useProfile()
 
   if (isLoadingProfile) return <LoadingMask isLoading />
-  if (profile?.role !== 'ADMIN' && profile?.role !== 'REGIONAL_MANAGER') {
+  if (!canManageManagers(profile?.role)) {
     return <Navigate to="/home" replace />
   }
 
