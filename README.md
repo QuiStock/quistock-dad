@@ -62,6 +62,26 @@ tests/
 Os testes devem verificar resultados observáveis. Evite assertions sobre estado interno,
 implementação de hooks, classes CSS ou snapshots extensos.
 
+## Estrutura do projeto
+
+```text
+src/
+├── main.tsx          # bootstrap (createRoot)
+├── App.tsx           # providers, rotas e notificações globais
+├── pages/            # uma pasta por rota (home, stores, managers, not-found...)
+├── partials/         # seções de página com estado de tela
+├── components/       # componentes reutilizáveis e apresentacionais
+├── hooks/            # acesso a dados e lógica de estado (useProfile, useManagers...)
+├── services/         # chamadas HTTP (api-*), cliente axios e normalização de erros
+├── contexts/         # contextos globais (autenticação)
+├── types/            # contratos de domínio (user, auth, managers, branches...)
+├── utils/            # funções puras (permissões, mailto...)
+└── styles/           # tema e estilos globais
+```
+
+Componentes e páginas não importam `@/services` diretamente: o acesso a dados passa por
+hooks em `src/hooks`, e os tipos de domínio ficam centralizados em `src/types`.
+
 ## Imports internos
 
 O projeto usa aliases para evitar caminhos relativos longos:
@@ -75,7 +95,7 @@ Use caminhos relativos para arquivos do mesmo módulo e aliases quando o import 
 diretórios. Dependências externas continuam usando o nome do pacote:
 
 ```ts
-import App from '@/pages/App'
+import App from '@/App'
 import { healthyApiResponse } from '@test/fixtures/health'
 import { describe, expect, it } from 'vitest'
 import './App.css'
@@ -131,6 +151,22 @@ O Lefthook executa estas validações sequencialmente antes de cada push:
 
 O hook apenas valida e não altera arquivos. Testes, cobertura, build e E2E permanecem no
 pipeline completo para não tornar o push local excessivamente lento.
+
+## Padrão de commits
+
+As mensagens seguem [Conventional Commits](https://www.conventionalcommits.org/pt-br/):
+`<tipo>(escopo opcional): descrição`, com os tipos `feat`, `fix`, `refactor`, `docs`,
+`style`, `test`, `chore`, `build`, `ci`, `perf` e `revert`. O hook `commit-msg` do
+Lefthook rejeita mensagens fora do padrão.
+
+## Publicação na Vercel
+
+O arquivo `vercel.json` configura o build do Vite (`dist/`) e redireciona todas as rotas
+para `index.html`, permitindo acesso direto a rotas do React Router (ex.: `/lojas`).
+
+1. Importe o repositório em [vercel.com/new](https://vercel.com/new);
+2. Configure as variáveis de ambiente listadas em `.env.example`;
+3. Faça o deploy. URL pública: _a definir após o primeiro deploy_.
 
 ## Integração contínua
 
