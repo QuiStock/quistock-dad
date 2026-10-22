@@ -1,4 +1,4 @@
-import type { TAccountStatus, TUserRole } from './api'
+import type { TAccountStatus, TUserRole } from './user'
 
 export const ManagerStatusEnum = {
   ACTIVE: 'Ativo',

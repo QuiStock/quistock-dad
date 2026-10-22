@@ -7,6 +7,10 @@ export interface INotificationProps {
   errors?: { [key: string]: string }
 }
 
+export interface IEmittedNotification extends INotificationProps {
+  id: string
+}
+
 export interface IId {
   id: number
 }
@@ -22,4 +26,9 @@ export interface IIdAndName extends IId {
 export interface IServerDerivativePagination {
   offset?: number
   limit?: number
+}
+
+export interface IPaginationModel {
+  page: number
+  pageSize: number
 }
