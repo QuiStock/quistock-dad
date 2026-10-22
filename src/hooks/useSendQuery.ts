@@ -16,7 +16,7 @@ interface IErrorResponseData {
 
 interface IUseSendQueryInitialProps<Res> {
   queryKey: unknown[]
-  apiPromise: () => Promise<AxiosResponse>
+  apiPromise: (signal: AbortSignal) => Promise<AxiosResponse>
   suffix: string
   options?: Omit<
     UseQueryOptions<Res, AxiosError<IErrorResponseData>>,
@@ -51,10 +51,10 @@ export const useSendQuery = <Res = unknown, Suffix extends string = string>({
     AxiosError<IErrorResponseData>
   >({
     queryKey,
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!apiPromise) throw new Error('No API promise provided')
 
-      const result = await apiPromise()
+      const result = await apiPromise(signal)
       return result.data as Res
     },
     ...options,
