@@ -16,7 +16,7 @@ export default defineConfig({
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
-        'src/pages/main.tsx',
+        'src/main.tsx',
         'src/**/*.d.ts',
         'src/**/*.test.{ts,tsx}',
         'src/**/*.spec.{ts,tsx}',
