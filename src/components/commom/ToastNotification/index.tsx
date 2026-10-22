@@ -1,16 +1,16 @@
 import * as S from './styles'
 import { NotificationSnackbar } from '../NotificationSnackbar'
-import { type INotificationProps } from '@/types'
+import { type IEmittedNotification } from '@/types'
 
 interface IToastNotificationProps {
-  notifications: INotificationProps[]
+  notifications: IEmittedNotification[]
 }
 
 const ToastNotification = ({ notifications }: IToastNotificationProps) => (
   <S.Wrapper>
-    {notifications.map((notification: INotificationProps) => (
+    {notifications.map((notification) => (
       <NotificationSnackbar
-        key={notification.id || `${new Date().getTime()}`}
+        key={notification.id}
         message={notification.message}
         type={notification.type}
       />

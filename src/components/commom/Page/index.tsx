@@ -8,9 +8,8 @@ import { Container } from '@mui/material'
 import { HouseOutlined, PersonOutlined, Logout } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { useSendQuery } from '@/hooks/useSendQuery'
-import { getProfile, PROFILE_QUERY_KEY } from '@/services/api-profile'
-import type { IProfile } from '@/types'
+import { useProfile } from '@/hooks/useProfile'
+import { canManageManagers } from '@/utils/permissions'
 
 interface IPage {
   children: ReactNode
@@ -21,11 +20,7 @@ const Page = ({ children, title }: IPage) => {
   const navigate = useNavigate()
   const { logout } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { responseProfile: profile } = useSendQuery<IProfile, 'Profile'>({
-    queryKey: PROFILE_QUERY_KEY,
-    apiPromise: getProfile,
-    suffix: 'Profile',
-  })
+  const { profile } = useProfile()
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
 
@@ -60,9 +55,18 @@ const Page = ({ children, title }: IPage) => {
           <Container maxWidth="xl">
             <S.BoxTopBar>
               <S.BoxItens>
-                <S.MenuButton onClick={handleClickMenuButton} />
+                <S.IconTrigger
+                  disableRipple
+                  id="navigation-menu-trigger"
+                  aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+                  aria-controls="main-navigation"
+                  aria-expanded={isMenuOpen}
+                  onClick={handleClickMenuButton}
+                >
+                  <S.MenuButton />
+                </S.IconTrigger>
 
-                <S.CustomLink href={'/home'}>
+                <S.CustomLink to={'/home'}>
                   <S.LogoJBS
                     src="src/assets/quistock.svg"
                     alt="Logo QuiStock"
@@ -73,12 +77,25 @@ const Page = ({ children, title }: IPage) => {
               </S.BoxItens>
 
               <S.BoxItens>
-                <S.AvatarButton onClick={handleOpenUserMenu}>
-                  {'Q'}
-                </S.AvatarButton>
+                <S.IconTrigger
+                  disableRipple
+                  id="user-menu-trigger"
+                  aria-label="Abrir menu do usuário"
+                  aria-haspopup="menu"
+                  aria-controls="user-menu"
+                  aria-expanded={Boolean(anchorElUser)}
+                  onClick={handleOpenUserMenu}
+                >
+                  <S.AvatarButton>{'Q'}</S.AvatarButton>
+                </S.IconTrigger>
                 <S.StyledFloatMenu
+                  id="user-menu"
                   open={Boolean(anchorElUser)}
                   anchorEl={anchorElUser}
+                  slotProps={{
+                    root: { keepMounted: true },
+                    list: { 'aria-labelledby': 'user-menu-trigger' },
+                  }}
                   onClose={handleCloseUserMenu}
                   transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                   anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
@@ -103,35 +120,35 @@ const Page = ({ children, title }: IPage) => {
             anchor="left"
             open={isMenuOpen}
             onClose={handleClickMenuButton}
+            ModalProps={{ keepMounted: true }}
           >
-            <S.StyledContainer>
-              <S.CustomLink href={'/home'}>
+            <S.Navigation id="main-navigation" aria-label="Navegação principal">
+              <S.CustomLink to={'/home'}>
                 <S.MenuItem>
                   <HouseOutlined /> {'Home'}
                 </S.MenuItem>
               </S.CustomLink>
 
-              <S.CustomLink href={'/dashboards'}>
+              <S.CustomLink to={'/dashboards'}>
                 <S.MenuItem>
                   <InsertChartOutlinedOutlinedIcon /> {'Dashboards'}
                 </S.MenuItem>
               </S.CustomLink>
 
-              <S.CustomLink href={'/lojas'}>
+              <S.CustomLink to={'/lojas'}>
                 <S.MenuItem>
                   <StoreOutlinedIcon /> {'Lojas'}
                 </S.MenuItem>
               </S.CustomLink>
 
-              {(profile?.role === 'ADMIN' ||
-                profile?.role === 'REGIONAL_MANAGER') && (
-                <S.CustomLink href={'/gerentes'}>
+              {canManageManagers(profile?.role) && (
+                <S.CustomLink to={'/gerentes'}>
                   <S.MenuItem>
                     <PeopleAltOutlinedIcon /> {'Gerentes'}
                   </S.MenuItem>
                 </S.CustomLink>
               )}
-            </S.StyledContainer>
+            </S.Navigation>
           </S.MenuDrawer>
         </S.TopBar>
       </header>

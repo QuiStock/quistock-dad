@@ -1,4 +1,4 @@
-import type { INotificationProps } from '@/types'
+import type { IEmittedNotification, INotificationProps } from '@/types'
 
 const emitNotification = (notification: INotificationProps) => {
   let finalMessage = notification.message
@@ -21,7 +21,7 @@ const emitNotification = (notification: INotificationProps) => {
   }
 
   return dispatchEvent(
-    new CustomEvent('emitNotification', {
+    new CustomEvent<IEmittedNotification>('emitNotification', {
       detail: {
         id: notification.id || `${new Date().getTime()}`,
         type: notification.type,

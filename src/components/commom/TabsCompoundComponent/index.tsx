@@ -85,7 +85,7 @@ const List = ({ children, onReturnPage }: IListProps) => {
   return (
     <S.WrapperTabs>
       {!!onReturnPage && (
-        <IconButton onClick={onReturnPage}>
+        <IconButton aria-label="Voltar" onClick={onReturnPage}>
           <ArrowBack />
         </IconButton>
       )}

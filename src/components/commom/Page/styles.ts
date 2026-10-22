@@ -1,14 +1,18 @@
+import { createElement } from 'react'
 import styled, { css } from 'styled-components'
 
 import {
   Box,
   Avatar,
+  ButtonBase,
   Drawer,
   IconButton,
   MenuItem as ItemFloatMenu,
   Menu as FloatMenu,
   Link,
+  type LinkProps,
 } from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
 import { Menu } from '@mui/icons-material'
 
 export const TopBar = styled(Box)(
@@ -70,6 +74,13 @@ export const FlagLessonType = styled('div')(
     text-align: center;
   `,
 )
+
+export const IconTrigger = styled(ButtonBase)`
+  && {
+    padding: 0;
+    border-radius: 50%;
+  }
+`
 
 export const MenuButton = styled(Menu)(
   ({ theme }) => css`
@@ -179,7 +190,10 @@ export const TitleTop = styled('p')(
   `,
 )
 
-export const CustomLink = styled(Link)(
+const RouterMuiLink = (props: LinkProps & { to: string }) =>
+  createElement(Link, { component: RouterLink, ...props })
+
+export const CustomLink = styled(RouterMuiLink)(
   ({ theme }) => css`
     && {
       min-width: fit-content;
@@ -280,7 +294,7 @@ export const LogoJBS = styled('img')(
   `,
 )
 
-export const StyledContainer = styled('div')(
+export const Navigation = styled('nav')(
   () => css`
     height: calc(100% - 9rem);
     display: flex;

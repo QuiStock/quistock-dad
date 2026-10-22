@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import * as S from './styles'
 
 import { Checkbox } from '@mui/material'
@@ -23,27 +23,52 @@ const ModalConfirmationWarning = ({
   onCancel,
 }: IModalConfirmationWarning) => {
   const [secondValidation, setSecondValidation] = useState(false)
+  const dialogId = useId()
 
   const getModalTitle = () => {
     if (isImportant) return 'Aviso importante'
     if (isAlert) return 'Alerta!'
     return 'Confirmação'
   }
+  const messageItems =
+    typeof message === 'string'
+      ? [
+          {
+            id: `${dialogId}-message`,
+            key: `${dialogId}-message`,
+            text: message,
+          },
+        ]
+      : (() => {
+          const duplicateCounts = new Map<string, number>()
+          return message.map((text) => {
+            const occurrence = duplicateCounts.get(text) ?? 0
+            duplicateCounts.set(text, occurrence + 1)
+            const key = `${text}:${occurrence}`
+            return { id: `${dialogId}-${occurrence}`, key, text }
+          })
+        })()
+  const messageIds = messageItems.map(({ id }) => id).join(' ')
 
   return (
-    <S.StyledModal open={openModal}>
+    <S.StyledModal
+      open={openModal}
+      aria-labelledby="confirmation-modal-title"
+      aria-describedby={messageIds}
+    >
       <S.Wrapper>
-        <S.ModalTitle color={isAlert ? 'red' : 'main'}>
+        <S.ModalTitle
+          id="confirmation-modal-title"
+          color={isAlert ? 'red' : 'main'}
+        >
           {getModalTitle()}
         </S.ModalTitle>
 
-        {typeof message === 'string' ? (
-          <S.ModalContent>{message}</S.ModalContent>
-        ) : (
-          message.map((string) => (
-            <S.ModalContent key={string}>{string}</S.ModalContent>
-          ))
-        )}
+        {messageItems.map(({ id, key, text }) => (
+          <S.ModalContent id={id} key={key}>
+            {text}
+          </S.ModalContent>
+        ))}
 
         {isImportant && (
           <S.ConfirmationBox htmlFor="confirmation-checkbox">

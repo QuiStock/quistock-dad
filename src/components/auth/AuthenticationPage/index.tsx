@@ -11,7 +11,7 @@ const AuthenticationPage = ({ children, title }: IAuthenticationPage) => {
     <>
       <title>{`QuiStock | ${title}`}</title>
       <S.Container>
-        <S.Background src="/images/wing-background.png" alt="background" />
+        <S.Background src="/images/wing-background.png" alt="" />
         <S.Wrapper>{children}</S.Wrapper>
       </S.Container>
     </>

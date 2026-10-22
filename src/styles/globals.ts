@@ -2,6 +2,17 @@ import { createGlobalStyle } from 'styled-components'
 import theme from './theme'
 
 const GlobalStyles = createGlobalStyle`
+    *:focus:not(:focus-visible),
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: none;
+    }
+
+    :where(a, button, [role='button'], [tabindex]):focus-visible {
+      outline: 2px solid ${theme.colors.lightBlue};
+      outline-offset: 2px;
+    }
+
     * {
       font-size: 1.4rem;
       margin: 0;
@@ -9,7 +20,6 @@ const GlobalStyles = createGlobalStyle`
       box-sizing: border-box;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      outline: none;
             
       &::before,
       &::after {

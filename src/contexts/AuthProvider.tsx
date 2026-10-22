@@ -5,7 +5,6 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { isAxiosError } from 'axios'
 
 import emitError from '@/events/emitError'
 import { postLogin, postLogout, postRefresh } from '@/services/api-auth'
@@ -19,25 +18,6 @@ import { AuthContext } from './AuthContext'
 
 interface IAuthProviderProps {
   children: ReactNode
-}
-
-const getErrorMessage = (error: unknown) => {
-  if (!isAxiosError<{ message?: string }>(error) || !error.response) {
-    return 'Erro ao realizar login.'
-  }
-
-  const status = error.response.status
-  const message = error.response.data?.message
-
-  if (status === 401) {
-    return 'E-mail ou senha inválidos.'
-  }
-
-  if (status === 403) {
-    return message ?? 'Seu perfil não tem acesso a esta plataforma.'
-  }
-
-  return message ?? 'Erro ao realizar login.'
 }
 
 export const AuthProvider = ({ children }: IAuthProviderProps) => {
@@ -64,7 +44,9 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
       return true
     } catch (error) {
       setIsAuthenticated(false)
-      emitError(getErrorMessage(error))
+      emitError(
+        error instanceof Error ? error.message : 'Erro ao realizar login.',
+      )
       return false
     } finally {
       setIsLoading(false)
@@ -115,6 +97,7 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
       window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired)
   }, [])
 
+  // Keep the context value stable so consumers update only when auth state changes.
   const value = useMemo(
     () => ({ isAuthenticated, isLoading, login, logout, refreshSession }),
     [isAuthenticated, isLoading, login, logout, refreshSession],

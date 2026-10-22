@@ -27,6 +27,7 @@ const NotificationSnackbar = ({
     >
       <S.Alert
         onClose={handleClose}
+        role="alert"
         elevation={6}
         variant="filled"
         severity={type === 'long' ? 'info' : type}
