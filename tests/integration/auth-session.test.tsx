@@ -10,6 +10,25 @@ import { server } from '@test/mocks/server'
 
 const TOKEN_KEY = 'quistock.auth.token'
 
+const readStoredToken = (): string | null => {
+  const storedValue = window.localStorage.getItem(TOKEN_KEY)
+  if (!storedValue) return null
+
+  const parsedValue: unknown = JSON.parse(storedValue)
+  if (
+    typeof parsedValue === 'object' &&
+    parsedValue !== null &&
+    '_versao' in parsedValue &&
+    parsedValue._versao === 1 &&
+    'token' in parsedValue &&
+    typeof parsedValue.token === 'string'
+  ) {
+    return parsedValue.token
+  }
+
+  return null
+}
+
 const createToken = (expiresAt: number) => {
   const payload = btoa(JSON.stringify({ exp: expiresAt }))
     .replace(/=/g, '')
@@ -75,8 +94,9 @@ describe('AuthProvider', () => {
     })
 
     expect(refreshRequest).not.toHaveBeenCalled()
-    expect(requestWithToken).toHaveBeenCalledWith(
-      `Bearer ${window.localStorage.getItem(TOKEN_KEY)}`,
+    expect(requestWithToken).toHaveBeenCalledOnce()
+    expect(requestWithToken.mock.calls[0]?.[0]).toMatch(
+      /^Bearer header\.[A-Za-z0-9_-]+\.signature$/,
     )
   })
 
@@ -105,7 +125,7 @@ describe('AuthProvider', () => {
     expect(refreshRequest).toHaveBeenCalledOnce()
     expect(refreshRequest).toHaveBeenCalledWith('auth-csrf-token')
     expect(csrfRequest).toHaveBeenCalledWith('include')
-    expect(window.localStorage.getItem(TOKEN_KEY)).toBe(refreshedToken)
+    expect(readStoredToken()).toBe(refreshedToken)
   })
 
   it('fetches the Auth CSRF token and sends it on logout', async () => {
@@ -131,7 +151,7 @@ describe('AuthProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Login' }))
 
     await waitFor(() => {
-      expect(window.localStorage.getItem(TOKEN_KEY)).toBe('mock-token')
+      expect(readStoredToken()).toBe('mock-token')
     })
   })
 })
