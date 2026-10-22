@@ -2,7 +2,7 @@
 
 Frontend web do Quistock, desenvolvido com React, TypeScript e Vite.
 
-[URL da Aplicação](quistock.onrender.com)
+[URL da Aplicação](https://quistock.onrender.com)
 
 ## Requisitos
 
