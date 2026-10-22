@@ -2,11 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { Skeleton } from '@mui/material'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
-import { useSendQuery } from '@/hooks/useSendQuery'
-import {
-  getDashboardSummary,
-  DASHBOARD_SUMMARY_QUERY_KEY,
-} from '@/services/api-dashboard'
+import { useDashboardSummary } from '@/hooks/useDashboardSummary'
 import type { IDashboardSummary } from '@/types'
 import * as S from './styles'
 
@@ -189,14 +185,7 @@ const MiniKpisColumn = ({
 const ReducedDashboard = () => {
   const navigate = useNavigate()
 
-  const {
-    responseDashboardSummary: summary,
-    isLoadingDashboardSummary: isLoading,
-  } = useSendQuery<IDashboardSummary, 'DashboardSummary'>({
-    queryKey: DASHBOARD_SUMMARY_QUERY_KEY,
-    apiPromise: getDashboardSummary,
-    suffix: 'DashboardSummary',
-  })
+  const { summary, isLoading } = useDashboardSummary()
 
   return (
     <S.Wrapper>

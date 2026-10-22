@@ -1,10 +1,6 @@
 import { Skeleton } from '@mui/material'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
-import { useSendQuery } from '@/hooks/useSendQuery'
-import {
-  getDashboardSummary,
-  DASHBOARD_SUMMARY_QUERY_KEY,
-} from '@/services/api-dashboard'
+import { useDashboardSummary } from '@/hooks/useDashboardSummary'
 import type { IDashboardSummary } from '@/types'
 import * as S from './styles'
 
@@ -278,14 +274,7 @@ const OperationalActionsChart = ({
 }
 
 const Dashboards = () => {
-  const {
-    responseDashboardSummary: summary,
-    isLoadingDashboardSummary: isLoading,
-  } = useSendQuery<IDashboardSummary, 'DashboardSummary'>({
-    queryKey: DASHBOARD_SUMMARY_QUERY_KEY,
-    apiPromise: getDashboardSummary,
-    suffix: 'DashboardSummary',
-  })
+  const { summary, isLoading } = useDashboardSummary()
 
   return (
     <S.Wrapper>
