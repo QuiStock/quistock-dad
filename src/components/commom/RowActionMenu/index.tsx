@@ -1,16 +1,22 @@
 import { useId, useState, type MouseEvent } from 'react'
 import { IconButton, Menu } from '@mui/material'
-import { ArticleOutlined, MoreVertOutlined } from '@mui/icons-material'
+import {
+  ArticleOutlined,
+  MoreVertOutlined,
+  OpenInNewOutlined,
+} from '@mui/icons-material'
 
 import * as S from './styles'
 
 interface IRowActionMenuProps {
   onDetails: () => void
+  onViewPage?: () => void
   label?: string
 }
 
 const RowActionMenu = ({
   onDetails,
+  onViewPage,
   label = 'Abrir ações',
 }: IRowActionMenuProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -32,6 +38,12 @@ const RowActionMenu = ({
     onDetails()
   }
 
+  const handleViewPage = (event: MouseEvent) => {
+    event.stopPropagation()
+    handleClose()
+    onViewPage?.()
+  }
+
   return (
     <>
       <IconButton
@@ -48,6 +60,12 @@ const RowActionMenu = ({
           <ArticleOutlined />
           <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
         </S.StyledItemFloatMenu>
+        {onViewPage && (
+          <S.StyledItemFloatMenu onClick={handleViewPage}>
+            <OpenInNewOutlined />
+            <S.TextItemMenuFloat>Ver detalhes</S.TextItemMenuFloat>
+          </S.StyledItemFloatMenu>
+        )}
       </Menu>
     </>
   )

@@ -20,6 +20,7 @@ const NotFound = lazy(() => import('@/pages/not-found'))
 const Home = lazy(() => import('@/pages/home'))
 const Dashboards = lazy(() => import('@/pages/dashboards'))
 const Managers = lazy(() => import('@/pages/managers'))
+const ManagerDetail = lazy(() => import('@/pages/manager-detail'))
 const Profile = lazy(() => import('@/pages/profile'))
 const Contact = lazy(() => import('@/pages/contact'))
 
@@ -67,6 +68,7 @@ export default function App() {
                   <Route path="/lojas" element={<Stores />} />
                   <Route path="/dashboards" element={<Dashboards />} />
                   <Route path="/gerentes" element={<Managers />} />
+                  <Route path="/gerentes/:id" element={<ManagerDetail />} />
                   <Route path="/perfil" element={<Profile />} />
                   <Route path="/contato" element={<Contact />} />
                 </Route>

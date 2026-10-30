@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as S from './styles'
 
 import { Add, Search } from '@mui/icons-material'
@@ -36,6 +37,7 @@ export const ManagersPartial = () => {
     handlePaginationChange,
   } = useTableSearch()
   const [modal, setModal] = useState<IManagerModalState>(CLOSED_MODAL)
+  const navigate = useNavigate()
 
   const handleSaveSuccess = useCallback(() => setModal(CLOSED_MODAL), [])
   const { managers, isLoadingManagers, isSavingManager, saveManager } =
@@ -110,12 +112,15 @@ export const ManagersPartial = () => {
             <RowActionMenu
               label={`Ações do gerente ${row.name}`}
               onDetails={() => setModal({ type: 'details', item: row.rawItem })}
+              onViewPage={() => {
+                void navigate(`/gerentes/${encodeURIComponent(row.id)}`)
+              }}
             />
           )
         },
       },
     ],
-    [],
+    [navigate],
   )
 
   return (
