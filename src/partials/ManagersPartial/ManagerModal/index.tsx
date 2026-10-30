@@ -62,6 +62,7 @@ const FormFields = ({
   return (
     <S.FormContainer>
       <TextInputComponent
+        id="manager-modal-name"
         label="Nome"
         value={form.name}
         error={Boolean(validationErrors.name)}
@@ -71,6 +72,7 @@ const FormFields = ({
         disabled={!isEditing}
       />
       <TextInputComponent
+        id="manager-modal-email"
         label="E-mail"
         value={form.email}
         error={Boolean(validationErrors.email)}
@@ -81,6 +83,7 @@ const FormFields = ({
       />
       {type === 'create' ? (
         <TextInputComponent
+          id="manager-modal-password"
           label="Senha Inicial"
           type="password"
           value={form.password}
@@ -94,6 +97,7 @@ const FormFields = ({
         <TextInputComponent
           select
           fullWidth
+          id="manager-modal-status"
           label="Status"
           value={form.status}
           onChange={(e) => onStatusChange(e.target.value as TAccountStatus)}
@@ -114,6 +118,7 @@ const FormFields = ({
           select
           fullWidth
           required
+          id="manager-modal-store"
           label="Filial *"
           value={form.storeId}
           error={Boolean(validationErrors.storeId)}
@@ -137,6 +142,7 @@ const FormFields = ({
         </TextInputComponent>
       ) : (
         <TextInputComponent
+          id="manager-modal-linked-store"
           label="Loja Vinculada"
           value={
             branches.find((branch) => branch.store_id === form.storeId)?.name ??
@@ -151,6 +157,7 @@ const FormFields = ({
           select
           fullWidth
           required
+          id="manager-modal-replacement"
           label="Gerente substituto *"
           value={form.replacementManagerId}
           error={Boolean(validationErrors.replacementManagerId)}
@@ -287,16 +294,15 @@ const ManagerModalContent = ({
   }
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="manager-modal-title"
-      aria-describedby={
-        type === 'create' ? 'manager-modal-description' : undefined
-      }
-      data-testid="modal-manager"
-    >
-      <S.BoxModal>
+    <Modal open={open} onClose={handleClose} data-testid="modal-manager">
+      <S.BoxModal
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="manager-modal-title"
+        aria-describedby={
+          type === 'create' ? 'manager-modal-description' : undefined
+        }
+      >
         <S.Title id="manager-modal-title">{getModalTitle(type)}</S.Title>
         <ManagerModalHelper id="manager-modal-description" type={type} />
 

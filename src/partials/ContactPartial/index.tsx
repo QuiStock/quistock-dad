@@ -34,6 +34,7 @@ export const ContactPartial = () => {
     <S.Wrapper>
       <S.FormContainer>
         <S.UserInput
+          id="contact-problema"
           label="Problema"
           placeholder="Ex: Não consigo ver os dados da minha região"
           value={form.problema}
@@ -43,6 +44,7 @@ export const ContactPartial = () => {
           onChange={handleFieldChange('problema')}
         />
         <S.UserInput
+          id="contact-mensagem"
           label="Mensagem"
           placeholder="Descreva o problema para a gente"
           value={form.mensagem}
