@@ -55,7 +55,7 @@ export const UserInput = styled(TextInputComponent)(
 
       .MuiOutlinedInput-root {
         fieldset {
-          border-color: #a855f7;
+          border-color: #9333EA;
         }
         &:hover fieldset {
           border-color: #7f3aef;
@@ -66,7 +66,7 @@ export const UserInput = styled(TextInputComponent)(
       }
 
       label {
-        color: #a855f7;
+        color: #9333EA;
       }
       label.Mui-focused {
         color: #7f3aef;
@@ -82,7 +82,7 @@ export const UserPassword = styled(TextInputWithIcon)(
 
       .MuiOutlinedInput-root {
         fieldset {
-          border-color: #a855f7;
+          border-color: #9333EA;
         }
         &:hover fieldset {
           border-color: #7f3aef;
@@ -93,7 +93,7 @@ export const UserPassword = styled(TextInputWithIcon)(
       }
 
       label {
-        color: #a855f7;
+        color: #9333EA;
       }
       label.Mui-focused {
         color: #7f3aef;

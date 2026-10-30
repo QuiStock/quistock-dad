@@ -13,6 +13,21 @@ const GlobalStyles = createGlobalStyle`
       outline-offset: 2px;
     }
 
+    :where(.Mui-focusVisible):not(.MuiMenuItem-root) {
+      outline: 2px solid ${theme.colors.lightBlue};
+      outline-offset: 2px;
+    }
+
+    header :where(a, button, [role='button'], [tabindex]):focus-visible,
+    .MuiDrawer-paper :where(a, button, [role='button'], [tabindex]):focus-visible {
+      outline-color: #d8b4fe;
+    }
+
+    .MuiMenu-paper [role='menuitem']:focus-visible {
+      outline: 2px solid ${theme.colors.lightBlue};
+      outline-offset: -2px;
+    }
+
     * {
       font-size: 1.4rem;
       margin: 0;
