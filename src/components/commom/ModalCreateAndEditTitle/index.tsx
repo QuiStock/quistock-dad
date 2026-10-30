@@ -1,5 +1,5 @@
 import * as S from './styles'
-import { type ReactNode, useState } from 'react'
+import { type ReactNode, useId, useState } from 'react'
 
 import { Modal } from '@mui/material'
 
@@ -28,13 +28,22 @@ const ModalCreateAndEditTitle = ({
   onSave,
 }: IModalCreateAndEditTitle) => {
   const [value, setValue] = useState(initialValue || '')
+  const baseId = useId()
+  const titleId = `${baseId}-title`
+  const helperId = `${baseId}-helper`
 
   return (
     <Modal open={open} data-testid="modal-create-and-edit-title">
-      <S.BoxModal>
-        <S.Title>{modalTitle}</S.Title>
+      <S.BoxModal
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={helper ? helperId : undefined}
+      >
+        <S.Title id={titleId}>{modalTitle}</S.Title>
 
         <TextInputComponent
+          id={`${baseId}-input`}
           label={placeholder}
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -43,7 +52,7 @@ const ModalCreateAndEditTitle = ({
           }}
         />
 
-        <S.Helper>{helper}</S.Helper>
+        <S.Helper id={helperId}>{helper}</S.Helper>
 
         <S.BoxButtons>
           <ButtonComponent

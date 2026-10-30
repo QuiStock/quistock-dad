@@ -99,13 +99,13 @@ export const MenuButton = styled(Menu)(
 export const AvatarButton = styled(Avatar)(
   ({ theme }) => css`
     && {
-      background-color: #7f3aef;
+      background-color: #6a2eb8;
       width: 4rem;
       height: 4rem;
       cursor: pointer;
 
       &:hover {
-        background-color: #6a2eb8;
+        background-color: #5b25a0;
       }
 
       @media (max-width: ${theme.screen.small}) {
@@ -302,5 +302,38 @@ export const Navigation = styled('nav')(
     align-items: flex-start;
     gap: 1.6rem;
     padding: 1.6rem;
+  `,
+)
+
+export const SkipLink = styled('a')(
+  ({ theme }) => css`
+    position: absolute;
+    left: 1.6rem;
+    top: -10rem;
+    z-index: 2000;
+    padding: 0.8rem 1.6rem;
+    background-color: ${theme.colors.white};
+    color: ${theme.font.colors.title};
+    font-family: ${theme.font.family.base};
+    font-size: ${theme.font.size.body1};
+
+    &:focus {
+      top: 1rem;
+    }
+  `,
+)
+
+export const Footer = styled('footer')(
+  ({ theme }) => css`
+    width: 100%;
+    padding: 1.6rem;
+    text-align: center;
+    background-color: #2d1b4e;
+
+    small {
+      color: ${theme.colors.white};
+      font-family: ${theme.font.family.base};
+      font-size: ${theme.font.size.base};
+    }
   `,
 )

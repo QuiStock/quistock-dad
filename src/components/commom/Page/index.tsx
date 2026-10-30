@@ -50,6 +50,9 @@ const Page = ({ children, title }: IPage) => {
   return (
     <>
       <title>{`QuiStock | ${title}`}</title>
+      <S.SkipLink href="#main-content">
+        Pular para o conteúdo principal
+      </S.SkipLink>
       <header>
         <S.TopBar>
           <Container maxWidth="xl">
@@ -153,13 +156,17 @@ const Page = ({ children, title }: IPage) => {
         </S.TopBar>
       </header>
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <S.Wrapper>
           <Container maxWidth="xl" style={{ backgroundColor: 'white' }}>
             <S.PageWrapper>{children}</S.PageWrapper>
           </Container>
         </S.Wrapper>
       </main>
+
+      <S.Footer>
+        <small>{'© QuiStock. Todos os direitos reservados.'}</small>
+      </S.Footer>
     </>
   )
 }
