@@ -7,8 +7,10 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 
 COPY . .
 
-ARG VITE_API_URL=/api
-ENV VITE_API_URL=${VITE_API_URL}
+ARG AUTH_API_URL=/auth
+ARG CORE_API_URL=/api
+ENV AUTH_API_URL=${AUTH_API_URL} \
+    CORE_API_URL=${CORE_API_URL}
 
 RUN npm run build
 
