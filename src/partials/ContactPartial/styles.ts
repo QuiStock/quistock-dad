@@ -38,7 +38,7 @@ export const UserInput = styled(TextInputComponent)(
 
       .MuiOutlinedInput-root {
         fieldset {
-          border-color: #9333EA;
+          border-color: #9333ea;
         }
         &:hover fieldset {
           border-color: #7f3aef;
@@ -49,7 +49,7 @@ export const UserInput = styled(TextInputComponent)(
       }
 
       label {
-        color: #9333EA;
+        color: #9333ea;
       }
       label.Mui-focused {
         color: #7f3aef;
