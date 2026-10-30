@@ -54,6 +54,9 @@ const BoxLogin = ({ setUserDocument, setVerifiedUser }: IBoxLogin) => {
       </S.HeaderContainer>
 
       <S.UserInput
+        id="login-email"
+        type="email"
+        autoComplete="username"
         label={'E-mail'}
         placeholder="Ex: seunome@gmail.com"
         value={email}
@@ -64,6 +67,8 @@ const BoxLogin = ({ setUserDocument, setVerifiedUser }: IBoxLogin) => {
       />
 
       <S.LoginPassword
+        id="login-password"
+        autoComplete="current-password"
         value={password}
         label={'Senha'}
         placeholder="Digite a sua senha"

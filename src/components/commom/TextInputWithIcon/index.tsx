@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import { type ReactNode, useId } from 'react'
 import * as S from './styles'
 import {
   type TextFieldProps,
@@ -12,19 +12,32 @@ type ITextInputWithIconProps = TextFieldProps & {
 
 const TextInputWithIcon = ({
   icon,
+  id,
+  error,
   slotProps,
   ...props
-}: ITextInputWithIconProps) => (
-  <S.Wrapper
-    {...props}
-    slotProps={{
-      ...slotProps,
-      input: {
-        ...(slotProps?.input as Partial<InputBaseProps>),
-        endAdornment: <InputAdornment position="end">{icon}</InputAdornment>,
-      },
-    }}
-  />
-)
+}: ITextInputWithIconProps) => {
+  const generatedId = useId()
+  const helperSlot = slotProps?.formHelperText as object | undefined
+
+  return (
+    <S.Wrapper
+      {...props}
+      id={id ?? generatedId}
+      error={error}
+      slotProps={{
+        ...slotProps,
+        formHelperText: {
+          ...helperSlot,
+          ...(error ? { role: 'alert' } : {}),
+        },
+        input: {
+          ...(slotProps?.input as Partial<InputBaseProps>),
+          endAdornment: <InputAdornment position="end">{icon}</InputAdornment>,
+        },
+      }}
+    />
+  )
+}
 
 export { TextInputWithIcon }
