@@ -24,6 +24,8 @@ const ModalConfirmationWarning = ({
 }: IModalConfirmationWarning) => {
   const [secondValidation, setSecondValidation] = useState(false)
   const dialogId = useId()
+  const titleId = `${dialogId}-title`
+  const checkboxId = `${dialogId}-checkbox`
 
   const getModalTitle = () => {
     if (isImportant) return 'Aviso importante'
@@ -51,16 +53,14 @@ const ModalConfirmationWarning = ({
   const messageIds = messageItems.map(({ id }) => id).join(' ')
 
   return (
-    <S.StyledModal
-      open={openModal}
-      aria-labelledby="confirmation-modal-title"
-      aria-describedby={messageIds}
-    >
-      <S.Wrapper>
-        <S.ModalTitle
-          id="confirmation-modal-title"
-          color={isAlert ? 'red' : 'main'}
-        >
+    <S.StyledModal open={openModal}>
+      <S.Wrapper
+        role={isAlert ? 'alertdialog' : 'dialog'}
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={messageIds}
+      >
+        <S.ModalTitle id={titleId} color={isAlert ? 'red' : 'main'}>
           {getModalTitle()}
         </S.ModalTitle>
 
@@ -71,9 +71,9 @@ const ModalConfirmationWarning = ({
         ))}
 
         {isImportant && (
-          <S.ConfirmationBox htmlFor="confirmation-checkbox">
+          <S.ConfirmationBox htmlFor={checkboxId}>
             <Checkbox
-              id="confirmation-checkbox"
+              id={checkboxId}
               checked={secondValidation}
               onChange={(e) => setSecondValidation(e.target.checked)}
               sx={{ '& .MuiSvgIcon-root': { fontSize: '2.5rem', margin: 0 } }}
