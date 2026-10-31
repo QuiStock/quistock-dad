@@ -16,6 +16,11 @@ export const DEACTIVATION_REQUIRES_REPLACEMENT_MESSAGE =
   'Não foi possível inativar: a filial possui funcionários ativos e exige um gerente substituto ativo na mesma filial.'
 
 export const MANAGERS_QUERY_KEY = ['/managers']
+export const storeManagersQueryKey = (storeId: number) => [
+  ...MANAGERS_QUERY_KEY,
+  'store',
+  storeId,
+]
 export const managerDetailQueryKey = (id: string | number) => [
   '/managers',
   String(id),
