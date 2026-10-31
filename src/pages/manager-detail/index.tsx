@@ -1,4 +1,4 @@
-import { useCallback, useState, type ReactNode } from 'react'
+import { useCallback, useState } from 'react'
 import {
   ArrowBack,
   BadgeOutlined,
@@ -13,6 +13,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import * as S from './styles'
 import { Page } from '@/components/commom/Page'
 import { ButtonWithIcon } from '@/components/commom/ButtonWithIcon'
+import { DetailFeedback, DetailItem } from '@/components/commom/DetailCard'
 import { LoadingMask } from '@/components/commom/LoadingMask'
 import { ManagerModal } from '@/partials/ManagersPartial/ManagerModal'
 import { useManagers } from '@/hooks/useManagers'
@@ -20,20 +21,6 @@ import { useSendQuery } from '@/hooks/useSendQuery'
 import { getManagerById, managerDetailQueryKey } from '@/services/api-managers'
 import { ManagerStatusEnum, UserRoleLabel } from '@/types/enums'
 import type { IManager, ISaveManagerData } from '@/types'
-
-interface IDetailItemProps {
-  icon: ReactNode
-  label: string
-  children: ReactNode
-}
-
-const DetailItem = ({ icon, label, children }: IDetailItemProps) => (
-  <S.DetailItem>
-    {icon}
-    <S.DetailLabel>{label}</S.DetailLabel>
-    <S.DetailValue>{children}</S.DetailValue>
-  </S.DetailItem>
-)
 
 interface ILinkedValueProps {
   name: string | null
@@ -156,10 +143,7 @@ const ManagerDetail = () => {
   const canEdit = hasValidId && !isLoadingManager && !!responseManager
 
   const renderFeedback = (title: string, message: string) => (
-    <S.Feedback role="alert">
-      <strong>{title}</strong>
-      <p>{message}</p>
-    </S.Feedback>
+    <DetailFeedback title={title} message={message} />
   )
 
   const renderContent = () => {

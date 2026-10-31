@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react'
 import {
   ArrowBack,
   MapOutlined,
@@ -14,6 +13,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import * as S from './styles'
 import { Page } from '@/components/commom/Page'
 import { ButtonWithIcon } from '@/components/commom/ButtonWithIcon'
+import { DetailFeedback, DetailItem } from '@/components/commom/DetailCard'
 import { useBranches } from '@/hooks/useBranches'
 import { useProfile } from '@/hooks/useProfile'
 import { useSendQuery } from '@/hooks/useSendQuery'
@@ -37,20 +37,6 @@ const formatLocation = (branch: IBranch) => {
   const parts = [branch.city, branch.state].filter(Boolean)
   return parts.length > 0 ? parts.join(' - ') : NOT_INFORMED
 }
-
-interface IDetailItemProps {
-  icon: ReactNode
-  label: string
-  children: ReactNode
-}
-
-const DetailItem = ({ icon, label, children }: IDetailItemProps) => (
-  <S.DetailItem>
-    {icon}
-    <S.DetailLabel>{label}</S.DetailLabel>
-    <S.DetailValue>{children}</S.DetailValue>
-  </S.DetailItem>
-)
 
 const METRICS: { key: keyof IDashboardSummary; label: string }[] = [
   { key: 'total_products', label: 'Produtos analisados' },
@@ -249,20 +235,13 @@ const StoreDetailCard = ({ branch, canSeeManagers }: IStoreDetailCardProps) => {
   )
 }
 
-const Feedback = ({ title, message }: { title: string; message: string }) => (
-  <S.Feedback role="alert">
-    <strong>{title}</strong>
-    <p>{message}</p>
-  </S.Feedback>
-)
-
 const StoreDetailContent = ({ storeId }: { storeId: number | null }) => {
   const { branches, isLoadingBranches } = useBranches()
   const { profile } = useProfile()
 
   if (storeId === null) {
     return (
-      <Feedback
+      <DetailFeedback
         title="Identificador da loja inválido."
         message="Volte para a lista e escolha uma loja."
       />
@@ -275,7 +254,7 @@ const StoreDetailContent = ({ storeId }: { storeId: number | null }) => {
   const branch = branches?.find((item) => item.store_id === storeId)
   if (!branch) {
     return (
-      <Feedback
+      <DetailFeedback
         title="Loja não encontrada."
         message="A loja não existe, está inativa ou fora do seu escopo de acesso."
       />
