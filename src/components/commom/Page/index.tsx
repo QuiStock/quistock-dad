@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useProfile } from '@/hooks/useProfile'
 import { canManageManagers } from '@/utils/permissions'
+import quistockLogo from '@/assets/quistock.svg'
 
 interface IPage {
   children: ReactNode
@@ -70,10 +71,7 @@ const Page = ({ children, title }: IPage) => {
                 </S.IconTrigger>
 
                 <S.CustomLink to={'/home'}>
-                  <S.LogoJBS
-                    src="src/assets/quistock.svg"
-                    alt="Logo QuiStock"
-                  />
+                  <S.LogoJBS src={quistockLogo} alt="Logo QuiStock" />
                   <span>|</span>
                   {'Admin'}
                 </S.CustomLink>
