@@ -1,6 +1,11 @@
-import { Modal, MenuItem } from '@mui/material'
+import { MenuItem } from '@mui/material'
 
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
+import {
+  DialogHeader,
+  DialogModal,
+  DialogTitle,
+} from '@/components/commom/DialogModal'
 import { TextInputComponent } from '@/components/commom/TextInputComponent'
 import { useBranches } from '@/hooks/useBranches'
 import { useManagerForm } from '@/hooks/useManagerForm'
@@ -312,42 +317,44 @@ const ManagerModalContent = ({
   }
 
   return (
-    <Modal open={open} onClose={handleClose} data-testid="modal-manager">
-      <S.BoxModal
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="manager-modal-title"
-        aria-describedby={
-          type === 'create' ? 'manager-modal-description' : undefined
-        }
-      >
-        <S.Title id="manager-modal-title">{getModalTitle(type)}</S.Title>
+    <DialogModal
+      open={open}
+      onClose={handleClose}
+      size="md"
+      data-testid="modal-manager"
+      labelledBy="manager-modal-title"
+      describedBy={type === 'create' ? 'manager-modal-description' : undefined}
+    >
+      <DialogHeader>
+        <DialogTitle id="manager-modal-title">
+          {getModalTitle(type)}
+        </DialogTitle>
         <ManagerModalHelper id="manager-modal-description" type={type} />
+      </DialogHeader>
 
-        <FormFields
-          type={type}
-          isEditing={isEditing}
-          form={form}
-          validationErrors={validationErrors}
-          onFieldChange={setField}
-          onStatusChange={setStatus}
-          onStoreChange={setStoreId}
-          replacementManagers={replacementManagers}
-          isDeactivating={isDeactivating}
-          branches={branches ?? []}
-          storeName={item?.store_name ?? ''}
-        />
+      <FormFields
+        type={type}
+        isEditing={isEditing}
+        form={form}
+        validationErrors={validationErrors}
+        onFieldChange={setField}
+        onStatusChange={setStatus}
+        onStoreChange={setStoreId}
+        replacementManagers={replacementManagers}
+        isDeactivating={isDeactivating}
+        branches={branches ?? []}
+        storeName={item?.store_name ?? ''}
+      />
 
-        <ActionButtons
-          isEditing={isEditing}
-          isFormValid={isFormValid}
-          isSaving={isSaving}
-          type={type}
-          onClose={handleClose}
-          onSave={handleSave}
-          onStartEditing={startEditing}
-        />
-      </S.BoxModal>
-    </Modal>
+      <ActionButtons
+        isEditing={isEditing}
+        isFormValid={isFormValid}
+        isSaving={isSaving}
+        type={type}
+        onClose={handleClose}
+        onSave={handleSave}
+        onStartEditing={startEditing}
+      />
+    </DialogModal>
   )
 }
