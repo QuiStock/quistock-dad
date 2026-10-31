@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { renderWithTheme } from '@/utils/__tests__/helpers'
 import { describe, it, expect, vi } from 'vitest'
 import Home from './index'
 
@@ -20,7 +20,7 @@ vi.mock('@/components/home/ReducedDashboard', () => ({
 
 describe('Home', () => {
   it('renders correctly', () => {
-    const { container } = render(<Home />)
+    const { container } = renderWithTheme(<Home />)
     expect(container).toBeInTheDocument()
   })
 })

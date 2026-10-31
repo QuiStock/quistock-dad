@@ -2,8 +2,11 @@ import { useNavigate } from 'react-router-dom'
 import { Skeleton } from '@mui/material'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
+import { FlowBarList, type IFlowBarItem } from '@/components/commom/FlowBar'
+import { MetricTile } from '@/components/commom/DetailCard/styles'
 import { useDashboardSummary } from '@/hooks/useDashboardSummary'
 import type { IDashboardSummary } from '@/types'
+import theme from '@/styles/theme'
 import * as S from './styles'
 
 const DEFAULT_SUMMARY: IDashboardSummary = {
@@ -25,14 +28,6 @@ const calcPercentage = (value: number, total: number): number => {
   return Math.round((value / total) * 100)
 }
 
-interface IFlowBarItem {
-  id: string
-  label: string
-  count: number
-  percentage: number
-  color: string
-}
-
 const buildFlowItems = (s: IDashboardSummary): IFlowBarItem[] => {
   const total = s.total_products
   const highPct = calcPercentage(s.high_risk_products, total)
@@ -43,23 +38,26 @@ const buildFlowItems = (s: IDashboardSummary): IFlowBarItem[] => {
     {
       id: 'high',
       label: 'Fluxo Alto (Ruptura iminente)',
-      count: s.high_risk_products,
+      value: `${s.high_risk_products} itens`,
+      detail: `${highPct}%`,
       percentage: highPct,
-      color: '#D32F2F',
+      color: theme.colors.red,
     },
     {
       id: 'medium',
       label: 'Fluxo Médio (Estoque equilibrado)',
-      count: s.medium_risk_products,
+      value: `${s.medium_risk_products} itens`,
+      detail: `${medPct}%`,
       percentage: medPct,
-      color: '#ED6C02',
+      color: theme.colors.orange,
     },
     {
       id: 'low',
       label: 'Fluxo Baixo (Risco de excesso/vencimento)',
-      count: s.low_risk_products,
+      value: `${s.low_risk_products} itens`,
+      detail: `${lowPct}%`,
       percentage: lowPct,
-      color: '#4CAF50',
+      color: theme.colors.green2,
     },
   ]
 }
@@ -88,61 +86,37 @@ const StockFlowColumn = ({
 
   return (
     <S.CardContainer>
-      <S.FlowBarGroup>
-        {items.map((item) => (
-          <S.FlowItem key={item.id}>
-            <S.FlowItemHeader>
-              <span>{item.label}</span>
-              <span>
-                {item.count} itens ({item.percentage}%)
-              </span>
-            </S.FlowItemHeader>
-            <S.FlowTrack>
-              <S.FlowFill $percentage={item.percentage} $color={item.color} />
-            </S.FlowTrack>
-          </S.FlowItem>
-        ))}
-      </S.FlowBarGroup>
+      <FlowBarList items={items} />
     </S.CardContainer>
   )
 }
 
 interface IMiniKpiConfig {
   id: string
-  borderColor: string
   title: string
   value: number
-  color: string
 }
 
 const buildMiniKpis = (s: IDashboardSummary): IMiniKpiConfig[] => [
   {
     id: 'total',
-    borderColor: '#7623E1',
-    title: 'Produtos Cadastrados',
+    title: 'Produtos cadastrados',
     value: s.total_products,
-    color: '#7623E1',
   },
   {
     id: 'actions',
-    borderColor: '#0091ff',
-    title: 'Ações Ativas',
+    title: 'Ações ativas',
     value: s.active_actions,
-    color: '#0091ff',
   },
   {
     id: 'expiry',
-    borderColor: '#FF9800',
-    title: 'Perto do Vencimento',
+    title: 'Perto do vencimento',
     value: s.near_expiry_products,
-    color: '#FF9800',
   },
   {
     id: 'promotions',
-    borderColor: '#AF36DF',
-    title: 'Promoções Sugeridas',
+    title: 'Promoções sugeridas',
     value: s.suggested_promotions,
-    color: '#AF36DF',
   },
 ]
 
@@ -172,10 +146,10 @@ const MiniKpisColumn = ({
     <S.CardContainer>
       <S.MiniKpisGrid>
         {kpis.map((kpi) => (
-          <S.MiniKpi key={kpi.id} $borderColor={kpi.borderColor}>
-            <S.MiniKpiTitle>{kpi.title}</S.MiniKpiTitle>
-            <S.MiniKpiValue $color={kpi.color}>{kpi.value}</S.MiniKpiValue>
-          </S.MiniKpi>
+          <MetricTile key={kpi.id}>
+            <strong>{kpi.value}</strong>
+            <span>{kpi.title}</span>
+          </MetricTile>
         ))}
       </S.MiniKpisGrid>
     </S.CardContainer>
@@ -209,14 +183,12 @@ const ReducedDashboard = () => {
               <TabsCompoundComponent.Tab label={"Seus KPI's"} index={0} />
             </TabsCompoundComponent.List>
           </TabsCompoundComponent.Root>
-          <S.SeeMoreButton>
-            <ButtonComponent
-              variant="outlined"
-              onClick={() => void navigate('/dashboards')}
-            >
-              Mais detalhes
-            </ButtonComponent>
-          </S.SeeMoreButton>
+          <ButtonComponent
+            variant="outlined"
+            onClick={() => void navigate('/dashboards')}
+          >
+            Mais detalhes
+          </ButtonComponent>
         </S.Header>
         <S.Content>
           <MiniKpisColumn summary={summary} isLoading={isLoading} />

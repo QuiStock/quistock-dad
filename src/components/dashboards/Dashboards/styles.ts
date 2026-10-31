@@ -1,28 +1,32 @@
 import styled, { css } from 'styled-components'
 
 export const Wrapper = styled('div')(
-  () => css`
+  ({ theme }) => css`
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 4.8rem;
+
+    @media (max-width: ${theme.screen.small}) {
+      gap: 3.2rem;
+    }
   `,
 )
 
-export const Section = styled('div')(
+export const Section = styled('section')(
   () => css`
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.6rem;
   `,
 )
 
 export const Header = styled('div')(
   () => css`
+    width: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
+    align-items: flex-end;
   `,
 )
 
@@ -32,60 +36,74 @@ export const Content = styled('div')(
   `,
 )
 
-export const KpiGrid = styled('div')(
-  () => css`
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
-    gap: 2rem;
+export const KpiGrid = styled('ul')(
+  ({ theme }) => css`
     width: 100%;
-  `,
-)
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.6rem;
 
-export const KpiCard = styled('div')<{ $borderColor?: string }>(
-  ({ theme, $borderColor }) => css`
-    background: ${theme.colors.white};
-    border-radius: ${theme.borderRadius.main};
-    box-shadow: ${theme.boxShadow.main};
-    padding: 2.2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    border-top: 4px solid ${$borderColor || '#7623E1'};
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
+    @media (max-width: ${theme.screen.medium}) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0.4rem 0.8rem 0 #23237830;
+    @media (max-width: ${theme.screen.xsmall}) {
+      grid-template-columns: 1fr;
     }
   `,
 )
 
-export const KpiCardHeader = styled('div')(
+export const KpiCard = styled('li')(
   ({ theme }) => css`
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: ${theme.font.size.base};
-    font-weight: 500;
-    color: ${theme.font.colors.title};
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 2.4rem;
+    background-color: ${theme.colors.white};
+    border-radius: ${theme.borderRadius.main};
+    box-shadow: ${theme.boxShadow.main};
+    font-family: ${theme.font.family.base};
   `,
 )
 
-export const KpiValue = styled('span')<{ $color?: string }>(
-  ({ theme, $color }) => css`
+// The semantic colour lives in a status dot, so the number keeps full contrast.
+export const KpiCardHeader = styled('span')<{ $accent: string }>(
+  ({ theme, $accent }) => css`
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: ${theme.font.size.base};
+    font-weight: 400;
+    color: ${theme.font.colors.title2};
+
+    &::before {
+      content: '';
+      width: 0.8rem;
+      height: 0.8rem;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background-color: ${$accent};
+    }
+  `,
+)
+
+export const KpiValue = styled('strong')(
+  ({ theme }) => css`
     font-size: ${theme.font.size.bigTitle};
-    font-weight: 700;
-    color: ${$color || theme.font.colors.title};
-    line-height: 1.2;
-    font-family: ${theme.font.family.base};
+    font-weight: 500;
+    line-height: 1.1;
+    color: ${theme.colors.brandInk};
+    font-variant-numeric: tabular-nums;
   `,
 )
 
 export const KpiDescription = styled('span')(
   ({ theme }) => css`
-    font-size: ${theme.font.size.minimum};
+    font-size: ${theme.font.size.base};
+    font-weight: 300;
     color: ${theme.font.colors.main};
   `,
 )
@@ -93,7 +111,7 @@ export const KpiDescription = styled('span')(
 export const ChartsContainer = styled('div')(
   ({ theme }) => css`
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 2.4rem;
 
     @media (max-width: ${theme.screen.medium}) {
@@ -102,64 +120,28 @@ export const ChartsContainer = styled('div')(
   `,
 )
 
-export const ChartCard = styled('div')(
+export const ChartCard = styled('article')(
   ({ theme }) => css`
-    background: ${theme.colors.white};
-    border-radius: ${theme.borderRadius.main};
-    box-shadow: ${theme.boxShadow.main};
-    padding: 2.4rem;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 2.4rem;
+    padding: 2.4rem 3.2rem 3.2rem;
+    background-color: ${theme.colors.white};
+    border-radius: ${theme.borderRadius.main};
+    box-shadow: ${theme.boxShadow.main};
+
+    @media (max-width: ${theme.screen.small}) {
+      padding: 2.4rem;
+    }
   `,
 )
 
 export const ChartTitle = styled('h3')(
   ({ theme }) => css`
-    font-size: ${theme.font.size.body2};
-    font-weight: 600;
-    color: ${theme.font.colors.title};
     margin: 0;
-  `,
-)
-
-export const ProgressBarWrapper = styled('div')(
-  () => css`
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-  `,
-)
-
-export const ProgressBarHeader = styled('div')(
-  ({ theme }) => css`
-    display: flex;
-    justify-content: space-between;
-    font-size: ${theme.font.size.body1};
-    color: ${theme.font.colors.dark};
-    font-weight: 500;
-  `,
-)
-
-export const ProgressBarTrack = styled('div')(
-  ({ theme }) => css`
-    width: 100%;
-    height: 1.2rem;
-    background: ${theme.colors.progressBarBG};
-    border-radius: 0.6rem;
-    overflow: hidden;
-  `,
-)
-
-export const ProgressBarFill = styled('div')<{
-  $percentage: number
-  $color: string
-}>(
-  ({ $percentage, $color }) => css`
-    width: ${Math.min(100, Math.max(0, $percentage))}%;
-    height: 100%;
-    background-color: ${$color};
-    border-radius: 0.6rem;
-    transition: width 0.5s ease-in-out;
+    font-family: ${theme.font.family.base};
+    font-size: ${theme.font.size.pageTab};
+    font-weight: 400;
+    color: ${theme.font.colors.title};
   `,
 )
