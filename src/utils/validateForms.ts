@@ -19,6 +19,7 @@ export interface IManagerValidationErrors {
 }
 
 export interface IManagerUpdateValidationErrors {
+  payload?: string
   name?: string
   email?: string
   store_id?: string
@@ -36,8 +37,11 @@ export interface IContactValidationErrors {
 }
 
 const EMAIL_MAX_LENGTH = 254
-const NAME_MAX_LENGTH = 100
 const PASSWORD_MAX_LENGTH = 128
+const MANAGER_NAME_MAX_LENGTH = 150
+const MANAGER_EMAIL_MAX_LENGTH = 255
+const MANAGER_PASSWORD_MIN_LENGTH = 8
+const MANAGER_PASSWORD_MAX_BYTES = 72
 const CONTACT_SUBJECT_MAX_LENGTH = 120
 const CONTACT_MESSAGE_MAX_LENGTH = 2000
 
@@ -65,12 +69,15 @@ const validateRequiredText = (
   return undefined
 }
 
-const validateEmail = (value: string): string | undefined => {
+const validateEmail = (
+  value: string,
+  maxLength = EMAIL_MAX_LENGTH,
+): string | undefined => {
   const email = value.trim()
   const requiredOrLengthError = validateRequiredText(
     email,
     'o e-mail',
-    EMAIL_MAX_LENGTH,
+    maxLength,
   )
   if (requiredOrLengthError) return requiredOrLengthError
   if (!isValidEmail(email)) return 'Informe um e-mail válido.'
@@ -86,6 +93,22 @@ const validatePassword = (
     return `A senha deve ter no máximo ${PASSWORD_MAX_LENGTH} caracteres.`
   return undefined
 }
+
+const validateManagerPassword = (
+  value: string,
+  required: boolean,
+): string | undefined => {
+  if (!required) return undefined
+  if (!value.trim()) return 'Informe a senha inicial.'
+  if (value.length < MANAGER_PASSWORD_MIN_LENGTH)
+    return `A senha deve ter no mínimo ${MANAGER_PASSWORD_MIN_LENGTH} caracteres.`
+  if (new TextEncoder().encode(value).length > MANAGER_PASSWORD_MAX_BYTES)
+    return `A senha deve ter no máximo ${MANAGER_PASSWORD_MAX_BYTES} caracteres.`
+  return undefined
+}
+
+const isPositiveInteger = (value: number) =>
+  Number.isInteger(value) && value > 0
 
 const validateContactField = (
   value: string,
@@ -111,14 +134,20 @@ export const validateManagerForm = (
   requiresPassword: boolean,
 ): IManagerValidationErrors => {
   const errors: IManagerValidationErrors = {}
-  const nameError = validateRequiredText(form.name, 'o nome', NAME_MAX_LENGTH)
-  const emailError = validateEmail(form.email)
-  const passwordError = validatePassword(form.password, requiresPassword)
+  const nameError = validateRequiredText(
+    form.name,
+    'o nome',
+    MANAGER_NAME_MAX_LENGTH,
+  )
+  const emailError = validateEmail(form.email, MANAGER_EMAIL_MAX_LENGTH)
+  const passwordError = validateManagerPassword(form.password, requiresPassword)
   if (nameError) errors.name = nameError
   if (emailError) errors.email = emailError
   if (passwordError) errors.password = passwordError
 
-  if (form.storeId === '') errors.storeId = 'Selecione uma filial.'
+  
+  if (form.status === 'ACTIVE' && form.storeId === '')
+    errors.storeId = 'Selecione uma filial.'
   if (requiresReplacementManager && form.replacementManagerId === '')
     errors.replacementManagerId = 'Selecione um gerente substituto.'
 
@@ -143,22 +172,37 @@ export const validateManagerUpdatePayload = (
   payload: IUpdateManagerPayload,
 ): IManagerUpdateValidationErrors => {
   const errors: IManagerUpdateValidationErrors = {}
+  const hasChanges = Object.values(payload).some((value) => value !== undefined)
+  if (!hasChanges) {
+    errors.payload = 'Nenhuma alteração para salvar.'
+    return errors
+  }
+
   const nameError =
     payload.name === undefined
       ? undefined
-      : validateRequiredText(payload.name, 'o nome', NAME_MAX_LENGTH)
+      : validateRequiredText(payload.name, 'o nome', MANAGER_NAME_MAX_LENGTH)
   const emailError =
-    payload.email === undefined ? undefined : validateEmail(payload.email)
+    payload.email === undefined
+      ? undefined
+      : validateEmail(payload.email, MANAGER_EMAIL_MAX_LENGTH)
   if (nameError) errors.name = nameError
   if (emailError) errors.email = emailError
 
-  if (payload.store_id !== undefined && !Number.isInteger(payload.store_id))
-    errors.store_id = 'Selecione uma filial válida.'
-  if (
-    payload.replacement_manager_id !== undefined &&
-    !Number.isInteger(payload.replacement_manager_id)
-  )
-    errors.replacement_manager_id = 'Selecione um gerente substituto válido.'
+  if (payload.store_id !== undefined) {
+    if (!isPositiveInteger(payload.store_id))
+      errors.store_id = 'Selecione uma filial válida.'
+    else if (payload.status === 'INACTIVE')
+      errors.store_id = 'A filial não pode ser alterada ao inativar o gerente.'
+  }
+
+  if (payload.replacement_manager_id !== undefined) {
+    if (!isPositiveInteger(payload.replacement_manager_id))
+      errors.replacement_manager_id = 'Selecione um gerente substituto válido.'
+    else if (payload.status !== 'INACTIVE')
+      errors.replacement_manager_id =
+        'O gerente substituto só pode ser informado ao inativar o gerente.'
+  }
 
   return errors
 }

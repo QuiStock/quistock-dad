@@ -43,6 +43,7 @@ interface IFormFieldsProps {
   onStatusChange: (status: TAccountStatus) => void
   onStoreChange: (storeId: TStoreSelection) => void
   replacementManagers: IManager[]
+  isDeactivating: boolean
   branches: IBranch[]
   storeName: string
 }
@@ -56,6 +57,7 @@ const FormFields = ({
   onStatusChange,
   onStoreChange,
   replacementManagers,
+  isDeactivating,
   branches,
   storeName,
 }: IFormFieldsProps) => {
@@ -117,14 +119,14 @@ const FormFields = ({
         <TextInputComponent
           select
           fullWidth
-          required
+          required={form.status === 'ACTIVE'}
           id="manager-modal-store"
           label="Filial"
           value={form.storeId}
           error={Boolean(validationErrors.storeId)}
           helperText={validationErrors.storeId}
           onChange={(e) => onStoreChange(toStoreSelection(e.target.value))}
-          disabled={!isEditing}
+          disabled={!isEditing || form.status === 'INACTIVE'}
           sx={SELECT_LABEL_SX}
         >
           <MenuItem value="" sx={MENU_ITEM_SX}>
@@ -150,6 +152,15 @@ const FormFields = ({
           }
           disabled
         />
+      )}
+
+      {isDeactivating && replacementManagers.length === 0 && (
+        <S.Helper id="manager-modal-replacement-note" role="note">
+          Não há outro gerente ativo nesta filial. Se a filial tiver
+          funcionários ativos, a inativação exige um gerente substituto ativo
+          na mesma filial: cadastre ou vincule outro gerente a ela antes de
+          inativar.
+        </S.Helper>
       )}
 
       {replacementManagers.length > 0 && (
@@ -282,6 +293,7 @@ const ManagerModalContent = ({
     isEditing,
     isFormValid,
     validationErrors,
+    isDeactivating,
     replacementManagers,
     setField,
     setStatus,
@@ -321,6 +333,7 @@ const ManagerModalContent = ({
           onStatusChange={setStatus}
           onStoreChange={setStoreId}
           replacementManagers={replacementManagers}
+          isDeactivating={isDeactivating}
           branches={branches ?? []}
           storeName={item?.store_name ?? ''}
         />
