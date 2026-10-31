@@ -145,7 +145,6 @@ export const validateManagerForm = (
   if (emailError) errors.email = emailError
   if (passwordError) errors.password = passwordError
 
-  
   if (form.status === 'ACTIVE' && form.storeId === '')
     errors.storeId = 'Selecione uma filial.'
   if (requiresReplacementManager && form.replacementManagerId === '')
@@ -168,43 +167,52 @@ export const validateManagerCreatePayload = (
     true,
   )
 
+const validateOptionalName = (name: string | undefined) =>
+  name === undefined
+    ? undefined
+    : validateRequiredText(name, 'o nome', MANAGER_NAME_MAX_LENGTH)
+
+const validateOptionalEmail = (email: string | undefined) =>
+  email === undefined
+    ? undefined
+    : validateEmail(email, MANAGER_EMAIL_MAX_LENGTH)
+
+// store_id is only accepted when the resulting status is ACTIVE.
+const validateStoreChange = (payload: IUpdateManagerPayload) => {
+  if (payload.store_id === undefined) return undefined
+  if (!isPositiveInteger(payload.store_id))
+    return 'Selecione uma filial válida.'
+  if (payload.status === 'INACTIVE')
+    return 'A filial não pode ser alterada ao inativar o gerente.'
+  return undefined
+}
+
+// replacement_manager_id is only accepted together with status INACTIVE.
+const validateReplacementChange = (payload: IUpdateManagerPayload) => {
+  if (payload.replacement_manager_id === undefined) return undefined
+  if (!isPositiveInteger(payload.replacement_manager_id))
+    return 'Selecione um gerente substituto válido.'
+  if (payload.status !== 'INACTIVE')
+    return 'O gerente substituto só pode ser informado ao inativar o gerente.'
+  return undefined
+}
+
 export const validateManagerUpdatePayload = (
   payload: IUpdateManagerPayload,
 ): IManagerUpdateValidationErrors => {
-  const errors: IManagerUpdateValidationErrors = {}
   const hasChanges = Object.values(payload).some((value) => value !== undefined)
-  if (!hasChanges) {
-    errors.payload = 'Nenhuma alteração para salvar.'
-    return errors
+  if (!hasChanges) return { payload: 'Nenhuma alteração para salvar.' }
+
+  const errors: IManagerUpdateValidationErrors = {
+    name: validateOptionalName(payload.name),
+    email: validateOptionalEmail(payload.email),
+    store_id: validateStoreChange(payload),
+    replacement_manager_id: validateReplacementChange(payload),
   }
 
-  const nameError =
-    payload.name === undefined
-      ? undefined
-      : validateRequiredText(payload.name, 'o nome', MANAGER_NAME_MAX_LENGTH)
-  const emailError =
-    payload.email === undefined
-      ? undefined
-      : validateEmail(payload.email, MANAGER_EMAIL_MAX_LENGTH)
-  if (nameError) errors.name = nameError
-  if (emailError) errors.email = emailError
-
-  if (payload.store_id !== undefined) {
-    if (!isPositiveInteger(payload.store_id))
-      errors.store_id = 'Selecione uma filial válida.'
-    else if (payload.status === 'INACTIVE')
-      errors.store_id = 'A filial não pode ser alterada ao inativar o gerente.'
-  }
-
-  if (payload.replacement_manager_id !== undefined) {
-    if (!isPositiveInteger(payload.replacement_manager_id))
-      errors.replacement_manager_id = 'Selecione um gerente substituto válido.'
-    else if (payload.status !== 'INACTIVE')
-      errors.replacement_manager_id =
-        'O gerente substituto só pode ser informado ao inativar o gerente.'
-  }
-
-  return errors
+  return Object.fromEntries(
+    Object.entries(errors).filter(([, value]) => value !== undefined),
+  )
 }
 
 export const validateContactForm = (

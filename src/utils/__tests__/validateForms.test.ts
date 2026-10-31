@@ -44,8 +44,11 @@ describe('form validation', () => {
 
   it('applies backend limits to manager password and store rules', () => {
     expect(
-      validateManagerForm({ ...validManagerForm, password: 'short' }, false, true)
-        .password,
+      validateManagerForm(
+        { ...validManagerForm, password: 'short' },
+        false,
+        true,
+      ).password,
     ).toContain('mínimo')
     expect(
       validateManagerForm(

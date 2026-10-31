@@ -161,7 +161,12 @@ export const useManagerForm = ({
   const isDeactivating = isManagerDeactivating(item, form.status, isEditing)
   const replacementManagers = useMemo(
     () =>
-      getReplacementManagers(managers, item?.id, item?.store_id, isDeactivating),
+      getReplacementManagers(
+        managers,
+        item?.id,
+        item?.store_id,
+        isDeactivating,
+      ),
     [isDeactivating, item?.id, item?.store_id, managers],
   )
 

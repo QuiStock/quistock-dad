@@ -157,8 +157,8 @@ const FormFields = ({
       {isDeactivating && replacementManagers.length === 0 && (
         <S.Helper id="manager-modal-replacement-note" role="note">
           Não há outro gerente ativo nesta filial. Se a filial tiver
-          funcionários ativos, a inativação exige um gerente substituto ativo
-          na mesma filial: cadastre ou vincule outro gerente a ela antes de
+          funcionários ativos, a inativação exige um gerente substituto ativo na
+          mesma filial: cadastre ou vincule outro gerente a ela antes de
           inativar.
         </S.Helper>
       )}

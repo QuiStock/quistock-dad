@@ -68,18 +68,55 @@ export const createManager = async (
   }
 }
 
+const getUpdateValidationError = (payload: IUpdateManagerPayload) => {
+  const errors = validateManagerUpdatePayload(payload)
+  return (
+    errors.payload ??
+    errors.name ??
+    errors.email ??
+    errors.store_id ??
+    errors.replacement_manager_id
+  )
+}
+
+// The backend answers a deactivation of a manager whose store still has
+// active employees, without replacement_manager_id, with a generic 400.
+const isMissingReplacementError = (
+  error: Error,
+  payload: IUpdateManagerPayload,
+) =>
+  payload.status === 'INACTIVE' &&
+  payload.replacement_manager_id === undefined &&
+  isAxiosError<IApiErrorResponse>(error) &&
+  error.response?.status === 400
+
+const normalizeUpdateManagerError = (
+  error: unknown,
+  payload: IUpdateManagerPayload,
+): Error => {
+  const normalizedError = normalizeApiError(
+    error,
+    'Não foi possível atualizar o gerente.',
+  )
+  if (
+    isMissingReplacementError(normalizedError, payload) &&
+    isAxiosError<IApiErrorResponse>(normalizedError) &&
+    normalizedError.response
+  ) {
+    normalizedError.response.data = {
+      ...normalizedError.response.data,
+      message: DEACTIVATION_REQUIRES_REPLACEMENT_MESSAGE,
+    }
+  }
+  return normalizedError
+}
+
 export const updateManager = async (
   id: string | number,
   payload: IUpdateManagerPayload,
 ): Promise<AxiosResponse<IManager>> => {
   try {
-    const validationErrors = validateManagerUpdatePayload(payload)
-    const validationError =
-      validationErrors.payload ??
-      validationErrors.name ??
-      validationErrors.email ??
-      validationErrors.store_id ??
-      validationErrors.replacement_manager_id
+    const validationError = getUpdateValidationError(payload)
     if (validationError) throw new Error(validationError)
 
     return await coreApi.patch<IManager>(`/managers/${id}`, {
@@ -88,21 +125,6 @@ export const updateManager = async (
       email: payload.email?.trim().toLowerCase(),
     })
   } catch (error) {
-    const normalizedError = normalizeApiError(
-      error,
-      'Não foi possível atualizar o gerente.',
-    )
-    if (
-      payload.status === 'INACTIVE' &&
-      payload.replacement_manager_id === undefined &&
-      isAxiosError<IApiErrorResponse>(normalizedError) &&
-      normalizedError.response?.status === 400
-    ) {
-      normalizedError.response.data = {
-        ...normalizedError.response.data,
-        message: DEACTIVATION_REQUIRES_REPLACEMENT_MESSAGE,
-      }
-    }
-    throw normalizedError
+    throw normalizeUpdateManagerError(error, payload)
   }
 }
