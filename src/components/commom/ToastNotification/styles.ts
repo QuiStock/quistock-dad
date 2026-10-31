@@ -5,15 +5,15 @@ export const Wrapper = styled('div')(
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0.8rem;
     position: fixed;
-    bottom: 2rem;
-    left: 1rem;
+    bottom: 1.6rem;
+    left: 0.8rem;
     width: fit-content;
     max-height: 25rem;
     overflow: auto;
     z-index: 99999;
-    padding: 1rem;
+    padding: 0.8rem;
 
     &::-webkit-scrollbar {
       width: 0;

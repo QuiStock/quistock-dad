@@ -4,14 +4,27 @@ import { Button, type IconButtonProps } from '@mui/material'
 export const Wrapper = styled(Button)<IconButtonProps>(
   ({ theme, variant }) => css`
     && {
-      border-radius: ${theme.borderRadius.main};
-      font-size: ${theme.font.size.medium};
-      font-family: ${theme.font.family.base};
-      font-weight: 500;
       min-width: fit-content;
-
+      min-height: 3.6rem;
+      padding: 0.6rem 1.6rem;
       display: flex;
       align-items: center;
+      border-radius: ${theme.borderRadius.main};
+      font-family: ${theme.font.family.base};
+      font-size: ${theme.font.size.base};
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+      box-shadow: none;
+      transition:
+        transform ${theme.motion.press} ${theme.motion.easeOut},
+        background-color ${theme.motion.hover} ease,
+        border-color ${theme.motion.hover} ease,
+        color ${theme.motion.hover} ease;
+
+      &:active:not(:disabled) {
+        transform: scale(0.98);
+      }
 
       p {
         margin: auto;
@@ -27,11 +40,18 @@ export const Wrapper = styled(Button)<IconButtonProps>(
         variant === 'contained' &&
         css`
           background-color: ${theme.colors.lightBlue};
+          color: ${theme.colors.white};
+
           &:disabled {
-            background-color: rgba(0, 0, 0, 0.12);
+            background-color: ${theme.colors.lightGray3};
+            color: ${theme.colors.lightGray4};
           }
-          &:hover {
-            background-color: ${theme.colors.darkBlue};
+
+          @media (hover: hover) and (pointer: fine) {
+            &:hover:not(:disabled) {
+              background-color: ${theme.colors.brandPrimary};
+              box-shadow: none;
+            }
           }
         `
       }
@@ -41,12 +61,16 @@ export const Wrapper = styled(Button)<IconButtonProps>(
         css`
           border: 0.1rem solid ${theme.colors.lightBlue};
           color: ${theme.colors.lightBlue};
+
           &:disabled {
-            color: rgba(0, 0, 0, 0.26);
-            border: 0.1rem solid rgba(0, 0, 0, 0.12);
+            color: ${theme.colors.lightGray4};
+            border-color: ${theme.colors.lightGray3};
           }
-          &:hover {
-            background-color: rgba(0, 90, 190, 0.1);
+
+          @media (hover: hover) and (pointer: fine) {
+            &:hover:not(:disabled) {
+              background-color: ${theme.colors.brandTint};
+            }
           }
         `
       }
