@@ -95,12 +95,13 @@ const GlobalStyles = createGlobalStyle`
     html {
       font-size: 62.5%;
       background-color: ${theme.colors.lightGray1};
-
-      @media (max-width: ${theme.screen.medium}) {
-        font-size: 44.5%;
-      }
     }
+
     body {
+      font-family: ${theme.font.family.base};
+      color: ${theme.font.colors.title2};
+      text-rendering: optimizeLegibility;
+
       main {
         padding-top: 8.8rem;
         min-height: 100vh;
@@ -108,6 +109,22 @@ const GlobalStyles = createGlobalStyle`
     }
 
 
+
+    ::selection {
+      background-color: ${theme.colors.brandTint};
+      color: ${theme.colors.brandInk};
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-property: opacity, color, background-color, border-color !important;
+        scroll-behavior: auto !important;
+      }
+    }
 
     .MuiPickersDay-root {
       font-size: ${theme.font.size.minimum}
