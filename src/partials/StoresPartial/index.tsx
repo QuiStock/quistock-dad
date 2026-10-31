@@ -72,24 +72,28 @@ export const StoresPartial = () => {
         field: 'name',
         headerName: 'Nome da Filial',
         flex: 2,
+        minWidth: 160,
         editable: false,
       },
       {
         field: 'city',
         headerName: 'Cidade',
         flex: 1.5,
+        minWidth: 120,
         editable: false,
       },
       {
         field: 'state',
         headerName: 'Estado',
         flex: 1,
+        minWidth: 72,
         editable: false,
       },
       {
         field: 'address',
         headerName: 'Endereço',
         flex: 2,
+        minWidth: 180,
         editable: false,
       },
       {
@@ -131,21 +135,19 @@ export const StoresPartial = () => {
           </S.FilterInputs>
         </S.BoxFilters>
       ) : (
-        <S.BoxFilters>
+        <S.SectionHeader>
           <TabsCompoundComponent.Root>
             <TabsCompoundComponent.List>
               <TabsCompoundComponent.Tab label={'Lojas'} index={0} />
             </TabsCompoundComponent.List>
           </TabsCompoundComponent.Root>
-          <S.SeeMoreStoresButton>
-            <ButtonComponent
-              variant="outlined"
-              onClick={() => void navigate(STORES_PATH)}
-            >
-              Ver mais lojas
-            </ButtonComponent>
-          </S.SeeMoreStoresButton>
-        </S.BoxFilters>
+          <ButtonComponent
+            variant="outlined"
+            onClick={() => void navigate(STORES_PATH)}
+          >
+            Ver mais lojas
+          </ButtonComponent>
+        </S.SectionHeader>
       )}
 
       {displayedStores.length === 0 && !isLoadingBranches ? (
