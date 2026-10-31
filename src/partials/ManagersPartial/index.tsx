@@ -81,24 +81,28 @@ export const ManagersPartial = () => {
         field: 'name',
         headerName: 'Nome',
         flex: 2,
+        minWidth: 160,
         editable: false,
       },
       {
         field: 'email',
         headerName: 'E-mail',
         flex: 2,
+        minWidth: 220,
         editable: false,
       },
       {
         field: 'store',
         headerName: 'Loja',
         flex: 2,
+        minWidth: 140,
         editable: false,
       },
       {
         field: 'status',
         headerName: 'Status',
         flex: 1.5,
+        minWidth: 110,
         editable: false,
       },
       {
