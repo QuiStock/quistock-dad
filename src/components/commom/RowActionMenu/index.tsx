@@ -9,7 +9,7 @@ import {
 import * as S from './styles'
 
 interface IRowActionMenuProps {
-  onDetails: () => void
+  onDetails?: () => void
   onViewPage?: () => void
   label?: string
 }
@@ -35,7 +35,7 @@ const RowActionMenu = ({
   const handleDetails = (event: MouseEvent) => {
     event.stopPropagation()
     handleClose()
-    onDetails()
+    onDetails?.()
   }
 
   const handleViewPage = (event: MouseEvent) => {
@@ -56,10 +56,12 @@ const RowActionMenu = ({
         <MoreVertOutlined />
       </IconButton>
       <Menu id={menuId} anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <S.StyledItemFloatMenu onClick={handleDetails}>
-          <ArticleOutlined />
-          <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
-        </S.StyledItemFloatMenu>
+        {onDetails && (
+          <S.StyledItemFloatMenu onClick={handleDetails}>
+            <ArticleOutlined />
+            <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
+          </S.StyledItemFloatMenu>
+        )}
         {onViewPage && (
           <S.StyledItemFloatMenu onClick={handleViewPage}>
             <OpenInNewOutlined />

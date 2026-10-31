@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, it, expect, vi } from 'vitest'
 import { ThemeProvider } from 'styled-components'
@@ -14,9 +14,24 @@ vi.mock('@/components/commom/LoadingMask', () => ({
   LoadingMask: () => <div data-testid="loading" />,
 }))
 vi.mock('@/components/commom/ButtonWithIcon', () => ({
-  ButtonWithIcon: ({ children }: { children: ReactNode }) => (
-    <button>{children}</button>
-  ),
+  ButtonWithIcon: ({
+    children,
+    onClick,
+  }: {
+    children: ReactNode
+    onClick?: () => void
+  }) => <button onClick={onClick}>{children}</button>,
+}))
+vi.mock('@/hooks/useManagers', () => ({
+  useManagers: () => ({
+    managers: [],
+    isSavingManager: false,
+    saveManager: vi.fn(),
+  }),
+}))
+vi.mock('@/partials/ManagersPartial/ManagerModal', () => ({
+  ManagerModal: ({ open, type }: { open: boolean; type: string }) =>
+    open ? <div data-testid="manager-modal">{type}</div> : null,
 }))
 vi.mock('@/hooks/useSendQuery', () => ({
   useSendQuery: () => ({
@@ -48,11 +63,24 @@ const renderAt = (path: string) =>
 describe('ManagerDetail', () => {
   it('shows manager data when id is present', () => {
     renderAt('/gerentes/7')
-    expect(screen.getByText('Maria')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Maria' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Não vinculada')).toBeInTheDocument()
+  })
+
+  it('opens the edit modal when clicking Editar', () => {
+    renderAt('/gerentes/7')
+    expect(screen.queryByTestId('manager-modal')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Editar' }))
+    expect(screen.getByTestId('manager-modal')).toHaveTextContent('edit')
   })
 
   it('shows an alert when id is missing', () => {
     renderAt('/sem-id')
     expect(screen.getByRole('alert')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Editar' }),
+    ).not.toBeInTheDocument()
   })
 })

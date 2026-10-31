@@ -111,7 +111,6 @@ export const ManagersPartial = () => {
           return (
             <RowActionMenu
               label={`Ações do gerente ${row.name}`}
-              onDetails={() => setModal({ type: 'details', item: row.rawItem })}
               onViewPage={() => {
                 void navigate(`/gerentes/${encodeURIComponent(row.id)}`)
               }}

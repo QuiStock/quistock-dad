@@ -119,7 +119,7 @@ const FormFields = ({
           fullWidth
           required
           id="manager-modal-store"
-          label="Filial *"
+          label="Filial"
           value={form.storeId}
           error={Boolean(validationErrors.storeId)}
           helperText={validationErrors.storeId}
@@ -158,7 +158,7 @@ const FormFields = ({
           fullWidth
           required
           id="manager-modal-replacement"
-          label="Gerente substituto *"
+          label="Gerente substituto"
           value={form.replacementManagerId}
           error={Boolean(validationErrors.replacementManagerId)}
           helperText={validationErrors.replacementManagerId}
@@ -246,8 +246,14 @@ export const ManagerModal = (props: IManagerModal) =>
     />
   ) : null
 
+const MODAL_TITLES: Record<NonNullable<TManagerModalType>, string> = {
+  create: 'Cadastrar novo gerente',
+  edit: 'Editar gerente',
+  details: 'Detalhes do gerente',
+}
+
 const getModalTitle = (type: TManagerModalType) =>
-  type === 'create' ? 'Cadastrar novo gerente' : 'Detalhes do gerente'
+  type ? MODAL_TITLES[type] : MODAL_TITLES.details
 
 interface IManagerModalHelperProps {
   id: string
