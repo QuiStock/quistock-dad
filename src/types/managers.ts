@@ -26,7 +26,7 @@ export interface ISaveManagerData {
   email: string
   password?: string
   status?: TAccountStatus
-  store_id: number
+  store_id?: number
   replacement_manager_id?: number
 }
 
