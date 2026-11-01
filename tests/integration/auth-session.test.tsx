@@ -100,6 +100,27 @@ describe('AuthProvider', () => {
     )
   })
 
+  it('stays anonymous without calling refresh when no token is stored', async () => {
+    const refreshRequest = vi.fn()
+    const csrfRequest = vi.fn()
+    server.use(
+      http.get('*/csrf', () => {
+        csrfRequest()
+        return HttpResponse.json({ token: 'auth-csrf-token' })
+      }),
+      http.post('*/refresh', () => {
+        refreshRequest()
+        return HttpResponse.json({ success: true })
+      }),
+    )
+
+    renderAuthProvider()
+
+    expect(await screen.findByText('anonymous')).toBeInTheDocument()
+    expect(refreshRequest).not.toHaveBeenCalled()
+    expect(csrfRequest).not.toHaveBeenCalled()
+  })
+
   it('refreshes an expired token and persists the replacement', async () => {
     const refreshedToken = createToken(Math.floor(Date.now() / 1000) + 120)
     const refreshRequest = vi.fn()
@@ -147,9 +168,10 @@ describe('AuthProvider', () => {
 
   it('persists the token returned by login', async () => {
     renderAuthProvider()
-    expect(await screen.findByText('authenticated')).toBeInTheDocument()
+    expect(await screen.findByText('anonymous')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Login' }))
 
+    expect(await screen.findByText('authenticated')).toBeInTheDocument()
     await waitFor(() => {
       expect(readStoredToken()).toBe('mock-token')
     })
