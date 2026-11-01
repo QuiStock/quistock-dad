@@ -47,10 +47,18 @@ describe('App', () => {
   })
 
   it('renders the Stores page when route is "/lojas"', async () => {
+    const payload = btoa(
+      JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 60 }),
+    ).replace(/=/g, '')
+    window.localStorage.setItem(
+      'quistock.auth.token',
+      JSON.stringify({ _versao: 1, token: `header.${payload}.signature` }),
+    )
     window.history.pushState({}, '', '/lojas')
     render(<App />)
 
     expect(await screen.findByTestId('stores-page')).toBeInTheDocument()
+    window.localStorage.clear()
   })
 
   it('listens to "emitNotification" events and updates the ToastNotification state', () => {

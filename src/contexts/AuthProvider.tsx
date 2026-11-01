@@ -74,8 +74,8 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
       const token = getAuthToken()
       if (token && !isAuthTokenExpired(token)) {
         setIsAuthenticated(true)
-      } else {
-        if (token) clearAuthToken()
+      } else if (token) {
+        clearAuthToken()
         await refreshSession(() => isMounted)
       }
 
