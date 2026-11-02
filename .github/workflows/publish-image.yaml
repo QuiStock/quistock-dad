@@ -54,7 +54,8 @@ jobs:
           push: true
           tags: ghcr.io/quistock/web-frontend:${{ env.IMAGE_TAG }}
           build-args: |
-            VITE_API_URL=/api
+            AUTH_API_URL=/auth
+            CORE_API_URL=/api
           labels: |
             org.opencontainers.image.source=https://github.com/QuiStock/quistock-dad
             org.opencontainers.image.revision=${{ github.sha }}
@@ -109,6 +110,7 @@ jobs:
         with:
           path: infra
           token: ${{ secrets.INFRA_REPO_TOKEN }}
+          draft: true
           add-paths: clusters/us-east1/apps/website/deployment.yaml
           base: ${{ env.INFRA_BASE_REF }}
           branch: codex/deploy-website-${{ env.IMAGE_TAG }}
