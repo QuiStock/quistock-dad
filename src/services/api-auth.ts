@@ -6,7 +6,7 @@ import { validateLoginCredentials } from '@/utils/validateForms'
 
 const DEFAULT_LOGIN_ERROR = 'Erro ao realizar login.'
 
-const authApiUrl: string =
+export const authApiUrl: string =
   (import.meta.env.AUTH_API_URL as string | undefined)?.trim() ||
   'http://localhost:3000'
 
