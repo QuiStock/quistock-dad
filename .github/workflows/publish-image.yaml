@@ -110,6 +110,7 @@ jobs:
         with:
           path: infra
           token: ${{ secrets.INFRA_REPO_TOKEN }}
+          draft: true
           add-paths: clusters/us-east1/apps/website/deployment.yaml
           base: ${{ env.INFRA_BASE_REF }}
           branch: codex/deploy-website-${{ env.IMAGE_TAG }}
