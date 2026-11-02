@@ -4,7 +4,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 
-import { postRefresh } from '@/services/api-auth'
+import { authApiUrl, postRefresh } from '@/services/api-auth'
 import { clearAuthToken, getAuthToken } from '@/services/auth-token'
 import type { IApiErrorResponse } from '@/types'
 
@@ -18,9 +18,16 @@ export const coreApiUrl: string =
   (import.meta.env.CORE_API_URL as string | undefined)?.trim() ||
   'http://localhost:8080'
 
+// The Core rejects requests containing both an access cookie and a Bearer token.
+// First-party deployments use HttpOnly cookies; remote APIs use Bearer only.
+const usesFirstPartyCookies =
+  new URL(authApiUrl, window.location.origin).origin ===
+    window.location.origin &&
+  new URL(coreApiUrl, window.location.origin).origin === window.location.origin
+
 export const coreApi = axios.create({
   baseURL: coreApiUrl,
-  withCredentials: true,
+  withCredentials: usesFirstPartyCookies,
 })
 
 type TRetriableConfig = InternalAxiosRequestConfig & {
@@ -64,7 +71,10 @@ const isMutation = (config: InternalAxiosRequestConfig) =>
 
 coreApi.interceptors.request.use(async (config) => {
   const authToken = getAuthToken()
-  if (authToken) {
+  if (usesFirstPartyCookies) {
+    config.headers = AxiosHeaders.from(config.headers)
+    config.headers.delete('Authorization')
+  } else if (authToken) {
     config.headers = AxiosHeaders.from(config.headers)
     config.headers.set('Authorization', `Bearer ${authToken}`)
   }

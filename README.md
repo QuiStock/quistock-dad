@@ -202,3 +202,7 @@ Se apenas um job falhar, execute localmente o comando correspondente antes de re
 
 Veja [publicação e preparação do Infra](docs/container-release.md) para releases,
 execução manual, referência por digest e permissões do GHCR/Infra.
+
+### Autenticação no gateway compartilhado
+
+Quando website, Auth e Core usam a mesma origem HTTPS, o cliente Core envia somente os cookies HttpOnly e mantém CSRF nas mutações. Para APIs em outras origens, envia Bearer sem cookies de credenciais na Core. O Auth continua usando cookies para refresh/logout. Essa separação evita HTTP 400 por credenciais ambíguas no backend. No Docker do teste AWS, Auth usa `/auth` e Core usa `/api`.
