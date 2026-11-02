@@ -65,7 +65,7 @@ describe('ManagerModal', () => {
     fireEvent.change(screen.getByLabelText('Senha Inicial'), {
       target: { value: 'temporary-password' },
     })
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Filial *' }))
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Filial' }))
     fireEvent.click(screen.getByRole('option', { name: 'Loja Centro' }))
     expect(screen.getByRole('button', { name: 'Cadastrar' })).toBeEnabled()
 
@@ -159,7 +159,7 @@ describe('ManagerModal', () => {
     })
     expect(screen.getByRole('button', { name: 'Cadastrar' })).toBeDisabled()
 
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Filial *' }))
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Filial' }))
     fireEvent.click(screen.getByRole('option', { name: 'Loja Centro' }))
     fireEvent.click(screen.getByRole('button', { name: 'Cadastrar' }))
 
@@ -188,12 +188,12 @@ describe('ManagerModal', () => {
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Status' }))
     fireEvent.click(screen.getByRole('option', { name: 'Desativado' }))
     expect(
-      screen.getByRole('combobox', { name: 'Gerente substituto *' }),
+      screen.getByRole('combobox', { name: 'Gerente substituto' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Salvar' })).toBeDisabled()
 
     fireEvent.mouseDown(
-      screen.getByRole('combobox', { name: 'Gerente substituto *' }),
+      screen.getByRole('combobox', { name: 'Gerente substituto' }),
     )
     fireEvent.click(screen.getByRole('option', { name: 'Joao' }))
     fireEvent.click(screen.getByRole('button', { name: 'Salvar' }))

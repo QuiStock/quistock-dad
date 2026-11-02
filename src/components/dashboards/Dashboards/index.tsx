@@ -1,7 +1,9 @@
 import { Skeleton } from '@mui/material'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
+import { FlowBarList, type IFlowBarItem } from '@/components/commom/FlowBar'
 import { useDashboardSummary } from '@/hooks/useDashboardSummary'
 import type { IDashboardSummary } from '@/types'
+import theme from '@/styles/theme'
 import * as S from './styles'
 
 const SKELETON_KEYS = ['sk-1', 'sk-2', 'sk-3', 'sk-4', 'sk-5', 'sk-6']
@@ -22,60 +24,53 @@ const DEFAULT_SUMMARY: IDashboardSummary = {
 
 interface IKpiCardConfig {
   id: string
-  borderColor: string
+  accent: string
   header: string
   value: number
-  color: string
   description: string
 }
 
 const buildKpiCards = (s: IDashboardSummary): IKpiCardConfig[] => [
   {
     id: 'total',
-    borderColor: '#7623E1',
-    header: 'Total de Produtos',
+    accent: theme.colors.brandPrimary,
+    header: 'Total de produtos',
     value: s.total_products,
-    color: '#7623E1',
     description: 'Itens cadastrados no catálogo consolidado',
   },
   {
     id: 'high',
-    borderColor: '#D32F2F',
-    header: 'Risco Alto (Ruptura)',
+    accent: theme.colors.red,
+    header: 'Risco alto (ruptura)',
     value: s.high_risk_products,
-    color: '#D32F2F',
     description: `${s.stockout_products} produto(s) atualmente sem estoque`,
   },
   {
     id: 'medium',
-    borderColor: '#ED6C02',
-    header: 'Risco Médio (Adequado)',
+    accent: theme.colors.orange,
+    header: 'Risco médio (adequado)',
     value: s.medium_risk_products,
-    color: '#ED6C02',
     description: 'Estoque equilibrado conforme histórico de vendas',
   },
   {
     id: 'low',
-    borderColor: '#4CAF50',
-    header: 'Risco Baixo (Excesso)',
+    accent: theme.colors.green2,
+    header: 'Risco baixo (excesso)',
     value: s.low_risk_products,
-    color: '#4CAF50',
     description: `${s.overstock_products} produto(s) com estoque acima do limite`,
   },
   {
     id: 'expiry',
-    borderColor: '#FF9800',
-    header: 'Próximos do Vencimento',
+    accent: theme.colors.golden,
+    header: 'Próximos do vencimento',
     value: s.near_expiry_products,
-    color: '#FF9800',
     description: 'Lotes com validade próxima da expiração',
   },
   {
     id: 'actions',
-    borderColor: '#0091ff',
-    header: 'Ações Sugeridas / Ativas',
+    accent: theme.colors.brandPrimary,
+    header: 'Ações sugeridas / ativas',
     value: s.active_actions,
-    color: '#0091ff',
     description: `${s.suggested_promotions} promoção(ões) e ${s.suggested_stock_orders} pedido(s)`,
   },
 ]
@@ -98,6 +93,7 @@ const KpiCardsSection = ({
         {SKELETON_KEYS.map((skeletonId) => (
           <Skeleton
             key={skeletonId}
+            component="li"
             variant="rectangular"
             height={130}
             sx={{ borderRadius: '0.8rem' }}
@@ -113,9 +109,9 @@ const KpiCardsSection = ({
   return (
     <S.KpiGrid>
       {cards.map((card) => (
-        <S.KpiCard key={card.id} $borderColor={card.borderColor}>
-          <S.KpiCardHeader>{card.header}</S.KpiCardHeader>
-          <S.KpiValue $color={card.color}>{card.value}</S.KpiValue>
+        <S.KpiCard key={card.id}>
+          <S.KpiCardHeader $accent={card.accent}>{card.header}</S.KpiCardHeader>
+          <S.KpiValue>{card.value}</S.KpiValue>
           <S.KpiDescription>{card.description}</S.KpiDescription>
         </S.KpiCard>
       ))}
@@ -123,15 +119,7 @@ const KpiCardsSection = ({
   )
 }
 
-interface IProgressItem {
-  id: string
-  label: string
-  valueLabel: string
-  percentage: number
-  color: string
-}
-
-const buildRiskProgressItems = (s: IDashboardSummary): IProgressItem[] => {
+const buildRiskProgressItems = (s: IDashboardSummary): IFlowBarItem[] => {
   const total = s.total_products
   const highPct = calcPercentage(s.high_risk_products, total)
   const medPct = calcPercentage(s.medium_risk_products, total)
@@ -140,24 +128,27 @@ const buildRiskProgressItems = (s: IDashboardSummary): IProgressItem[] => {
   return [
     {
       id: 'high',
-      label: 'Risco Alto (Ruptura)',
-      valueLabel: `${s.high_risk_products} (${highPct}%)`,
+      label: 'Risco alto (ruptura)',
+      value: s.high_risk_products,
+      detail: `${highPct}%`,
       percentage: highPct,
-      color: '#D32F2F',
+      color: theme.colors.red,
     },
     {
       id: 'medium',
-      label: 'Risco Médio (Equilibrado)',
-      valueLabel: `${s.medium_risk_products} (${medPct}%)`,
+      label: 'Risco médio (equilibrado)',
+      value: s.medium_risk_products,
+      detail: `${medPct}%`,
       percentage: medPct,
-      color: '#ED6C02',
+      color: theme.colors.orange,
     },
     {
       id: 'low',
-      label: 'Risco Baixo (Excesso)',
-      valueLabel: `${s.low_risk_products} (${lowPct}%)`,
+      label: 'Risco baixo (excesso)',
+      value: s.low_risk_products,
+      detail: `${lowPct}%`,
       percentage: lowPct,
-      color: '#4CAF50',
+      color: theme.colors.green2,
     },
   ]
 }
@@ -182,27 +173,10 @@ const RiskDistributionChart = ({
   const s = summary ?? DEFAULT_SUMMARY
   const items = buildRiskProgressItems(s)
 
-  return (
-    <>
-      {items.map((item) => (
-        <S.ProgressBarWrapper key={item.id}>
-          <S.ProgressBarHeader>
-            <span>{item.label}</span>
-            <span>{item.valueLabel}</span>
-          </S.ProgressBarHeader>
-          <S.ProgressBarTrack>
-            <S.ProgressBarFill
-              $percentage={item.percentage}
-              $color={item.color}
-            />
-          </S.ProgressBarTrack>
-        </S.ProgressBarWrapper>
-      ))}
-    </>
-  )
+  return <FlowBarList items={items} />
 }
 
-const buildActionProgressItems = (s: IDashboardSummary): IProgressItem[] => {
+const buildActionProgressItems = (s: IDashboardSummary): IFlowBarItem[] => {
   const actionsTotal = s.suggested_actions
   const promoPct = calcPercentage(s.suggested_promotions, actionsTotal)
   const ordersPct = calcPercentage(s.suggested_stock_orders, actionsTotal)
@@ -211,24 +185,24 @@ const buildActionProgressItems = (s: IDashboardSummary): IProgressItem[] => {
   return [
     {
       id: 'promo',
-      label: 'Promoções Recomendadas',
-      valueLabel: String(s.suggested_promotions),
+      label: 'Promoções recomendadas',
+      value: s.suggested_promotions,
       percentage: promoPct,
-      color: '#AF36DF',
+      color: theme.colors.brandPrimary,
     },
     {
       id: 'orders',
-      label: 'Pedidos de Compra Recomendados',
-      valueLabel: String(s.suggested_stock_orders),
+      label: 'Pedidos de compra recomendados',
+      value: s.suggested_stock_orders,
       percentage: ordersPct,
-      color: '#0091ff',
+      color: theme.colors.brandPrimary,
     },
     {
       id: 'expiry',
-      label: 'Lotes Próximos da Validade',
-      valueLabel: String(s.near_expiry_products),
+      label: 'Lotes próximos da validade',
+      value: s.near_expiry_products,
       percentage: expiryPct,
-      color: '#FF9800',
+      color: theme.colors.golden,
     },
   ]
 }
@@ -253,24 +227,7 @@ const OperationalActionsChart = ({
   const s = summary ?? DEFAULT_SUMMARY
   const items = buildActionProgressItems(s)
 
-  return (
-    <>
-      {items.map((item) => (
-        <S.ProgressBarWrapper key={item.id}>
-          <S.ProgressBarHeader>
-            <span>{item.label}</span>
-            <span>{item.valueLabel}</span>
-          </S.ProgressBarHeader>
-          <S.ProgressBarTrack>
-            <S.ProgressBarFill
-              $percentage={item.percentage}
-              $color={item.color}
-            />
-          </S.ProgressBarTrack>
-        </S.ProgressBarWrapper>
-      ))}
-    </>
-  )
+  return <FlowBarList items={items} />
 }
 
 const Dashboards = () => {
@@ -305,12 +262,12 @@ const Dashboards = () => {
         <S.Content>
           <S.ChartsContainer>
             <S.ChartCard>
-              <S.ChartTitle>Distribuição de Risco do Estoque</S.ChartTitle>
+              <S.ChartTitle>Distribuição de risco do estoque</S.ChartTitle>
               <RiskDistributionChart summary={summary} isLoading={isLoading} />
             </S.ChartCard>
 
             <S.ChartCard>
-              <S.ChartTitle>Recomendações e Ações Operacionais</S.ChartTitle>
+              <S.ChartTitle>Recomendações e ações operacionais</S.ChartTitle>
               <OperationalActionsChart
                 summary={summary}
                 isLoading={isLoading}

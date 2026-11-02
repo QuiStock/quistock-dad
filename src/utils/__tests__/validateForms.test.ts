@@ -42,6 +42,30 @@ describe('form validation', () => {
     expect(validateManagerForm(validManagerForm, false, false)).toEqual({})
   })
 
+  it('applies backend limits to manager password and store rules', () => {
+    expect(
+      validateManagerForm(
+        { ...validManagerForm, password: 'short' },
+        false,
+        true,
+      ).password,
+    ).toContain('mínimo')
+    expect(
+      validateManagerForm(
+        { ...validManagerForm, password: 'ç'.repeat(37) },
+        false,
+        true,
+      ).password,
+    ).toContain('máximo')
+    expect(
+      validateManagerForm(
+        { ...validManagerForm, status: 'INACTIVE', storeId: '' },
+        false,
+        false,
+      ),
+    ).toEqual({})
+  })
+
   it('validates required contact fields and their maximum lengths', () => {
     expect(validateContactForm({ problema: '  ', mensagem: '' })).toEqual({
       problema: 'Informe o problema.',

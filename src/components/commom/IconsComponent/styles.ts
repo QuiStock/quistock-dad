@@ -39,7 +39,7 @@ export const BoxContent = styled('div')<IAlign>(
       flex-direction: column;
       justify-content: center;
       align-items: ${align ? align : 'center'};
-      gap: 2rem;
+      gap: 1.6rem;
       color: ${theme.font.colors.main};
       max-width: 100%;
 
@@ -47,7 +47,7 @@ export const BoxContent = styled('div')<IAlign>(
       span {
         text-align: ${align ? align : 'center'};
         font-family: ${theme.font.family.base};
-        font-size: ${theme.font.size.subtitle};
+        font-size: ${theme.font.size.pageTab};
       }
 
       > p {
@@ -80,6 +80,14 @@ export const BoxContent = styled('div')<IAlign>(
       .small-text {
         font-weight: 300;
         font-size: 2rem;
+      }
+
+      /* Buttons keep the system button size inside the empty state. */
+      button p,
+      button span {
+        font-size: ${theme.font.size.base};
+        font-weight: 500;
+        color: inherit;
       }
     }
   `,

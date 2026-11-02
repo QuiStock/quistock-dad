@@ -39,10 +39,10 @@ const getInitialFormValues = (
 const getReplacementManagers = (
   managers: IManager[],
   itemId: IManager['id'] | undefined,
-  storeId: TStoreSelection,
+  storeId: IManager['store_id'] | undefined,
   isDeactivating: boolean,
 ) => {
-  if (!isDeactivating || storeId === '') return []
+  if (!isDeactivating || storeId === null || storeId === undefined) return []
 
   return managers.filter(
     (manager) =>
@@ -159,11 +159,15 @@ export const useManagerForm = ({
 
   const { form, isEditing } = state
   const isDeactivating = isManagerDeactivating(item, form.status, isEditing)
-  // Filter the full manager collection only when the relevant selection changes.
   const replacementManagers = useMemo(
     () =>
-      getReplacementManagers(managers, item?.id, form.storeId, isDeactivating),
-    [isDeactivating, item?.id, managers, form.storeId],
+      getReplacementManagers(
+        managers,
+        item?.id,
+        item?.store_id,
+        isDeactivating,
+      ),
+    [isDeactivating, item?.id, item?.store_id, managers],
   )
 
   const validationErrors = validateManagerForm(
@@ -174,14 +178,14 @@ export const useManagerForm = ({
   const isFormValid = Object.keys(validationErrors).length === 0
 
   const getSaveData = (): ISaveManagerData | null => {
-    if (!isFormValid || form.storeId === '') return null
+    if (!isFormValid) return null
 
     return {
       name: form.name.trim(),
       email: form.email.trim(),
       password: type === 'create' ? form.password : undefined,
       status: form.status,
-      store_id: form.storeId,
+      store_id: form.storeId === '' ? undefined : form.storeId,
       replacement_manager_id:
         isDeactivating && form.replacementManagerId !== ''
           ? form.replacementManagerId
@@ -194,6 +198,7 @@ export const useManagerForm = ({
     isEditing,
     isFormValid,
     validationErrors,
+    isDeactivating,
     replacementManagers,
     setField,
     setStatus,

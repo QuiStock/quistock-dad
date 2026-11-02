@@ -12,7 +12,7 @@ import {
   Link,
   type LinkProps,
 } from '@mui/material'
-import { Link as RouterLink } from 'react-router-dom'
+import { NavLink as RouterLink } from 'react-router-dom'
 import { Menu } from '@mui/icons-material'
 
 export const TopBar = styled(Box)(
@@ -20,7 +20,7 @@ export const TopBar = styled(Box)(
     && {
       width: 100vw;
       height: 8.8rem;
-      background-color: #2d1b4e;
+      background-color: ${theme.colors.brandDeep};
       padding: 1.6rem 0;
       position: fixed;
       top: 0;
@@ -75,12 +75,19 @@ export const FlagLessonType = styled('div')(
   `,
 )
 
-export const IconTrigger = styled(ButtonBase)`
-  && {
-    padding: 0;
-    border-radius: 50%;
-  }
-`
+export const IconTrigger = styled(ButtonBase)(
+  ({ theme }) => css`
+    && {
+      padding: 0;
+      border-radius: 50%;
+      transition: transform ${theme.motion.press} ${theme.motion.easeOut};
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+  `,
+)
 
 export const MenuButton = styled(Menu)(
   ({ theme }) => css`
@@ -99,13 +106,19 @@ export const MenuButton = styled(Menu)(
 export const AvatarButton = styled(Avatar)(
   ({ theme }) => css`
     && {
-      background-color: #7f3aef;
+      background-color: ${theme.colors.brandAvatar};
       width: 4rem;
       height: 4rem;
       cursor: pointer;
+      font-family: ${theme.font.family.base};
+      font-size: ${theme.font.size.body1};
+      font-weight: 500;
+      transition: background-color ${theme.motion.hover} ease;
 
-      &:hover {
-        background-color: #6a2eb8;
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          background-color: ${theme.colors.brandAvatarHover};
+        }
       }
 
       @media (max-width: ${theme.screen.small}) {
@@ -123,7 +136,8 @@ export const MenuDrawer = styled(Drawer)(
 
       .MuiPaper-root {
         top: 8.8rem;
-        background-color: #2d1b4e;
+        min-width: 24rem;
+        background-color: ${theme.colors.brandDeep};
         padding: 1.6rem 0;
       }
 
@@ -137,8 +151,9 @@ export const MenuDrawer = styled(Drawer)(
 
 export const MenuItem = styled('div')(
   ({ theme }) => css`
+    width: 100%;
     display: flex;
-    gap: 1rem;
+    gap: 1.2rem;
     align-items: center;
     font-size: ${theme.font.size.body1};
     font-family: ${theme.font.family.base};
@@ -147,16 +162,21 @@ export const MenuItem = styled('div')(
     color: ${theme.colors.white};
 
     svg {
-      font-size: ${theme.font.size.body2};
+      font-size: ${theme.font.size.pageTab};
+      color: ${theme.colors.brandOnDeep};
     }
   `,
 )
 
 export const Wrapper = styled('div')(
-  () => css`
+  ({ theme }) => css`
     && {
-      padding-bottom: 4.8rem;
       width: 100%;
+      min-height: calc(100vh - 8.8rem);
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 4.8rem;
+      background-color: ${theme.colors.white};
     }
   `,
 )
@@ -275,10 +295,14 @@ export const ButtonPrevPage = styled(IconButton)(
 )
 
 export const PageWrapper = styled('div')(
-  () => css`
+  ({ theme }) => css`
     width: 100%;
     height: 100%;
-    padding: 2rem 0;
+    padding: 3.2rem 0 1.6rem;
+
+    @media (max-width: ${theme.screen.small}) {
+      padding: 2.4rem 0 0.8rem;
+    }
   `,
 )
 
@@ -295,12 +319,67 @@ export const LogoJBS = styled('img')(
 )
 
 export const Navigation = styled('nav')(
-  () => css`
+  ({ theme }) => css`
     height: calc(100% - 9rem);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.6rem;
+    gap: 0.4rem;
+    padding: 0.8rem;
+
+    > a {
+      width: 100%;
+      border-radius: ${theme.borderRadius.main};
+      transition:
+        background-color ${theme.motion.hover} ease,
+        transform ${theme.motion.press} ${theme.motion.easeOut};
+
+      &:active {
+        transform: scale(0.98);
+      }
+
+      &[aria-current='page'] {
+        background-color: rgba(255, 255, 255, 0.12);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.08);
+        }
+      }
+    }
+  `,
+)
+
+export const SkipLink = styled('a')(
+  ({ theme }) => css`
+    position: absolute;
+    left: 1.6rem;
+    top: -10rem;
+    z-index: 2000;
+    padding: 0.8rem 1.6rem;
+    background-color: ${theme.colors.white};
+    color: ${theme.font.colors.title};
+    font-family: ${theme.font.family.base};
+    font-size: ${theme.font.size.body1};
+
+    &:focus {
+      top: 1rem;
+    }
+  `,
+)
+
+export const Footer = styled('footer')(
+  ({ theme }) => css`
+    width: 100%;
     padding: 1.6rem;
+    text-align: center;
+    background-color: ${theme.colors.brandDeep};
+
+    small {
+      color: ${theme.colors.white};
+      font-family: ${theme.font.family.base};
+      font-size: ${theme.font.size.base};
+    }
   `,
 )

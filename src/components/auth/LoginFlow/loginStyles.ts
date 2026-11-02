@@ -55,7 +55,7 @@ export const UserInput = styled(TextInputComponent)(
 
       .MuiOutlinedInput-root {
         fieldset {
-          border-color: #a855f7;
+          border-color: #9333ea;
         }
         &:hover fieldset {
           border-color: #7f3aef;
@@ -66,7 +66,7 @@ export const UserInput = styled(TextInputComponent)(
       }
 
       label {
-        color: #a855f7;
+        color: #9333ea;
       }
       label.Mui-focused {
         color: #7f3aef;
@@ -82,7 +82,7 @@ export const UserPassword = styled(TextInputWithIcon)(
 
       .MuiOutlinedInput-root {
         fieldset {
-          border-color: #a855f7;
+          border-color: #9333ea;
         }
         &:hover fieldset {
           border-color: #7f3aef;
@@ -93,7 +93,7 @@ export const UserPassword = styled(TextInputWithIcon)(
       }
 
       label {
-        color: #a855f7;
+        color: #9333ea;
       }
       label.Mui-focused {
         color: #7f3aef;
@@ -179,11 +179,18 @@ export const BoxPlatform = styled('div')(
     background-color: ${theme.colors.white};
     padding: 2.8rem;
     cursor: pointer;
-    transition: 0.3s;
+    transition:
+      transform ${theme.motion.press} ${theme.motion.easeOut},
+      background-color ${theme.motion.hover} ease;
 
-    &:hover {
-      scale: 1.03;
-      background-color: ${theme.colors.gray};
+    &:active {
+      transform: scale(0.98);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: ${theme.colors.lightGray2};
+      }
     }
   `,
 )
@@ -208,7 +215,13 @@ export const StyledIconButton = styled(IconButton)(
     && {
       background-color: ${theme.colors.lightBlue};
       padding: 0.4rem;
-      transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+      transition:
+        opacity ${theme.motion.hover} ease,
+        transform ${theme.motion.press} ${theme.motion.easeOut};
+
+      &:active {
+        transform: scale(0.95);
+      }
 
       &&:hover {
         background-color: ${theme.colors.lightBlue};
@@ -287,7 +300,7 @@ export const LoginButtonContainer = styled(ButtonContainer)(
 )
 
 export const SubmitButton = styled('button')<{ disabled?: boolean }>(
-  ({ disabled }) => css`
+  ({ theme, disabled }) => css`
     width: 100%;
     padding: 1.2rem;
     background-color: #7f3aef;
@@ -298,6 +311,12 @@ export const SubmitButton = styled('button')<{ disabled?: boolean }>(
     font-weight: 600;
     cursor: ${disabled ? 'not-allowed' : 'pointer'};
     opacity: ${disabled ? 0.7 : 1};
-    transition: opacity 0.2s;
+    transition:
+      opacity ${theme.motion.hover} ease,
+      transform ${theme.motion.press} ${theme.motion.easeOut};
+
+    &:not(:disabled):active {
+      transform: scale(0.98);
+    }
   `,
 )

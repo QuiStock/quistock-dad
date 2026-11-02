@@ -1,16 +1,22 @@
 import { useId, useState, type MouseEvent } from 'react'
 import { IconButton, Menu } from '@mui/material'
-import { ArticleOutlined, MoreVertOutlined } from '@mui/icons-material'
+import {
+  ArticleOutlined,
+  MoreVertOutlined,
+  OpenInNewOutlined,
+} from '@mui/icons-material'
 
 import * as S from './styles'
 
 interface IRowActionMenuProps {
-  onDetails: () => void
+  onDetails?: () => void
+  onViewPage?: () => void
   label?: string
 }
 
 const RowActionMenu = ({
   onDetails,
+  onViewPage,
   label = 'Abrir ações',
 }: IRowActionMenuProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -29,7 +35,13 @@ const RowActionMenu = ({
   const handleDetails = (event: MouseEvent) => {
     event.stopPropagation()
     handleClose()
-    onDetails()
+    onDetails?.()
+  }
+
+  const handleViewPage = (event: MouseEvent) => {
+    event.stopPropagation()
+    handleClose()
+    onViewPage?.()
   }
 
   return (
@@ -44,10 +56,18 @@ const RowActionMenu = ({
         <MoreVertOutlined />
       </IconButton>
       <Menu id={menuId} anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <S.StyledItemFloatMenu onClick={handleDetails}>
-          <ArticleOutlined />
-          <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
-        </S.StyledItemFloatMenu>
+        {onDetails && (
+          <S.StyledItemFloatMenu onClick={handleDetails}>
+            <ArticleOutlined />
+            <S.TextItemMenuFloat>Detalhes</S.TextItemMenuFloat>
+          </S.StyledItemFloatMenu>
+        )}
+        {onViewPage && (
+          <S.StyledItemFloatMenu onClick={handleViewPage}>
+            <OpenInNewOutlined />
+            <S.TextItemMenuFloat>Ver detalhes</S.TextItemMenuFloat>
+          </S.StyledItemFloatMenu>
+        )}
       </Menu>
     </>
   )

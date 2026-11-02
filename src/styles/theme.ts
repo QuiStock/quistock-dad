@@ -40,9 +40,28 @@ declare module 'styled-components' {
       buttonBackground: string
       green: string
       green2: string
+      brandDeep: string
+      brandPrimary: string
+      brandTint: string
+      brandInk: string
+      brandOnDeep: string
+      brandAvatar: string
+      brandAvatarHover: string
+      successTint: string
+      errorTint: string
+      errorInk: string
     }
     boxShadow: {
       main: string
+      floating: string
+    }
+    motion: {
+      easeOut: string
+      press: string
+      hover: string
+      enter: string
+      exit: string
+      reveal: string
     }
     font: {
       size: {
@@ -117,7 +136,7 @@ const theme = {
     red: '#D32F2F',
     blue: '#0091ff',
     blueInfoBackground: '#EBF6FC',
-    blueInfoText: '#0288D1',
+    blueInfoText: '#01579B',
     blueIcons: '#2196F3',
     blueIcons2: '#41CDF5',
     blueIcons3: '#1EAAF5',
@@ -137,9 +156,29 @@ const theme = {
     green2: '#4CAF50',
     green3: '#05B49C',
     green4: '#95AF11',
+    // Brand surfaces taken from the store/manager detail screens.
+    brandDeep: '#2D1B4E',
+    brandPrimary: '#7623E1',
+    brandTint: '#F3ECFD',
+    brandInk: '#4B1694',
+    brandOnDeep: '#E4DCF2',
+    brandAvatar: '#6A2EB8',
+    brandAvatarHover: '#5B25A0',
+    successTint: '#E8F5E9',
+    errorTint: '#FDEDED',
+    errorInk: '#5F2120',
   },
   boxShadow: {
     main: '0 0.2rem 0.4rem 0 #23237840',
+    floating: '0 1.6rem 4.8rem -0.8rem #2D1B4E59',
+  },
+  motion: {
+    easeOut: 'cubic-bezier(0.23, 1, 0.32, 1)',
+    press: '160ms',
+    hover: '150ms',
+    enter: '240ms',
+    exit: '160ms',
+    reveal: '400ms',
   },
   font: {
     size: {
@@ -164,11 +203,11 @@ const theme = {
       main: '#5D5D5F',
       dark: '#505050',
       dark2: '#383838',
-      error: '#FF5252',
+      error: '#D32F2F',
       warning: '#653C01',
-      warning2: '#0288D1',
+      warning2: '#0277BD',
       success: '#1D4620',
-      check: '#4CAF50',
+      check: '#2E7D32',
       info: '#024360',
       info2: '#10284A',
       title: '#232378',

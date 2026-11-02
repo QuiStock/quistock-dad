@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, use, useState } from 'react'
+import { createContext, type ReactNode, use, useId, useState } from 'react'
 import * as S from './styles'
 
 import { ArrowBack } from '@mui/icons-material'
@@ -6,10 +6,9 @@ import { IconButton } from '@mui/material'
 
 import { TabComponent } from '@/components/commom/TabComponent'
 
-const a11yProps = (index: number) => ({
-  id: `simple-tab-${index}`,
-  'aria-controls': `simple-tabpanel-${index}`,
-})
+const getTabId = (baseId: string, index: number) => `${baseId}-tab-${index}`
+const getPanelId = (baseId: string, index: number) =>
+  `${baseId}-tabpanel-${index}`
 
 const setFirstTabActive = (permissions: boolean[]): number => {
   const firstActive = permissions.findIndex((p) => p)
@@ -17,6 +16,7 @@ const setFirstTabActive = (permissions: boolean[]): number => {
 }
 
 interface ITabsContextProps {
+  baseId: string
   tab: number
   permissionsArray: boolean[]
   setTab: (val: number) => void
@@ -46,6 +46,7 @@ interface IPanelProps {
 const TabsContext = createContext<ITabsContextProps | null>(null)
 
 const Root = ({ children, permissionsArray = [true] }: IRootProps) => {
+  const baseId = useId()
   const [tab, setTab] = useState(() => {
     const searchParams = new URLSearchParams(window.location.search)
     const tabParam = searchParams.get('tab')
@@ -66,7 +67,7 @@ const Root = ({ children, permissionsArray = [true] }: IRootProps) => {
   })
 
   return (
-    <TabsContext value={{ tab, permissionsArray, setTab }}>
+    <TabsContext value={{ baseId, tab, permissionsArray, setTab }}>
       {children}
     </TabsContext>
   )
@@ -103,7 +104,7 @@ const Tab = ({ label, index, onClickOcurrence }: ITabProps) => {
     return null
   }
 
-  const { setTab, permissionsArray } = context
+  const { baseId, tab, setTab, permissionsArray } = context
 
   const handleChangeTab = () => {
     if (onClickOcurrence) onClickOcurrence()
@@ -116,7 +117,9 @@ const Tab = ({ label, index, onClickOcurrence }: ITabProps) => {
       onChange={handleChangeTab}
       disabled={!permissionsArray[index]}
       value={index}
-      {...a11yProps(index)}
+      id={getTabId(baseId, index)}
+      aria-controls={getPanelId(baseId, index)}
+      aria-selected={tab === index}
     />
   )
 }
@@ -129,14 +132,14 @@ const Panel = ({ children, index }: IPanelProps) => {
     return null
   }
 
-  const { tab, permissionsArray } = context
+  const { baseId, tab, permissionsArray } = context
 
   return (
     <S.CustomTabPanel
       role="tabpanel"
       hidden={tab !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
+      id={getPanelId(baseId, index)}
+      aria-labelledby={getTabId(baseId, index)}
     >
       {tab === index && permissionsArray[index] && children}
     </S.CustomTabPanel>

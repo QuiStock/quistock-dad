@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useProfile } from '@/hooks/useProfile'
 import { canManageManagers } from '@/utils/permissions'
+import quistockLogo from '@/assets/quistock.svg'
 
 interface IPage {
   children: ReactNode
@@ -50,6 +51,9 @@ const Page = ({ children, title }: IPage) => {
   return (
     <>
       <title>{`QuiStock | ${title}`}</title>
+      <S.SkipLink href="#main-content">
+        Pular para o conteúdo principal
+      </S.SkipLink>
       <header>
         <S.TopBar>
           <Container maxWidth="xl">
@@ -67,10 +71,7 @@ const Page = ({ children, title }: IPage) => {
                 </S.IconTrigger>
 
                 <S.CustomLink to={'/home'}>
-                  <S.LogoJBS
-                    src="src/assets/quistock.svg"
-                    alt="Logo QuiStock"
-                  />
+                  <S.LogoJBS src={quistockLogo} alt="Logo QuiStock" />
                   <span>|</span>
                   {'Admin'}
                 </S.CustomLink>
@@ -153,13 +154,17 @@ const Page = ({ children, title }: IPage) => {
         </S.TopBar>
       </header>
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <S.Wrapper>
           <Container maxWidth="xl" style={{ backgroundColor: 'white' }}>
             <S.PageWrapper>{children}</S.PageWrapper>
           </Container>
         </S.Wrapper>
       </main>
+
+      <S.Footer>
+        <small>{'© QuiStock. Todos os direitos reservados.'}</small>
+      </S.Footer>
     </>
   )
 }

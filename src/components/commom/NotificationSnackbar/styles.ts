@@ -21,8 +21,11 @@ export const Alert = styled(MuiAlert)(
       width: 100%;
       min-height: fit-content;
       font-family: ${theme.font.family.base};
-      padding: 1.6rem;
+      font-size: ${theme.font.size.base};
+      padding: 1.2rem 1.6rem;
       gap: 0.8rem;
+      border-radius: ${theme.borderRadius.main};
+      box-shadow: ${theme.boxShadow.floating};
 
       && > div {
         min-height: 100%;

@@ -38,7 +38,7 @@ export const UserInput = styled(TextInputComponent)(
 
       .MuiOutlinedInput-root {
         fieldset {
-          border-color: #a855f7;
+          border-color: #9333ea;
         }
         &:hover fieldset {
           border-color: #7f3aef;
@@ -49,7 +49,7 @@ export const UserInput = styled(TextInputComponent)(
       }
 
       label {
-        color: #a855f7;
+        color: #9333ea;
       }
       label.Mui-focused {
         color: #7f3aef;
@@ -59,21 +59,31 @@ export const UserInput = styled(TextInputComponent)(
 )
 
 export const SubmitButton = styled('button')<{ disabled?: boolean }>(
-  ({ disabled }) => css`
+  ({ theme, disabled }) => css`
     width: 100%;
     padding: 1.2rem;
-    background-color: #7f3aef;
-    color: white;
+    background-color: ${theme.colors.lightBlue};
+    color: ${theme.colors.white};
     border: none;
-    border-radius: 0.8rem;
-    font-size: 1.6rem;
-    font-weight: 600;
+    border-radius: ${theme.borderRadius.main};
+    font-family: ${theme.font.family.base};
+    font-size: ${theme.font.size.body1};
+    font-weight: 500;
     cursor: ${disabled ? 'not-allowed' : 'pointer'};
     opacity: ${disabled ? 0.7 : 1};
-    transition: all 0.2s ease-in-out;
+    transition:
+      transform ${theme.motion.press} ${theme.motion.easeOut},
+      background-color ${theme.motion.hover} ease,
+      opacity ${theme.motion.hover} ease;
 
-    &:not(:disabled):hover {
-      background-color: #6826cc;
+    &:not(:disabled):active {
+      transform: scale(0.98);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:not(:disabled):hover {
+        background-color: ${theme.colors.brandPrimary};
+      }
     }
   `,
 )

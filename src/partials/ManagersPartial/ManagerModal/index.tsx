@@ -1,6 +1,11 @@
-import { Modal, MenuItem } from '@mui/material'
+import { MenuItem } from '@mui/material'
 
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
+import {
+  DialogHeader,
+  DialogModal,
+  DialogTitle,
+} from '@/components/commom/DialogModal'
 import { TextInputComponent } from '@/components/commom/TextInputComponent'
 import { useBranches } from '@/hooks/useBranches'
 import { useManagerForm } from '@/hooks/useManagerForm'
@@ -43,6 +48,7 @@ interface IFormFieldsProps {
   onStatusChange: (status: TAccountStatus) => void
   onStoreChange: (storeId: TStoreSelection) => void
   replacementManagers: IManager[]
+  isDeactivating: boolean
   branches: IBranch[]
   storeName: string
 }
@@ -56,12 +62,14 @@ const FormFields = ({
   onStatusChange,
   onStoreChange,
   replacementManagers,
+  isDeactivating,
   branches,
   storeName,
 }: IFormFieldsProps) => {
   return (
     <S.FormContainer>
       <TextInputComponent
+        id="manager-modal-name"
         label="Nome"
         value={form.name}
         error={Boolean(validationErrors.name)}
@@ -71,6 +79,7 @@ const FormFields = ({
         disabled={!isEditing}
       />
       <TextInputComponent
+        id="manager-modal-email"
         label="E-mail"
         value={form.email}
         error={Boolean(validationErrors.email)}
@@ -81,6 +90,7 @@ const FormFields = ({
       />
       {type === 'create' ? (
         <TextInputComponent
+          id="manager-modal-password"
           label="Senha Inicial"
           type="password"
           value={form.password}
@@ -94,6 +104,7 @@ const FormFields = ({
         <TextInputComponent
           select
           fullWidth
+          id="manager-modal-status"
           label="Status"
           value={form.status}
           onChange={(e) => onStatusChange(e.target.value as TAccountStatus)}
@@ -113,13 +124,14 @@ const FormFields = ({
         <TextInputComponent
           select
           fullWidth
-          required
-          label="Filial *"
+          required={form.status === 'ACTIVE'}
+          id="manager-modal-store"
+          label="Filial"
           value={form.storeId}
           error={Boolean(validationErrors.storeId)}
           helperText={validationErrors.storeId}
           onChange={(e) => onStoreChange(toStoreSelection(e.target.value))}
-          disabled={!isEditing}
+          disabled={!isEditing || form.status === 'INACTIVE'}
           sx={SELECT_LABEL_SX}
         >
           <MenuItem value="" sx={MENU_ITEM_SX}>
@@ -137,6 +149,7 @@ const FormFields = ({
         </TextInputComponent>
       ) : (
         <TextInputComponent
+          id="manager-modal-linked-store"
           label="Loja Vinculada"
           value={
             branches.find((branch) => branch.store_id === form.storeId)?.name ??
@@ -146,12 +159,22 @@ const FormFields = ({
         />
       )}
 
+      {isDeactivating && replacementManagers.length === 0 && (
+        <S.Helper id="manager-modal-replacement-note" role="note">
+          Não há outro gerente ativo nesta filial. Se a filial tiver
+          funcionários ativos, a inativação exige um gerente substituto ativo na
+          mesma filial: cadastre ou vincule outro gerente a ela antes de
+          inativar.
+        </S.Helper>
+      )}
+
       {replacementManagers.length > 0 && (
         <TextInputComponent
           select
           fullWidth
           required
-          label="Gerente substituto *"
+          id="manager-modal-replacement"
+          label="Gerente substituto"
           value={form.replacementManagerId}
           error={Boolean(validationErrors.replacementManagerId)}
           helperText={validationErrors.replacementManagerId}
@@ -239,8 +262,14 @@ export const ManagerModal = (props: IManagerModal) =>
     />
   ) : null
 
+const MODAL_TITLES: Record<NonNullable<TManagerModalType>, string> = {
+  create: 'Cadastrar novo gerente',
+  edit: 'Editar gerente',
+  details: 'Detalhes do gerente',
+}
+
 const getModalTitle = (type: TManagerModalType) =>
-  type === 'create' ? 'Cadastrar novo gerente' : 'Detalhes do gerente'
+  type ? MODAL_TITLES[type] : MODAL_TITLES.details
 
 interface IManagerModalHelperProps {
   id: string
@@ -269,6 +298,7 @@ const ManagerModalContent = ({
     isEditing,
     isFormValid,
     validationErrors,
+    isDeactivating,
     replacementManagers,
     setField,
     setStatus,
@@ -287,42 +317,44 @@ const ManagerModalContent = ({
   }
 
   return (
-    <Modal
+    <DialogModal
       open={open}
       onClose={handleClose}
-      aria-labelledby="manager-modal-title"
-      aria-describedby={
-        type === 'create' ? 'manager-modal-description' : undefined
-      }
+      size="md"
       data-testid="modal-manager"
+      labelledBy="manager-modal-title"
+      describedBy={type === 'create' ? 'manager-modal-description' : undefined}
     >
-      <S.BoxModal>
-        <S.Title id="manager-modal-title">{getModalTitle(type)}</S.Title>
+      <DialogHeader>
+        <DialogTitle id="manager-modal-title">
+          {getModalTitle(type)}
+        </DialogTitle>
         <ManagerModalHelper id="manager-modal-description" type={type} />
+      </DialogHeader>
 
-        <FormFields
-          type={type}
-          isEditing={isEditing}
-          form={form}
-          validationErrors={validationErrors}
-          onFieldChange={setField}
-          onStatusChange={setStatus}
-          onStoreChange={setStoreId}
-          replacementManagers={replacementManagers}
-          branches={branches ?? []}
-          storeName={item?.store_name ?? ''}
-        />
+      <FormFields
+        type={type}
+        isEditing={isEditing}
+        form={form}
+        validationErrors={validationErrors}
+        onFieldChange={setField}
+        onStatusChange={setStatus}
+        onStoreChange={setStoreId}
+        replacementManagers={replacementManagers}
+        isDeactivating={isDeactivating}
+        branches={branches ?? []}
+        storeName={item?.store_name ?? ''}
+      />
 
-        <ActionButtons
-          isEditing={isEditing}
-          isFormValid={isFormValid}
-          isSaving={isSaving}
-          type={type}
-          onClose={handleClose}
-          onSave={handleSave}
-          onStartEditing={startEditing}
-        />
-      </S.BoxModal>
-    </Modal>
+      <ActionButtons
+        isEditing={isEditing}
+        isFormValid={isFormValid}
+        isSaving={isSaving}
+        type={type}
+        onClose={handleClose}
+        onSave={handleSave}
+        onStartEditing={startEditing}
+      />
+    </DialogModal>
   )
 }

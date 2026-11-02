@@ -1,10 +1,12 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { AuthProvider } from '@/contexts/AuthProvider'
 import { ThemeProvider } from 'styled-components'
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import theme from '@/styles/theme'
+import muiTheme from '@/styles/muiTheme'
 import { ToastNotification } from '@/components/commom/ToastNotification'
 import { type IEmittedNotification } from '@/types'
 import GlobalStyles from '@/styles/globals'
@@ -20,6 +22,8 @@ const NotFound = lazy(() => import('@/pages/not-found'))
 const Home = lazy(() => import('@/pages/home'))
 const Dashboards = lazy(() => import('@/pages/dashboards'))
 const Managers = lazy(() => import('@/pages/managers'))
+const ManagerDetail = lazy(() => import('@/pages/manager-detail'))
+const StoreDetail = lazy(() => import('@/pages/store-detail'))
 const Profile = lazy(() => import('@/pages/profile'))
 const Contact = lazy(() => import('@/pages/contact'))
 
@@ -53,31 +57,35 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        <GlobalStyles />
+      <MuiThemeProvider theme={muiTheme}>
+        <ThemeProvider theme={theme}>
+          <GlobalStyles />
 
-        <BrowserRouter>
-          <AuthProvider>
-            <Suspense fallback={<LoadingMask isLoading />}>
-              <Routes>
-                <Route path="/" element={<Navigate to="/home" replace />} />
-                <Route path="/login" element={<LoginRoute />} />
-                <Route element={<ProtectedRoute />}>
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/lojas" element={<Stores />} />
-                  <Route path="/dashboards" element={<Dashboards />} />
-                  <Route path="/gerentes" element={<Managers />} />
-                  <Route path="/perfil" element={<Profile />} />
-                  <Route path="/contato" element={<Contact />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </AuthProvider>
-        </BrowserRouter>
+          <BrowserRouter>
+            <AuthProvider>
+              <Suspense fallback={<LoadingMask isLoading />}>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/home" replace />} />
+                  <Route path="/login" element={<LoginRoute />} />
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/lojas" element={<Stores />} />
+                    <Route path="/lojas/:id" element={<StoreDetail />} />
+                    <Route path="/dashboards" element={<Dashboards />} />
+                    <Route path="/gerentes" element={<Managers />} />
+                    <Route path="/gerentes/:id" element={<ManagerDetail />} />
+                    <Route path="/perfil" element={<Profile />} />
+                    <Route path="/contato" element={<Contact />} />
+                  </Route>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </AuthProvider>
+          </BrowserRouter>
 
-        <ToastNotification notifications={notifications} />
-      </ThemeProvider>
+          <ToastNotification notifications={notifications} />
+        </ThemeProvider>
+      </MuiThemeProvider>
     </QueryClientProvider>
   )
 }

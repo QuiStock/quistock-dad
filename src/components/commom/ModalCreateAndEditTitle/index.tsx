@@ -1,9 +1,12 @@
-import * as S from './styles'
-import { type ReactNode, useState } from 'react'
-
-import { Modal } from '@mui/material'
+import { type ReactNode, useId, useState } from 'react'
 
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
+import {
+  DialogActions,
+  DialogDescription,
+  DialogModal,
+  DialogTitle,
+} from '@/components/commom/DialogModal'
 import { TextInputComponent } from '@/components/commom/TextInputComponent'
 
 interface IModalCreateAndEditTitle {
@@ -28,42 +31,51 @@ const ModalCreateAndEditTitle = ({
   onSave,
 }: IModalCreateAndEditTitle) => {
   const [value, setValue] = useState(initialValue || '')
+  const baseId = useId()
+  const titleId = `${baseId}-title`
+  const helperId = `${baseId}-helper`
 
   return (
-    <Modal open={open} data-testid="modal-create-and-edit-title">
-      <S.BoxModal>
-        <S.Title>{modalTitle}</S.Title>
+    <DialogModal
+      open={open}
+      data-testid="modal-create-and-edit-title"
+      labelledBy={titleId}
+      describedBy={helper ? helperId : undefined}
+    >
+      <DialogTitle id={titleId}>{modalTitle}</DialogTitle>
 
-        <TextInputComponent
-          label={placeholder}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && validateContent(value)) onSave(value)
-          }}
-        />
+      <TextInputComponent
+        id={`${baseId}-input`}
+        label={placeholder}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && validateContent(value)) onSave(value)
+        }}
+      />
 
-        <S.Helper>{helper}</S.Helper>
+      {!!helper && (
+        <DialogDescription id={helperId}>{helper}</DialogDescription>
+      )}
 
-        <S.BoxButtons>
-          <ButtonComponent
-            variant="outlined"
-            data-testid="cancel"
-            onClick={onCancel}
-          >
-            {'Cancelar'}
-          </ButtonComponent>
-          <ButtonComponent
-            variant="contained"
-            data-testid="save"
-            onClick={() => onSave(value)}
-            disabled={!validateContent(value)}
-          >
-            {'Salvar'}
-          </ButtonComponent>
-        </S.BoxButtons>
-      </S.BoxModal>
-    </Modal>
+      <DialogActions>
+        <ButtonComponent
+          variant="outlined"
+          data-testid="cancel"
+          onClick={onCancel}
+        >
+          {'Cancelar'}
+        </ButtonComponent>
+        <ButtonComponent
+          variant="contained"
+          data-testid="save"
+          onClick={() => onSave(value)}
+          disabled={!validateContent(value)}
+        >
+          {'Salvar'}
+        </ButtonComponent>
+      </DialogActions>
+    </DialogModal>
   )
 }
 

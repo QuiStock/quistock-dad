@@ -5,11 +5,20 @@ import { Tabs } from '@mui/material'
 export const CustomTabs = styled(Tabs)(
   ({ theme }) => css`
     && {
+      min-height: 0;
       border-bottom: none;
 
+      .MuiTabs-flexContainer {
+        gap: 3.2rem;
+      }
+
       .MuiTabs-indicator {
-        background-color: ${theme.colors.tabsIndicator};
         height: 0.3rem;
+        border-radius: 0.3rem 0.3rem 0 0;
+        background-color: ${theme.colors.tabsIndicator};
+        transition:
+          left ${theme.motion.enter} ${theme.motion.easeOut},
+          width ${theme.motion.enter} ${theme.motion.easeOut};
       }
     }
   `,
@@ -18,7 +27,7 @@ export const CustomTabs = styled(Tabs)(
 export const CustomTabPanel = styled('div')(
   () => css`
     position: relative;
-    padding: 2rem 0;
+    padding: 2.4rem 0 0;
   `,
 )
 
@@ -27,7 +36,6 @@ export const WrapperTabs = styled('div')(
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    margin: 2.4rem 0;
-    gap: 2.4rem;
+    gap: 1.6rem;
   `,
 )

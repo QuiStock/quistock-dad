@@ -11,6 +11,10 @@ import {
   updateManager,
 } from '@/services/api-managers'
 import type { IManager, ISaveManagerData } from '@/types'
+import {
+  buildManagerUpdatePayload,
+  isEmptyManagerUpdatePayload,
+} from '@/utils/buildManagerUpdatePayload'
 
 interface IUseManagersParams {
   onSaveSuccess: () => void
@@ -55,17 +59,21 @@ export const useManagers = ({ onSaveSuccess }: IUseManagersParams) => {
 
   const saveManager = (data: ISaveManagerData, existing: IManager | null) => {
     if (existing) {
-      runFetchEditManager(
-        updateManager(existing.id, {
-          name: data.name,
-          email: data.email,
-          status: data.status,
-          store_id: data.store_id,
-          replacement_manager_id: data.replacement_manager_id,
-        }),
-      )
+      const payload = buildManagerUpdatePayload(existing, data)
+      if (isEmptyManagerUpdatePayload(payload)) {
+        emitNotification({
+          type: 'info',
+          message: 'Nenhuma alteração para salvar.',
+        })
+        onSaveSuccess()
+        return
+      }
+
+      runFetchEditManager(updateManager(existing.id, payload))
       return
     }
+
+    if (data.store_id === undefined) return
 
     runFetchCreateManager(
       createManager({

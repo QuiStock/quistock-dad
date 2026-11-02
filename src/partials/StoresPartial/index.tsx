@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import * as S from './styles'
 
 import { Search } from '@mui/icons-material'
@@ -12,17 +12,11 @@ import { RowActionMenu } from '@/components/commom/RowActionMenu'
 import { TextInputWithIcon } from '@/components/commom/TextInputWithIcon'
 import { TabsCompoundComponent } from '@/components/commom/TabsCompoundComponent'
 import { ButtonComponent } from '@/components/commom/ButtonComponent'
-import { StoreModal } from './StoreModal'
 import { useBranches } from '@/hooks/useBranches'
 import { useTableSearch } from '@/hooks/useTableSearch'
 import type { IStoreItem } from '@/types'
 
 const STORES_PATH = '/lojas'
-
-interface IStoreModalState {
-  isOpen: boolean
-  item: IStoreItem | null
-}
 
 export const StoresPartial = () => {
   const {
@@ -31,10 +25,6 @@ export const StoresPartial = () => {
     handleSearchChange,
     handlePaginationChange,
   } = useTableSearch()
-  const [detailsModal, setDetailsModal] = useState<IStoreModalState>({
-    isOpen: false,
-    item: null,
-  })
 
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -82,24 +72,28 @@ export const StoresPartial = () => {
         field: 'name',
         headerName: 'Nome da Filial',
         flex: 2,
+        minWidth: 160,
         editable: false,
       },
       {
         field: 'city',
         headerName: 'Cidade',
         flex: 1.5,
+        minWidth: 120,
         editable: false,
       },
       {
         field: 'state',
         headerName: 'Estado',
         flex: 1,
+        minWidth: 72,
         editable: false,
       },
       {
         field: 'address',
         headerName: 'Endereço',
         flex: 2,
+        minWidth: 180,
         editable: false,
       },
       {
@@ -112,13 +106,19 @@ export const StoresPartial = () => {
           return (
             <RowActionMenu
               label={`Ações da loja ${row.name}`}
-              onDetails={() => setDetailsModal({ isOpen: true, item: row })}
+              onViewPage={
+                row.store_id === undefined
+                  ? undefined
+                  : () => {
+                      void navigate(`/lojas/${row.store_id}`)
+                    }
+              }
             />
           )
         },
       },
     ],
-    [],
+    [navigate],
   )
 
   return (
@@ -135,21 +135,19 @@ export const StoresPartial = () => {
           </S.FilterInputs>
         </S.BoxFilters>
       ) : (
-        <S.BoxFilters>
+        <S.SectionHeader>
           <TabsCompoundComponent.Root>
             <TabsCompoundComponent.List>
               <TabsCompoundComponent.Tab label={'Lojas'} index={0} />
             </TabsCompoundComponent.List>
           </TabsCompoundComponent.Root>
-          <S.SeeMoreStoresButton>
-            <ButtonComponent
-              variant="outlined"
-              onClick={() => void navigate(STORES_PATH)}
-            >
-              Ver mais lojas
-            </ButtonComponent>
-          </S.SeeMoreStoresButton>
-        </S.BoxFilters>
+          <ButtonComponent
+            variant="outlined"
+            onClick={() => void navigate(STORES_PATH)}
+          >
+            Ver mais lojas
+          </ButtonComponent>
+        </S.SectionHeader>
       )}
 
       {displayedStores.length === 0 && !isLoadingBranches ? (
@@ -169,12 +167,6 @@ export const StoresPartial = () => {
           hideFooter={!isStoresPage}
         />
       )}
-
-      <StoreModal
-        open={detailsModal.isOpen}
-        item={detailsModal.item}
-        onClose={() => setDetailsModal((prev) => ({ ...prev, isOpen: false }))}
-      />
 
       <LoadingMask isLoading={isLoadingBranches} />
     </S.Wrapper>

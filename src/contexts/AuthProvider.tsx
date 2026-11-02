@@ -24,17 +24,20 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
-  const refreshSession = useCallback(async () => {
-    try {
-      await postRefresh()
-      setIsAuthenticated(true)
-      return true
-    } catch {
-      clearAuthToken()
-      setIsAuthenticated(false)
-      return false
-    }
-  }, [])
+  const refreshSession = useCallback(
+    async (isActive: () => boolean = () => true) => {
+      try {
+        await postRefresh()
+        if (isActive()) setIsAuthenticated(true)
+        return true
+      } catch {
+        clearAuthToken()
+        if (isActive()) setIsAuthenticated(false)
+        return false
+      }
+    },
+    [],
+  )
 
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true)
@@ -71,9 +74,9 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
       const token = getAuthToken()
       if (token && !isAuthTokenExpired(token)) {
         setIsAuthenticated(true)
-      } else {
-        if (token) clearAuthToken()
-        await refreshSession()
+      } else if (token) {
+        clearAuthToken()
+        await refreshSession(() => isMounted)
       }
 
       if (isMounted) setIsLoading(false)

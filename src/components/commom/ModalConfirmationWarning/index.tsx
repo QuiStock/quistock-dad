@@ -4,6 +4,13 @@ import * as S from './styles'
 import { Checkbox } from '@mui/material'
 
 import { ButtonComponent } from '../ButtonComponent'
+import {
+  DialogActions,
+  DialogBody,
+  DialogDescription,
+  DialogModal,
+  DialogTitle,
+} from '../DialogModal'
 
 interface IModalConfirmationWarning {
   openModal: boolean
@@ -24,6 +31,8 @@ const ModalConfirmationWarning = ({
 }: IModalConfirmationWarning) => {
   const [secondValidation, setSecondValidation] = useState(false)
   const dialogId = useId()
+  const titleId = `${dialogId}-title`
+  const checkboxId = `${dialogId}-checkbox`
 
   const getModalTitle = () => {
     if (isImportant) return 'Aviso importante'
@@ -51,54 +60,52 @@ const ModalConfirmationWarning = ({
   const messageIds = messageItems.map(({ id }) => id).join(' ')
 
   return (
-    <S.StyledModal
+    <DialogModal
       open={openModal}
-      aria-labelledby="confirmation-modal-title"
-      aria-describedby={messageIds}
+      role={isAlert ? 'alertdialog' : 'dialog'}
+      labelledBy={titleId}
+      describedBy={messageIds}
     >
-      <S.Wrapper>
-        <S.ModalTitle
-          id="confirmation-modal-title"
-          color={isAlert ? 'red' : 'main'}
-        >
-          {getModalTitle()}
-        </S.ModalTitle>
+      <DialogTitle id={titleId} $tone={isAlert ? 'danger' : 'default'}>
+        {getModalTitle()}
+      </DialogTitle>
 
+      <DialogBody>
         {messageItems.map(({ id, key, text }) => (
-          <S.ModalContent id={id} key={key}>
+          <DialogDescription id={id} key={key}>
             {text}
-          </S.ModalContent>
+          </DialogDescription>
         ))}
+      </DialogBody>
 
-        {isImportant && (
-          <S.ConfirmationBox htmlFor="confirmation-checkbox">
-            <Checkbox
-              id="confirmation-checkbox"
-              checked={secondValidation}
-              onChange={(e) => setSecondValidation(e.target.checked)}
-              sx={{ '& .MuiSvgIcon-root': { fontSize: '2.5rem', margin: 0 } }}
-            />
-            <S.ModalContent>{'Aceitar e confirmar'}</S.ModalContent>
-          </S.ConfirmationBox>
-        )}
+      {isImportant && (
+        <S.ConfirmationBox htmlFor={checkboxId}>
+          <Checkbox
+            id={checkboxId}
+            checked={secondValidation}
+            onChange={(e) => setSecondValidation(e.target.checked)}
+            sx={{ '& .MuiSvgIcon-root': { fontSize: '2.4rem', margin: 0 } }}
+          />
+          <S.ConfirmationText>{'Aceitar e confirmar'}</S.ConfirmationText>
+        </S.ConfirmationBox>
+      )}
 
-        <S.ButtonContainer>
-          <ButtonComponent
-            variant="outlined"
-            onClick={() => onCancel && onCancel()}
-          >
-            {'Cancelar'}
-          </ButtonComponent>
-          <ButtonComponent
-            variant="contained"
-            onClick={() => onConfirm && onConfirm()}
-            disabled={isImportant && !secondValidation}
-          >
-            {'Confirmar'}
-          </ButtonComponent>
-        </S.ButtonContainer>
-      </S.Wrapper>
-    </S.StyledModal>
+      <DialogActions>
+        <ButtonComponent
+          variant="outlined"
+          onClick={() => onCancel && onCancel()}
+        >
+          {'Cancelar'}
+        </ButtonComponent>
+        <ButtonComponent
+          variant="contained"
+          onClick={() => onConfirm && onConfirm()}
+          disabled={isImportant && !secondValidation}
+        >
+          {'Confirmar'}
+        </ButtonComponent>
+      </DialogActions>
+    </DialogModal>
   )
 }
 
